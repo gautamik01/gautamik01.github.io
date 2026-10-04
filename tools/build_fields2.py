@@ -26,11 +26,11 @@ DMAX = 40000.0
 M = 2.0           # compute distances on a 2x larger area so the edges are honest
 SS = 2            # supersampling
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT = os.path.join(HERE, '..', 'fields')
-GEO = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'geodata')   # bel_coast_waterways.geojson, philly_hydro.geojson
+OUT = os.path.join(HERE, '..', 'hero', 'fields')
+GEO = '/home/claude/geodata/user'
 
 SITES = {
-  'mumbai':       {'center': (72.885, 19.020), 'side': 40000, 'src': 'gshhs'},
+  'mumbai':       {'center': (72.885, 18.990), 'side': 48000, 'src': 'gshhs'},
   'coast':        {'center': (2.925, 51.212),  'side': 24000, 'src': 'osm-be'},
   'philadelphia': {'center': (-75.165, 39.945), 'side': 14000, 'src': 'pwd'},
 }

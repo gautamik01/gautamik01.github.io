@@ -9,8 +9,10 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wdth,wght@75..100,400..700&family=Instrument+Serif&display=swap">
 <style>
 :root { --paper:#F3F1EB; --ink:#151515; --ink-soft:#5B5953; --hair:rgba(21,21,21,.18); --water:#2F45C6; --rust:#B9400F;
-  --sans:"Instrument Sans","Helvetica Neue",Helvetica,Arial,sans-serif; --serif:"Instrument Serif","Times New Roman",Times,serif; --gutter:clamp(16px,1.4vw,24px); --cond: var(--sans); --cond-stretch: 75%; --disp: 1; --body: 1; --ser: 1;
+  --sans:"Instrument Sans","Helvetica Neue",Helvetica,Arial,sans-serif; --serif:"Instrument Serif","Times New Roman",Times,serif; --gutter:clamp(16px,1.4vw,24px); --cond: var(--sans); --cond-stretch: 75%; --disp: 0.6; --body: 0.85; --ser: 1;
   color-scheme: light; }
+/* type scale settled by Gautami: big headings at 60%, body at 85% on screens wider than a phone */
+@media (max-width: 760px) { :root { --body: 1; } }
 html, body { margin:0; background:var(--paper); color:var(--ink); font-family:var(--sans); -webkit-font-smoothing:antialiased; }
 a { color:inherit; text-decoration:none; }
 :focus-visible { outline:1.5px solid var(--water); outline-offset:3px; }
@@ -79,107 +81,5 @@ document.getElementById('copy').addEventListener('click', async (e) => {
   }, { passive: true });
 })();
 </script>
-<!-- fonts:start -->
-<button type="button" id="ft-open" class="ft-open">Fonts</button>
-<div class="ft" id="ft" hidden>
-  <div class="ft-h"><b>Fonts</b><button type="button" id="ft-x">Hide</button></div>
-  <label for="ft-sans">Main typeface</label>
-  <select id="ft-sans"></select>
-  <label for="ft-cond">Labels and big headings</label>
-  <select id="ft-cond"></select>
-  <label for="ft-serif">Statement</label>
-  <select id="ft-serif"></select>
-  <label for="ft-disp">Big headings <output id="fo-disp" for="ft-disp"></output></label>
-  <input type="range" id="ft-disp" min="60" max="150" step="5">
-  <label for="ft-body">Body text <output id="fo-body" for="ft-body"></output></label>
-  <input type="range" id="ft-body" min="80" max="130" step="5">
-  <label for="ft-ser">Statement size <output id="fo-ser" for="ft-ser"></output></label>
-  <input type="range" id="ft-ser" min="60" max="150" step="5">
-  <div class="ft-row"><span class="ft-note">Applies to every page</span><button type="button" id="ft-reset">Reset</button></div>
-  <div class="ft-sum" id="ft-sum"></div>
-</div>
-<style>
-.ft-open { position: fixed; right: 16px; bottom: 16px; z-index: 40; background: var(--paper); border: 1px solid var(--hair); padding: 0 12px; min-height: 36px; font: inherit; font-size: 13px; text-transform: uppercase; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 700; color: var(--rust); cursor: pointer; }
-.ft-open[hidden], .ft[hidden] { display: none; }
-.ft { position: fixed; right: 16px; bottom: 16px; z-index: 41; width: 252px; max-height: calc(100vh - 96px); overflow-y: auto; background: var(--paper); border: 1px solid var(--hair); padding: 12px 14px 10px; font-family: var(--sans); font-size: 14px; display: grid; gap: 5px; color: var(--ink); }
-.ft-h { display: flex; justify-content: space-between; align-items: center; }
-.ft-h b { font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 700; text-transform: uppercase; color: var(--rust); font-size: 13px; }
-.ft button { font: inherit; background: none; border: 0; padding: 0; cursor: pointer; color: var(--water); font-size: 13px; min-height: 32px; text-transform: uppercase; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 600; }
-.ft label { display: flex; justify-content: space-between; margin-top: 6px; }
-.ft output { color: var(--ink-soft); font-variant-numeric: tabular-nums; }
-.ft select { font: inherit; font-size: 14px; color: var(--ink); background: var(--paper); border: 1px solid var(--hair); min-height: 34px; padding: 0 6px; width: 100%; }
-.ft input[type="range"] { width: 100%; accent-color: var(--water); margin: 0; min-height: 26px; }
-.ft-row { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
-.ft-note { font-size: 12px; color: var(--ink-soft); }
-.ft-sum { font-size: 12px; color: var(--ink-soft); border-top: 1px solid var(--hair); padding-top: 6px; line-height: 1.35; }
-@media (max-width: 760px) { .ft { left: 16px; right: 16px; width: auto; max-height: 60vh; } }
-</style>
-<script>
-(() => {
-  const SANS = [
-    ['Instrument Sans', 'Instrument+Sans:wdth,wght@75..100,400..700'],
-    ['Archivo', 'Archivo:wdth,wght@62..125,400..800'],
-    ['Bricolage Grotesque', 'Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800'],
-    ['Schibsted Grotesk', 'Schibsted+Grotesk:wght@400..800'],
-    ['Hanken Grotesk', 'Hanken+Grotesk:wght@400..800'],
-    ['Familjen Grotesk', 'Familjen+Grotesk:wght@400..700']
-  ];
-  // [label, family, stretch, google query]; family null = same as the main typeface
-  const COND = [
-    ['Instrument Sans, condensed', 'Instrument Sans', '75%', 'Instrument+Sans:wdth,wght@75..100,400..700'],
-    ['Archivo, narrow', 'Archivo', '62%', 'Archivo:wdth,wght@62..125,400..800'],
-    ['Barlow Condensed', 'Barlow Condensed', '100%', 'Barlow+Condensed:wght@400;500;600;700'],
-    ['Oswald', 'Oswald', '100%', 'Oswald:wght@400..700'],
-    ['Antonio', 'Antonio', '100%', 'Antonio:wght@400..700'],
-    ['Same as main, not condensed', null, '100%', null]
-  ];
-  const SERIF = [
-    ['Instrument Serif', 'Instrument+Serif:ital@0;1'],
-    ['Newsreader', 'Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600'],
-    ['Fraunces', 'Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600'],
-    ['EB Garamond', 'EB+Garamond:ital,wght@0,400..600;1,400..600'],
-    ['Cormorant Garamond', 'Cormorant+Garamond:ital,wght@0,400..600;1,400..600'],
-    ['Same as main typeface', null]
-  ];
-  const FALLBACK = '"Helvetica Neue", Helvetica, Arial, sans-serif', SERIF_FB = '"Times New Roman", Times, serif';
-  const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
-  const D = { sans: 0, cond: 0, serif: 0, disp: 100, body: 100, ser: 100 };
-  const S = {}; for (const k in D) { const v = store.get('gk-ft-' + k); S[k] = v === null || v === '' ? D[k] : +v; }
-  const root = document.documentElement, $ = (id) => document.getElementById(id);
-  const loaded = new Set(['Instrument+Sans:wdth,wght@75..100,400..700', 'Instrument+Serif:ital@0;1']);
-  function load(q) {
-    if (!q || loaded.has(q)) return; loaded.add(q);
-    const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://fonts.googleapis.com/css2?family=' + q + '&display=swap';
-    l.onload = () => { if (document.fonts) document.fonts.ready.then(() => dispatchEvent(new Event('resize'))); };
-    document.head.appendChild(l);
-  }
-  function apply() {
-    const sans = SANS[S.sans] || SANS[0], cond = COND[S.cond] || COND[0], serif = SERIF[S.serif] || SERIF[0];
-    load(sans[1]); load(cond[3]); load(serif[1]);
-    const sansStack = '"' + sans[0] + '", ' + FALLBACK;
-    root.style.setProperty('--sans', sansStack);
-    root.style.setProperty('--cond', cond[1] ? '"' + cond[1] + '", ' + sansStack : sansStack);
-    root.style.setProperty('--cond-stretch', cond[2]);
-    root.style.setProperty('--serif', serif[1] ? '"' + serif[0] + '", ' + SERIF_FB : sansStack);
-    root.style.setProperty('--disp', S.disp / 100); root.style.setProperty('--body', S.body / 100); root.style.setProperty('--ser', S.ser / 100);
-    if (!$('ft-sans')) return;
-    $('ft-sans').value = S.sans; $('ft-cond').value = S.cond; $('ft-serif').value = S.serif;
-    $('ft-disp').value = S.disp; $('ft-body').value = S.body; $('ft-ser').value = S.ser;
-    $('fo-disp').textContent = S.disp + '%'; $('fo-body').textContent = S.body + '%'; $('fo-ser').textContent = S.ser + '%';
-    $('ft-sum').textContent = 'Main ' + sans[0] + ' · labels ' + cond[0] + ' · statement ' + serif[0] + ' · headings ' + S.disp + '% · body ' + S.body + '% · statement ' + S.ser + '%';
-    dispatchEvent(new Event('resize'));
-  }
-  const fill = (id, list) => { $(id).innerHTML = list.map((o, i) => '<option value="' + i + '">' + o[0] + '</option>').join(''); };
-  fill('ft-sans', SANS); fill('ft-cond', COND); fill('ft-serif', SERIF);
-  const set = (k, v) => { S[k] = v; store.set('gk-ft-' + k, String(v)); apply(); };
-  ['sans', 'cond', 'serif'].forEach(k => $('ft-' + k).addEventListener('change', (e) => set(k, +e.target.value)));
-  ['disp', 'body', 'ser'].forEach(k => $('ft-' + k).addEventListener('input', (e) => set(k, +e.target.value)));
-  $('ft-reset').addEventListener('click', () => { for (const k in D) { S[k] = D[k]; store.set('gk-ft-' + k, ''); } apply(); });
-  $('ft-open').addEventListener('click', () => { $('ft').hidden = false; $('ft-open').hidden = true; });
-  $('ft-x').addEventListener('click', () => { $('ft').hidden = true; $('ft-open').hidden = false; });
-  apply();
-})();
-</script>
-<!-- fonts:end -->
 </body>
 </html>

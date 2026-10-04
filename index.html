@@ -1,5 +1,10 @@
+<!doctype html>
+<html lang="en">
+<head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Gautami Kasat</title>
+<meta name="description" content="Gautami Kasat, urban spatial analyst and urban designer. Landscape urbanism, climate and water, maps and data.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wdth,wght@75..100,400..700&family=Instrument+Serif:ital@0;1&display=swap">
@@ -23,9 +28,11 @@
   --gx: 95%;
   --gy: 50%;
   --gs: 84px;
-  --cond: var(--sans); --cond-stretch: 75%; --disp: 1; --body: 1; --ser: 1;
+  --cond: var(--sans); --cond-stretch: 75%; --disp: 0.6; --body: 0.85; --ser: 1;
   color-scheme: light;
 }
+/* type scale settled by Gautami: big headings at 60%, body at 85% on screens wider than a phone */
+@media (max-width: 760px) { :root { --body: 1; } }
 html { background: var(--paper); }
 body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
 a { color: inherit; text-decoration: none; }
@@ -57,8 +64,6 @@ h1 { margin: 0.06em 0 0.12em; font-weight: 700; line-height: 0.82; letter-spacin
 .scrollcue a:hover { color: var(--ink); }
 
 .globe { position: absolute; left: var(--gx); top: var(--gy); width: var(--gs); height: var(--gs); transform: translate(-50%, -50%); }
-.globe.dragging { outline: 1px dashed var(--rust); outline-offset: 6px; cursor: grab; }
-.globe.dragging #globe { cursor: grab; }
 #globe { width: 100%; height: 100%; display: block; touch-action: manipulation; }
 #gtip { position: absolute; right: calc(100% + 10px); top: 50%; transform: translateY(-50%); z-index: 2; width: 236px; padding: 10px 12px 9px; background: var(--paper); pointer-events: none; opacity: 0; transition: opacity .18s; font-variant-numeric: tabular-nums; }
 #gtip.on { opacity: 1; }
@@ -117,23 +122,6 @@ footer a:hover { color: var(--water); }
 .globe { transition-delay: .45s; }
 
 
-/* ---------- type tuner (for choosing sizes; remove before launch) ---------- */
-.tune { position: fixed; left: 16px; top: 64px; max-height: calc(100vh - 88px); overflow-y: auto; z-index: 25; width: 236px; background: var(--paper); border: 1px solid var(--hair); padding: 12px 14px 10px; font-size: 14px; display: grid; gap: 6px; }
-.tune[hidden] { display: none; }
-.tune-h { display: flex; justify-content: space-between; align-items: center; }
-.tune-h b { font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 700; text-transform: uppercase; color: var(--rust); font-size: 13px; }
-.tune label { display: flex; justify-content: space-between; margin-top: 4px; }
-.tune output { font-variant-numeric: tabular-nums; color: var(--ink-soft); }
-.tune input[type="range"] { width: 100%; accent-color: var(--water); margin: 0; min-height: 28px; }
-.tune .row { display: flex; justify-content: space-between; align-items: center; }
-.tune .sec { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--hair); font-size: 12px; text-transform: uppercase; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 700; color: var(--ink-soft); letter-spacing: .02em; }
-.tune .sec:first-of-type { border-top: 0; margin-top: 0; padding-top: 0; }
-.past-hero .tune, .past-hero #tune-open { visibility: hidden; }
-.tune .sum { font-size: 12px; color: var(--ink-soft); border-top: 1px solid var(--hair); padding-top: 6px; font-variant-numeric: tabular-nums; }
-.tune button[aria-pressed="true"] { color: var(--rust); }
-.tune button { color: var(--water); font-size: 13px; min-height: 32px; text-transform: uppercase; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 600; }
-#tune-open { position: fixed; left: 16px; top: 64px; z-index: 25; background: var(--paper); border: 1px solid var(--hair); padding: 0 12px; min-height: 36px; font-size: 13px; text-transform: uppercase; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 700; color: var(--rust); }
-#tune-open[hidden] { display: none; }
 
 @media (max-width: 760px) {
   .top nav { gap: 12px; }
@@ -146,13 +134,13 @@ footer a:hover { color: var(--water); }
   .grid { flex-wrap: wrap; gap: 14px 4%; }
   .p { width: 48% !important; margin-top: 0 !important; }
   .p:nth-child(even) { margin-top: 48px !important; }
-  .tune { left: 16px; right: 16px; width: auto; top: 136px; max-height: 52vh; }
-  #tune-open { top: 136px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .top, .namebox, .globe, .scrollcue { transition: none; }
 }
 </style>
+</head>
+<body>
 
 <header class="top hold">
   <a class="mark" href="index.html#home" aria-label="Gautami Kasat, home">GK</a>
@@ -212,44 +200,19 @@ footer a:hover { color: var(--water); }
 <div id="tag" class="cond" aria-hidden="true"></div>
 
 
-<div class="tune" id="tune" hidden>
-  <div class="tune-h"><b>Tune</b><button type="button" id="tune-x">Hide</button></div>
-  <div class="sec">Type</div>
-  <label for="t-name">Name <output id="o-name" for="t-name"></output></label>
-  <input type="range" id="t-name" min="32" max="260" step="1">
-  <label for="t-small">Hello + role <output id="o-small" for="t-small"></output></label>
-  <input type="range" id="t-small" min="12" max="40" step="1">
-  <div class="sec">Globe</div>
-  <label for="t-gx">Across <output id="o-gx" for="t-gx"></output></label>
-  <input type="range" id="t-gx" min="4" max="96" step="0.5">
-  <label for="t-gy">Up and down <output id="o-gy" for="t-gy"></output></label>
-  <input type="range" id="t-gy" min="8" max="92" step="0.5">
-  <label for="t-gs">Size <output id="o-gs" for="t-gs"></output></label>
-  <input type="range" id="t-gs" min="40" max="220" step="1">
-  <div class="row"><button type="button" id="tune-drag" aria-pressed="false">Drag the globe</button></div>
-  <div class="sec">Motion</div>
-  <label for="t-dwell">Time on each place <output id="o-dwell" for="t-dwell"></output></label>
-  <input type="range" id="t-dwell" min="4" max="40" step="1">
-  <label for="t-morph">Transition length <output id="o-morph" for="t-morph"></output></label>
-  <input type="range" id="t-morph" min="0.8" max="10" step="0.2">
-  <label for="t-drift">Line drift <output id="o-drift" for="t-drift"></output></label>
-  <input type="range" id="t-drift" min="0" max="6" step="0.1">
-  <div class="row"><span></span><button type="button" id="tune-reset">Reset all</button></div>
-  <div class="sum"><span id="tune-sum"></span><br><span id="tune-sum2"></span></div>
-</div>
-<button type="button" id="tune-open" hidden>Tune</button>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
 <script>
 (() => {
   const SITES = [
-    { key: 'mumbai', short: 'Mumbai, IN', place: 'Mumbai, IN', lat: 19.02, lon: 72.885, tz: 'Asia/Kolkata', water: 'Arabian Sea, Mahim Bay, Thane Creek, Mumbai Harbour', focus: [0.57, 0.6], zoom: 1.05, density: 8, edge: 'shore' },
+    { key: 'mumbai', short: 'Mumbai, IN', place: 'Mumbai, IN', lat: 19.02, lon: 72.885, tz: 'Asia/Kolkata', water: 'Arabian Sea, Mahim Bay, Thane Creek, Mumbai Harbour', focus: [0.57, 0.63], zoom: 1.0, density: 8, edge: 'shore' },
     { key: 'coast', short: 'Oostende, BE', place: 'Middelkerke to Oostende, BE', lat: 51.212, lon: 2.925, tz: 'Europe/Brussels', water: 'North Sea and the port of Oostende', focus: [0.45, 0.5], zoom: 1.0, density: 8, edge: 'shore' },
     { key: 'philadelphia', short: 'Philadelphia, US', place: 'Philadelphia, US', lat: 39.952, lon: -75.165, tz: 'America/New_York', water: 'The Schuylkill and the Delaware', focus: [0.55, 0.5], zoom: 1.0, density: 20, edge: 'riverbank' }
   ];
   const N0 = 8.0, D0 = 0.06;
-  let DWELL = 14000, MORPH = 3600, DRIFT = 0.055;
+  // 6 s on each place, 3.6 s to change over, lines drifting at 1x (Gautami's settings)
+  const DWELL = 6000, MORPH = 3600, DRIFT = 0.055;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const RAD = Math.PI / 180, DEG = 180 / Math.PI;
   const $ = (id) => document.getElementById(id);
@@ -268,7 +231,6 @@ footer a:hover { color: var(--water); }
   const C = { paper: tok('--paper'), paper2: tok('--paper-2'), ink: tok('--ink'), water: tok('--water'), now: tok('--now'), land: tok('--land') };
   const site = $('site'), hero = document.querySelector('.hero');
   const field = {};
-  const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
 
   // ---------- sun + time ----------
   function sunPos(ms) {
@@ -291,78 +253,36 @@ footer a:hover { color: var(--water); }
     return localTime(s.tz) + ' local, sun ' + (a >= 0 ? '+' : '−') + Math.abs(Math.round(a)) + '°' + (a < -6 ? ', night' : a < 0 ? ', twilight' : '');
   }
 
-  // ---------- name size + tuner ----------
-  const nameEl = $('name');
+  // ---------- name size and globe placement ----------
+  // Settled by Gautami on a laptop: the name about a third of the screen wide, hello and role at 21px,
+  // the globe 97px across sitting low on the right. Phones keep their own layout.
+  const nameEl = $('name'), globeBox = document.querySelector('.globe');
   const textWidth = (el) => { const r = document.createRange(); r.selectNodeContents(el); return r.getBoundingClientRect().width; };
-  function defaultNamePx() {
-    // about 45% of the screen width on a laptop; two stacked lines at about 60% on a phone
-    const W = innerWidth, phone = W <= 760;
+  const LAPTOP = { nameShare: 0.34, small: 21, gx: 93, gy: 84, gs: 97 };
+  const phone = () => innerWidth <= 760;
+  function namePx() {
+    // laptop: one line about 34% of the screen wide; phone: two stacked lines about 60% wide
+    const W = innerWidth, p = phone();
     const prev = nameEl.style.fontSize; nameEl.style.fontSize = '100px';
     const words = [...nameEl.querySelectorAll('.w')];
-    const nat = phone ? Math.max(...words.map(textWidth)) : textWidth(nameEl);
+    const nat = p ? Math.max(...words.map(textWidth)) : textWidth(nameEl);
     nameEl.style.fontSize = prev;
-    return Math.round(100 * W * (phone ? 0.6 : 0.45) / nat);
+    return Math.round(100 * W * (p ? 0.6 : LAPTOP.nameShare) / nat);
   }
-  const tName = $('t-name'), tSmall = $('t-small'), oName = $('o-name'), oSmall = $('o-small');
-  const tGx = $('t-gx'), tGy = $('t-gy'), tGs = $('t-gs'), globeBox = document.querySelector('.globe');
-  const U = { name: +store.get('gk-name') || 0, small: +store.get('gk-small') || 0, gx: +store.get('gk-gx') || 0, gy: +store.get('gk-gy') || 0, gs: +store.get('gk-gs') || 0 };
-  const phone = () => innerWidth <= 760;
   function applyType() {
-    const np = U.name || defaultNamePx(), sp = U.small || (phone() ? 16 : 20);
-    const gs = U.gs || (phone() ? 60 : 84);
-    const gx = U.gx || (phone() ? 100 - (16 + gs / 2) / innerWidth * 100 : 100 - (24 + gs / 2) / innerWidth * 100);
-    const gy = U.gy || (phone() ? (64 + gs / 2) / Math.max(560, innerHeight) * 100 : 50);
-    root.style.setProperty('--name', np + 'px'); root.style.setProperty('--small', sp + 'px');
+    const p = phone();
+    const gs = p ? 60 : LAPTOP.gs;
+    const gx = p ? 100 - (16 + gs / 2) / innerWidth * 100 : LAPTOP.gx;
+    const gy = p ? (92 + gs / 2) / Math.max(560, innerHeight) * 100 : LAPTOP.gy;  // phone: low enough that the place name clears the menu
+    root.style.setProperty('--name', namePx() + 'px'); root.style.setProperty('--small', (p ? 16 : LAPTOP.small) + 'px');
     root.style.setProperty('--gx', gx.toFixed(2) + '%'); root.style.setProperty('--gy', gy.toFixed(2) + '%'); root.style.setProperty('--gs', gs + 'px');
-    globeBox.classList.toggle('tip-below', phone());
-    globeBox.classList.toggle('tip-right', !phone() && gx < 50);
-    tName.value = np; tSmall.value = sp; tGx.value = gx; tGy.value = gy; tGs.value = gs;
-    const nw = Math.round(textWidth(nameEl) / innerWidth * 100);
-    oName.textContent = np + 'px, ' + nw + '% wide';
-    oSmall.textContent = sp + 'px';
-    $('o-gx').textContent = Math.round(gx) + '% from left'; $('o-gy').textContent = Math.round(gy) + '% from top'; $('o-gs').textContent = gs + 'px';
-    $('tune-sum').textContent = 'Name ' + np + 'px · small ' + sp + 'px · globe ' + Math.round(gx) + '% / ' + Math.round(gy) + '% / ' + gs + 'px';
+    globeBox.classList.toggle('tip-below', p);
+    globeBox.classList.toggle('tip-right', !p && gx < 50);
     if (globe.resize) globe.resize();
+    keepLabelIn();
   }
-  function setU(k, v) { U[k] = v; store.set('gk-' + k, v || ''); applyType(); }
-  // motion: stored with explicit defaults, since 0 is a real value for drift
-  const numOr = (k, d) => { const v = store.get('gk-' + k); return v === null || v === '' ? d : +v; };
-  const M = { dwell: numOr('dwell', 14), morph: numOr('morph', 3.6), drift: numOr('drift', 1) };
-  const tDwell = $('t-dwell'), tMorph = $('t-morph'), tDrift = $('t-drift');
-  function applyMotion() {
-    DWELL = M.dwell * 1000; MORPH = M.morph * 1000; DRIFT = 0.055 * M.drift;
-    tDwell.value = M.dwell; tMorph.value = M.morph; tDrift.value = M.drift;
-    $('o-dwell').textContent = M.dwell + ' s'; $('o-morph').textContent = M.morph.toFixed(1) + ' s'; $('o-drift').textContent = M.drift === 0 ? 'still' : M.drift.toFixed(1) + '×';
-    $('tune-sum2').textContent = 'Each place ' + M.dwell + ' s · transition ' + M.morph.toFixed(1) + ' s · drift ' + M.drift.toFixed(1) + '×';
-  }
-  const setM = (k, v) => { M[k] = v; store.set('gk-' + k, String(v)); applyMotion(); };
-  tDwell.addEventListener('input', () => setM('dwell', +tDwell.value));
-  tMorph.addEventListener('input', () => setM('morph', +tMorph.value));
-  tDrift.addEventListener('input', () => setM('drift', +tDrift.value));
-  applyMotion();
   addEventListener('resize', applyType);
   if (document.fonts) document.fonts.ready.then(applyType);
-  tName.addEventListener('input', () => setU('name', +tName.value));
-  tSmall.addEventListener('input', () => setU('small', +tSmall.value));
-  tGx.addEventListener('input', () => setU('gx', +tGx.value));
-  tGy.addEventListener('input', () => setU('gy', +tGy.value));
-  tGs.addEventListener('input', () => setU('gs', +tGs.value));
-  $('tune-reset').addEventListener('click', () => { ['name', 'small', 'gx', 'gy', 'gs'].forEach(k => { U[k] = 0; store.set('gk-' + k, ''); }); ['dwell', 'morph', 'drift'].forEach(k => store.set('gk-' + k, '')); Object.assign(M, { dwell: 14, morph: 3.6, drift: 1 }); applyType(); applyMotion(); });
-  // drag the globe straight on the page
-  const dragBtn = $('tune-drag');
-  let dragMode = false, dragging = false;
-  dragBtn.addEventListener('click', () => { dragMode = !dragMode; dragBtn.setAttribute('aria-pressed', String(dragMode)); dragBtn.textContent = dragMode ? 'Done dragging' : 'Drag the globe'; globeBox.classList.toggle('dragging', dragMode); });
-  globeBox.addEventListener('pointerdown', (e) => { if (!dragMode) return; dragging = true; root.style.userSelect = 'none'; globeBox.setPointerCapture(e.pointerId); e.preventDefault(); });
-  globeBox.addEventListener('pointermove', (e) => {
-    if (!dragging) return;
-    const r = hero.getBoundingClientRect();
-    U.gx = Math.min(96, Math.max(4, (e.clientX - r.left) / r.width * 100)); U.gy = Math.min(92, Math.max(8, (e.clientY - r.top) / r.height * 100));
-    applyType();
-  });
-  globeBox.addEventListener('pointerup', () => { if (!dragging) return; dragging = false; root.style.userSelect = ''; store.set('gk-gx', U.gx); store.set('gk-gy', U.gy); });
-  globeBox.style.touchAction = 'none';
-  $('tune-x').addEventListener('click', () => { $('tune').hidden = true; $('tune-open').hidden = false; });
-  $('tune-open').addEventListener('click', () => { $('tune').hidden = false; $('tune-open').hidden = true; });
 
   // ---------- header: over the hero it floats on the drawing; further down it hides on the way down and returns, on paper, on the way up ----------
   const topBar = document.querySelector('.top');
@@ -385,7 +305,6 @@ footer a:hover { color: var(--water); }
   let ready = false;
   function finish() {
     site.classList.remove('pre'); document.querySelector('.top').classList.remove('hold');
-    $('tune-open').hidden = false;
     ready = true;
     field.restartDwell && field.restartDwell();
   }
@@ -543,7 +462,7 @@ void main(){
       if (e.pointerType !== 'mouse' || !ready) { mouse = null; hideTag(); return; }
       const r = canvas.getBoundingClientRect();
       const inside = e.clientY >= r.top && e.clientY <= r.bottom;
-      const ui = !inside || !!(e.target.closest && e.target.closest('.top, .namebox, .globe, .scrollcue, .tune, #tune-open'));
+      const ui = !inside || !!(e.target.closest && e.target.closest('.top, .namebox, .globe, .scrollcue'));
       mouse = { x: e.clientX - r.left, y: e.clientY - r.top, cx: e.clientX, cy: e.clientY, ui };
       if (ui) hideTag();
     });
@@ -672,105 +591,5 @@ void main(){
   boot();
 })();
 </script>
-<!-- fonts:start -->
-<button type="button" id="ft-open" class="ft-open">Fonts</button>
-<div class="ft" id="ft" hidden>
-  <div class="ft-h"><b>Fonts</b><button type="button" id="ft-x">Hide</button></div>
-  <label for="ft-sans">Main typeface</label>
-  <select id="ft-sans"></select>
-  <label for="ft-cond">Labels and big headings</label>
-  <select id="ft-cond"></select>
-  <label for="ft-serif">Statement</label>
-  <select id="ft-serif"></select>
-  <label for="ft-disp">Big headings <output id="fo-disp" for="ft-disp"></output></label>
-  <input type="range" id="ft-disp" min="60" max="150" step="5">
-  <label for="ft-body">Body text <output id="fo-body" for="ft-body"></output></label>
-  <input type="range" id="ft-body" min="80" max="130" step="5">
-  <label for="ft-ser">Statement size <output id="fo-ser" for="ft-ser"></output></label>
-  <input type="range" id="ft-ser" min="60" max="150" step="5">
-  <div class="ft-row"><span class="ft-note">Applies to every page</span><button type="button" id="ft-reset">Reset</button></div>
-  <div class="ft-sum" id="ft-sum"></div>
-</div>
-<style>
-.ft-open { position: fixed; right: 16px; bottom: 16px; z-index: 40; background: var(--paper); border: 1px solid var(--hair); padding: 0 12px; min-height: 36px; font: inherit; font-size: 13px; text-transform: uppercase; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 700; color: var(--rust); cursor: pointer; }
-.ft-open[hidden], .ft[hidden] { display: none; }
-.ft { position: fixed; right: 16px; bottom: 16px; z-index: 41; width: 252px; max-height: calc(100vh - 96px); overflow-y: auto; background: var(--paper); border: 1px solid var(--hair); padding: 12px 14px 10px; font-family: var(--sans); font-size: 14px; display: grid; gap: 5px; color: var(--ink); }
-.ft-h { display: flex; justify-content: space-between; align-items: center; }
-.ft-h b { font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 700; text-transform: uppercase; color: var(--rust); font-size: 13px; }
-.ft button { font: inherit; background: none; border: 0; padding: 0; cursor: pointer; color: var(--water); font-size: 13px; min-height: 32px; text-transform: uppercase; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 600; }
-.ft label { display: flex; justify-content: space-between; margin-top: 6px; }
-.ft output { color: var(--ink-soft); font-variant-numeric: tabular-nums; }
-.ft select { font: inherit; font-size: 14px; color: var(--ink); background: var(--paper); border: 1px solid var(--hair); min-height: 34px; padding: 0 6px; width: 100%; }
-.ft input[type="range"] { width: 100%; accent-color: var(--water); margin: 0; min-height: 26px; }
-.ft-row { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
-.ft-note { font-size: 12px; color: var(--ink-soft); }
-.ft-sum { font-size: 12px; color: var(--ink-soft); border-top: 1px solid var(--hair); padding-top: 6px; line-height: 1.35; }
-@media (max-width: 760px) { .ft { left: 16px; right: 16px; width: auto; max-height: 60vh; } }
-</style>
-<script>
-(() => {
-  const SANS = [
-    ['Instrument Sans', 'Instrument+Sans:wdth,wght@75..100,400..700'],
-    ['Archivo', 'Archivo:wdth,wght@62..125,400..800'],
-    ['Bricolage Grotesque', 'Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800'],
-    ['Schibsted Grotesk', 'Schibsted+Grotesk:wght@400..800'],
-    ['Hanken Grotesk', 'Hanken+Grotesk:wght@400..800'],
-    ['Familjen Grotesk', 'Familjen+Grotesk:wght@400..700']
-  ];
-  // [label, family, stretch, google query]; family null = same as the main typeface
-  const COND = [
-    ['Instrument Sans, condensed', 'Instrument Sans', '75%', 'Instrument+Sans:wdth,wght@75..100,400..700'],
-    ['Archivo, narrow', 'Archivo', '62%', 'Archivo:wdth,wght@62..125,400..800'],
-    ['Barlow Condensed', 'Barlow Condensed', '100%', 'Barlow+Condensed:wght@400;500;600;700'],
-    ['Oswald', 'Oswald', '100%', 'Oswald:wght@400..700'],
-    ['Antonio', 'Antonio', '100%', 'Antonio:wght@400..700'],
-    ['Same as main, not condensed', null, '100%', null]
-  ];
-  const SERIF = [
-    ['Instrument Serif', 'Instrument+Serif:ital@0;1'],
-    ['Newsreader', 'Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600'],
-    ['Fraunces', 'Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600'],
-    ['EB Garamond', 'EB+Garamond:ital,wght@0,400..600;1,400..600'],
-    ['Cormorant Garamond', 'Cormorant+Garamond:ital,wght@0,400..600;1,400..600'],
-    ['Same as main typeface', null]
-  ];
-  const FALLBACK = '"Helvetica Neue", Helvetica, Arial, sans-serif', SERIF_FB = '"Times New Roman", Times, serif';
-  const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
-  const D = { sans: 0, cond: 0, serif: 0, disp: 100, body: 100, ser: 100 };
-  const S = {}; for (const k in D) { const v = store.get('gk-ft-' + k); S[k] = v === null || v === '' ? D[k] : +v; }
-  const root = document.documentElement, $ = (id) => document.getElementById(id);
-  const loaded = new Set(['Instrument+Sans:wdth,wght@75..100,400..700', 'Instrument+Serif:ital@0;1']);
-  function load(q) {
-    if (!q || loaded.has(q)) return; loaded.add(q);
-    const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://fonts.googleapis.com/css2?family=' + q + '&display=swap';
-    l.onload = () => { if (document.fonts) document.fonts.ready.then(() => dispatchEvent(new Event('resize'))); };
-    document.head.appendChild(l);
-  }
-  function apply() {
-    const sans = SANS[S.sans] || SANS[0], cond = COND[S.cond] || COND[0], serif = SERIF[S.serif] || SERIF[0];
-    load(sans[1]); load(cond[3]); load(serif[1]);
-    const sansStack = '"' + sans[0] + '", ' + FALLBACK;
-    root.style.setProperty('--sans', sansStack);
-    root.style.setProperty('--cond', cond[1] ? '"' + cond[1] + '", ' + sansStack : sansStack);
-    root.style.setProperty('--cond-stretch', cond[2]);
-    root.style.setProperty('--serif', serif[1] ? '"' + serif[0] + '", ' + SERIF_FB : sansStack);
-    root.style.setProperty('--disp', S.disp / 100); root.style.setProperty('--body', S.body / 100); root.style.setProperty('--ser', S.ser / 100);
-    if (!$('ft-sans')) return;
-    $('ft-sans').value = S.sans; $('ft-cond').value = S.cond; $('ft-serif').value = S.serif;
-    $('ft-disp').value = S.disp; $('ft-body').value = S.body; $('ft-ser').value = S.ser;
-    $('fo-disp').textContent = S.disp + '%'; $('fo-body').textContent = S.body + '%'; $('fo-ser').textContent = S.ser + '%';
-    $('ft-sum').textContent = 'Main ' + sans[0] + ' · labels ' + cond[0] + ' · statement ' + serif[0] + ' · headings ' + S.disp + '% · body ' + S.body + '% · statement ' + S.ser + '%';
-    dispatchEvent(new Event('resize'));
-  }
-  const fill = (id, list) => { $(id).innerHTML = list.map((o, i) => '<option value="' + i + '">' + o[0] + '</option>').join(''); };
-  fill('ft-sans', SANS); fill('ft-cond', COND); fill('ft-serif', SERIF);
-  const set = (k, v) => { S[k] = v; store.set('gk-ft-' + k, String(v)); apply(); };
-  ['sans', 'cond', 'serif'].forEach(k => $('ft-' + k).addEventListener('change', (e) => set(k, +e.target.value)));
-  ['disp', 'body', 'ser'].forEach(k => $('ft-' + k).addEventListener('input', (e) => set(k, +e.target.value)));
-  $('ft-reset').addEventListener('click', () => { for (const k in D) { S[k] = D[k]; store.set('gk-ft-' + k, ''); } apply(); });
-  $('ft-open').addEventListener('click', () => { $('ft').hidden = false; $('ft-open').hidden = true; });
-  $('ft-x').addEventListener('click', () => { $('ft').hidden = true; $('ft-open').hidden = false; });
-  apply();
-})();
-</script>
-<!-- fonts:end -->
+</body>
+</html>

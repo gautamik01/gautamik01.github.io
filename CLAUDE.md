@@ -62,17 +62,20 @@ Planned: a small script (`tools/build_projects.py`) that scans `projects/*/meta.
 
 - `fields/<key>.png` encode a signed distance field (metres to the shoreline, sqrt-compressed, 16-bit in R/G). Lines are drawn only where the value is positive (water).
 - Built by `tools/build_fields2.py` (Python: numpy, scipy, Pillow, basemap + basemap-data-hires for GSHHG shorelines).
-  - mumbai: GSHHG full resolution.
+  - mumbai: GSHHG full resolution, 48 km square centred on 72.885 E, 18.99 N (wide enough that Colaba's tip sits clear of the bottom edge).
   - coast: GSHHG plus OpenStreetMap harbour basins connected to the sea at Oostende (HOT export `hotosm_bel_waterways_osm_geojson`).
   - philadelphia: Philadelphia Water Department "Hydrographic Features (Poly)", Delaware and Schuylkill only.
 - The source GeoJSONs are large and not in the repo. Update the `GEO` path at the top of the script before rebuilding.
 - Per-place framing (`focus`, `zoom`) and line spacing (`density`) live in the `SITES` array in `index.html`.
 
-## Development tuners (remove before launch)
+## Settled settings (from Gautami's tuning, Oct 2026)
 
-- Home page **Tune** box: name size, hello/role size, globe position and size, time on each place, transition length, line drift. Values live in localStorage keys `gk-*`.
-- **Fonts** box on every page (`tools/fontpanel.html`, injected by `tools/inject_fonts.py`): main face, condensed face, serif, and size scales. Keys `gk-ft-*`.
-- When Gautami settles on values, copy them into the CSS/JS defaults and delete both boxes.
+The Tune and Fonts panels are gone; their values are now the defaults.
+- Home, laptop and up: name one line about 34% of the screen wide (65px at 1440px), "Hello, I am" and role at 21px, globe 97px centred at 93% across and 84% down. Phones keep their own layout (name on two lines, 60px globe top right, low enough that the place name clears the menu). See `LAPTOP` in `index.html`.
+- Motion: 6 s on each place, 3.6 s transition, line drift 1x (`DWELL`, `MORPH`, `DRIFT`).
+- Type scale on every page: `--disp: 0.6` (big headings), `--body: 0.85` (body text, back to 1 on phones), `--ser: 1`. Faces: Instrument Sans, Instrument Sans condensed, Instrument Serif.
+- `tools/fontpanel.html` and `tools/inject_fonts.py` are retired and can be deleted.
+- Every page must keep its own `<!doctype html>` and `<meta name="viewport">`; without the viewport tag phones render the page at desktop width.
 
 ## Local folder
 
