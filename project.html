@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Project, Gautami Kasat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wdth,wght@75..100,400..700&family=Instrument+Serif:ital@0;1&display=swap">
+<style>
+/* Layout: a simple image-led project page built from one projects.json entry: title block, cover, then the images, then next project. */
+:root {
+  --paper: #F3F1EB;
+  --paper-2: #E7E4DC;
+  --ink: #151515;
+  --ink-soft: #5B5953;
+  --hair: rgba(21, 21, 21, 0.18);
+  --water: #2F45C6;
+  --now: #EF5A2A;
+  --rust: #B9400F;
+  --sans: "Instrument Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --serif: "Instrument Serif", "Times New Roman", Times, serif;
+  --cond: var(--sans);
+  --cond-stretch: 75%;
+  --disp: 1;
+  --body: 1;
+  --ser: 1;
+  --gutter: clamp(16px, 1.4vw, 24px);
+  color-scheme: light;
+}
+html { background: var(--paper); }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+a { color: inherit; text-decoration: none; }
+:focus-visible { outline: 1.5px solid var(--water); outline-offset: 3px; }
+.top { position: sticky; top: 0; z-index: 20; display: flex; justify-content: space-between; align-items: center; padding: max(10px, env(safe-area-inset-top, 0px)) var(--gutter) 2px; background: var(--paper); transition: transform .5s cubic-bezier(.2,.75,.15,1); }
+.top.away { transform: translateY(-110%); }
+.top a { min-height: 44px; display: inline-flex; align-items: center; font-size: 17px; text-transform: uppercase; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 500; }
+.top nav { display: flex; gap: 20px; }
+.top a:hover, .top a[aria-current] { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px; }
+.cond { font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 600; }
+
+.back { display: inline-flex; margin: clamp(40px, 7vh, 80px) var(--gutter) 0; min-height: 40px; align-items: center; font-size: 15px; text-transform: uppercase; color: var(--ink-soft); }
+.back:hover { color: var(--ink); }
+.ttl { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 24px 40px; padding: 18px var(--gutter) 0; align-items: end; }
+h1 { margin: 0; font-size: calc(clamp(48px, 8vw, 132px) * var(--disp)); line-height: 0.86; text-transform: uppercase; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 700; letter-spacing: -0.02em; }
+dl { margin: 0; display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 8px 12px; font-size: 15px; border-top: 1px solid var(--ink); padding-top: 12px; }
+dt { color: var(--ink-soft); text-transform: uppercase; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 600; font-size: 13px; padding-top: 2px; }
+dd { margin: 0; }
+.sum { padding: 32px var(--gutter) 0; margin: 0; font-family: var(--serif); font-size: calc(clamp(26px, 2.6vw, 42px) * var(--ser)); line-height: 1.15; max-width: 28em; text-indent: 12%; }
+.imgs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(12px, 1.4vw, 24px); padding: clamp(40px, 6vw, 72px) var(--gutter) 0; }
+.imgs figure { margin: 0; }
+.imgs figure:first-child { grid-column: 1 / -1; }
+.imgs figure:nth-child(even):last-child { grid-column: 1 / -1; }
+.imgs figure:nth-child(even):last-child .ph { aspect-ratio: 16 / 8; }
+.ph { aspect-ratio: 4 / 3; background: var(--paper-2); position: relative; }
+.imgs figure:first-child .ph { aspect-ratio: 16 / 8; }
+.ph img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ph span { position: absolute; left: 12px; bottom: 10px; font-size: 13px; color: var(--ink-soft); text-transform: uppercase; }
+figcaption { font-size: 14px; color: var(--ink-soft); padding-top: 8px; }
+.next { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; margin: clamp(80px, 12vh, 140px) var(--gutter) 0; padding: 18px 0 clamp(60px, 10vh, 120px); border-top: 1px solid var(--ink); }
+.next small { display: block; font-size: 15px; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 8px; }
+.next b { font-size: calc(clamp(34px, 5vw, 80px) * var(--disp)); line-height: 0.9; text-transform: uppercase; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 700; letter-spacing: -0.02em; }
+.next:hover b { color: var(--water); }
+footer { border-top: 1px solid var(--hair); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 24px; padding: 18px var(--gutter) max(22px, env(safe-area-inset-bottom, 0px)); font-size: 15px; }
+footer .k { color: var(--ink-soft); }
+footer a:hover { color: var(--water); }
+@media (max-width: 760px) { .top nav { gap: 12px; } .top a { font-size: 15px; } .ttl { grid-template-columns: 1fr; } .imgs { grid-template-columns: 1fr; } .sum { text-indent: 0; } }
+@media (prefers-reduced-motion: reduce) { .top { transition: none; } }
+</style>
+</head>
+<body>
+<header class="top">
+  <a href="index.html" aria-label="Gautami Kasat, home">GK</a>
+  <nav aria-label="Main">
+    <a href="work.html" aria-current="page">Work</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+</header>
+<main id="main">
+  <a class="back cond" href="work.html">← All work</a>
+  <div class="ttl"><h1 id="t">Project</h1><dl id="m"></dl></div>
+  <p class="sum" id="s"></p>
+  <div class="imgs" id="imgs"></div>
+  <a class="next" id="next" href="work.html"><span><small class="cond">Next project</small><b id="nt"></b></span><span class="cond" aria-hidden="true">→</span></a>
+</main>
+<footer>
+  <a href="mailto:gautami.kasat@gmail.com">gautami.kasat@gmail.com</a>
+  <span><a href="https://www.linkedin.com/in/gautamikasat" target="_blank" rel="noopener">LinkedIn</a> <span class="k">|</span> <a href="https://github.com/gautamik01" target="_blank" rel="noopener">GitHub</a></span>
+</footer>
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const esc = (t) => String(t ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const topBar = document.querySelector('.top');
+  let lastY = scrollY, upRun = 0;
+  addEventListener('scroll', () => {
+    const y = Math.max(0, scrollY), atBottom = y + innerHeight >= document.documentElement.scrollHeight - 4;
+    if (y < 80) { topBar.classList.remove('away'); upRun = 0; }
+    else if (y > lastY) { upRun = 0; topBar.classList.add('away'); }
+    else if (y < lastY && !atBottom) { upRun += lastY - y; if (upRun > 48) topBar.classList.remove('away'); }
+    lastY = y;
+  }, { passive: true });
+  function show(d) {
+    const pages = d.projects.filter(p => p.link && p.link.startsWith('project.html#'));
+    const id = location.hash.slice(1), i = Math.max(0, pages.findIndex(p => p.id === id)), p = pages[i] || d.projects[0];
+    const cats = Object.fromEntries(d.categories.map(c => [c.id, c.name]));
+    document.title = p.title + ', Gautami Kasat';
+    $('t').textContent = p.title;
+    const rows = [['Place', p.place], ['Year', p.year], ['Category', (p.categories || []).map(c => cats[c] || c).join(', ')], ['Tools', (p.tools || []).join(', ')], ['Status', p.status === 'ongoing' ? 'Ongoing' : '']];
+    $('m').innerHTML = rows.filter(r => r[1]).map(r => '<dt>' + r[0] + '</dt><dd>' + esc(r[1]) + '</dd>').join('');
+    $('s').textContent = p.summary || '';
+    const imgs = (p.images && p.images.length ? p.images : ['', '', '']);
+    $('imgs').innerHTML = imgs.map((src, k) => '<figure><div class="ph">' + (src ? '<img src="' + esc(src) + '" alt="">' : '<span class="cond">Image ' + (k + 1) + '</span>') + '</div></figure>').join('');
+    const n = pages[(i + 1) % pages.length];
+    $('next').href = n.link; $('nt').textContent = n.title;
+    scrollTo(0, 0);
+  }
+  let data;
+  fetch('projects.json').then(r => r.json()).then(d => { data = d; show(d); });
+  addEventListener('hashchange', () => data && show(data));
+})();
+</script>
+<!-- fonts:start -->
+<button type="button" id="ft-open" class="ft-open">Fonts</button>
+<div class="ft" id="ft" hidden>
+  <div class="ft-h"><b>Fonts</b><button type="button" id="ft-x">Hide</button></div>
+  <label for="ft-sans">Main typeface</label>
+  <select id="ft-sans"></select>
+  <label for="ft-cond">Labels and big headings</label>
+  <select id="ft-cond"></select>
+  <label for="ft-serif">Statement</label>
+  <select id="ft-serif"></select>
+  <label for="ft-disp">Big headings <output id="fo-disp" for="ft-disp"></output></label>
+  <input type="range" id="ft-disp" min="60" max="150" step="5">
+  <label for="ft-body">Body text <output id="fo-body" for="ft-body"></output></label>
+  <input type="range" id="ft-body" min="80" max="130" step="5">
+  <label for="ft-ser">Statement size <output id="fo-ser" for="ft-ser"></output></label>
+  <input type="range" id="ft-ser" min="60" max="150" step="5">
+  <div class="ft-row"><span class="ft-note">Applies to every page</span><button type="button" id="ft-reset">Reset</button></div>
+  <div class="ft-sum" id="ft-sum"></div>
+</div>
+<style>
+.ft-open { position: fixed; right: 16px; bottom: 16px; z-index: 40; background: var(--paper); border: 1px solid var(--hair); padding: 0 12px; min-height: 36px; font: inherit; font-size: 13px; text-transform: uppercase; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 700; color: var(--rust); cursor: pointer; }
+.ft-open[hidden], .ft[hidden] { display: none; }
+.ft { position: fixed; right: 16px; bottom: 16px; z-index: 41; width: 252px; max-height: calc(100vh - 96px); overflow-y: auto; background: var(--paper); border: 1px solid var(--hair); padding: 12px 14px 10px; font-family: var(--sans); font-size: 14px; display: grid; gap: 5px; color: var(--ink); }
+.ft-h { display: flex; justify-content: space-between; align-items: center; }
+.ft-h b { font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 700; text-transform: uppercase; color: var(--rust); font-size: 13px; }
+.ft button { font: inherit; background: none; border: 0; padding: 0; cursor: pointer; color: var(--water); font-size: 13px; min-height: 32px; text-transform: uppercase; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 600; }
+.ft label { display: flex; justify-content: space-between; margin-top: 6px; }
+.ft output { color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.ft select { font: inherit; font-size: 14px; color: var(--ink); background: var(--paper); border: 1px solid var(--hair); min-height: 34px; padding: 0 6px; width: 100%; }
+.ft input[type="range"] { width: 100%; accent-color: var(--water); margin: 0; min-height: 26px; }
+.ft-row { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
+.ft-note { font-size: 12px; color: var(--ink-soft); }
+.ft-sum { font-size: 12px; color: var(--ink-soft); border-top: 1px solid var(--hair); padding-top: 6px; line-height: 1.35; }
+@media (max-width: 760px) { .ft { left: 16px; right: 16px; width: auto; max-height: 60vh; } }
+</style>
+<script>
+(() => {
+  const SANS = [
+    ['Instrument Sans', 'Instrument+Sans:wdth,wght@75..100,400..700'],
+    ['Archivo', 'Archivo:wdth,wght@62..125,400..800'],
+    ['Bricolage Grotesque', 'Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800'],
+    ['Schibsted Grotesk', 'Schibsted+Grotesk:wght@400..800'],
+    ['Hanken Grotesk', 'Hanken+Grotesk:wght@400..800'],
+    ['Familjen Grotesk', 'Familjen+Grotesk:wght@400..700']
+  ];
+  // [label, family, stretch, google query]; family null = same as the main typeface
+  const COND = [
+    ['Instrument Sans, condensed', 'Instrument Sans', '75%', 'Instrument+Sans:wdth,wght@75..100,400..700'],
+    ['Archivo, narrow', 'Archivo', '62%', 'Archivo:wdth,wght@62..125,400..800'],
+    ['Barlow Condensed', 'Barlow Condensed', '100%', 'Barlow+Condensed:wght@400;500;600;700'],
+    ['Oswald', 'Oswald', '100%', 'Oswald:wght@400..700'],
+    ['Antonio', 'Antonio', '100%', 'Antonio:wght@400..700'],
+    ['Same as main, not condensed', null, '100%', null]
+  ];
+  const SERIF = [
+    ['Instrument Serif', 'Instrument+Serif:ital@0;1'],
+    ['Newsreader', 'Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600'],
+    ['Fraunces', 'Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600'],
+    ['EB Garamond', 'EB+Garamond:ital,wght@0,400..600;1,400..600'],
+    ['Cormorant Garamond', 'Cormorant+Garamond:ital,wght@0,400..600;1,400..600'],
+    ['Same as main typeface', null]
+  ];
+  const FALLBACK = '"Helvetica Neue", Helvetica, Arial, sans-serif', SERIF_FB = '"Times New Roman", Times, serif';
+  const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
+  const D = { sans: 0, cond: 0, serif: 0, disp: 100, body: 100, ser: 100 };
+  const S = {}; for (const k in D) { const v = store.get('gk-ft-' + k); S[k] = v === null || v === '' ? D[k] : +v; }
+  const root = document.documentElement, $ = (id) => document.getElementById(id);
+  const loaded = new Set(['Instrument+Sans:wdth,wght@75..100,400..700', 'Instrument+Serif:ital@0;1']);
+  function load(q) {
+    if (!q || loaded.has(q)) return; loaded.add(q);
+    const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://fonts.googleapis.com/css2?family=' + q + '&display=swap';
+    l.onload = () => { if (document.fonts) document.fonts.ready.then(() => dispatchEvent(new Event('resize'))); };
+    document.head.appendChild(l);
+  }
+  function apply() {
+    const sans = SANS[S.sans] || SANS[0], cond = COND[S.cond] || COND[0], serif = SERIF[S.serif] || SERIF[0];
+    load(sans[1]); load(cond[3]); load(serif[1]);
+    const sansStack = '"' + sans[0] + '", ' + FALLBACK;
+    root.style.setProperty('--sans', sansStack);
+    root.style.setProperty('--cond', cond[1] ? '"' + cond[1] + '", ' + sansStack : sansStack);
+    root.style.setProperty('--cond-stretch', cond[2]);
+    root.style.setProperty('--serif', serif[1] ? '"' + serif[0] + '", ' + SERIF_FB : sansStack);
+    root.style.setProperty('--disp', S.disp / 100); root.style.setProperty('--body', S.body / 100); root.style.setProperty('--ser', S.ser / 100);
+    if (!$('ft-sans')) return;
+    $('ft-sans').value = S.sans; $('ft-cond').value = S.cond; $('ft-serif').value = S.serif;
+    $('ft-disp').value = S.disp; $('ft-body').value = S.body; $('ft-ser').value = S.ser;
+    $('fo-disp').textContent = S.disp + '%'; $('fo-body').textContent = S.body + '%'; $('fo-ser').textContent = S.ser + '%';
+    $('ft-sum').textContent = 'Main ' + sans[0] + ' · labels ' + cond[0] + ' · statement ' + serif[0] + ' · headings ' + S.disp + '% · body ' + S.body + '% · statement ' + S.ser + '%';
+    dispatchEvent(new Event('resize'));
+  }
+  const fill = (id, list) => { $(id).innerHTML = list.map((o, i) => '<option value="' + i + '">' + o[0] + '</option>').join(''); };
+  fill('ft-sans', SANS); fill('ft-cond', COND); fill('ft-serif', SERIF);
+  const set = (k, v) => { S[k] = v; store.set('gk-ft-' + k, String(v)); apply(); };
+  ['sans', 'cond', 'serif'].forEach(k => $('ft-' + k).addEventListener('change', (e) => set(k, +e.target.value)));
+  ['disp', 'body', 'ser'].forEach(k => $('ft-' + k).addEventListener('input', (e) => set(k, +e.target.value)));
+  $('ft-reset').addEventListener('click', () => { for (const k in D) { S[k] = D[k]; store.set('gk-ft-' + k, ''); } apply(); });
+  $('ft-open').addEventListener('click', () => { $('ft').hidden = false; $('ft-open').hidden = true; });
+  $('ft-x').addEventListener('click', () => { $('ft').hidden = true; $('ft-open').hidden = false; });
+  apply();
+})();
+</script>
+<!-- fonts:end -->
+</body>
+</html>

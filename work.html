@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Work, Gautami Kasat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wdth,wght@75..100,400..700&family=Instrument+Serif:ital@0;1&display=swap">
+<style>
+/* Layout: one warm title, a row of category words, then a wall read from projects.json. Names show on hover; a project opens in place and the wall moves round it. */
+:root {
+  --paper: #F3F1EB;
+  --paper-2: #E7E4DC;
+  --ink: #151515;
+  --ink-soft: #5B5953;
+  --hair: rgba(21, 21, 21, 0.18);
+  --water: #2F45C6;
+  --now: #EF5A2A;
+  --rust: #B9400F;
+  --sans: "Instrument Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --serif: "Instrument Serif", "Times New Roman", Times, serif;
+  --cond: var(--sans);
+  --cond-stretch: 75%;
+  --disp: 1;
+  --body: 1;
+  --ser: 1;
+  --gutter: clamp(16px, 1.4vw, 24px);
+  color-scheme: light;
+}
+html { background: var(--paper); }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+:focus-visible { outline: 1.5px solid var(--water); outline-offset: 3px; }
+.label { margin: 0; font-size: 15px; color: var(--rust); text-transform: uppercase; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 600; }
+
+.top { position: sticky; top: 0; z-index: 20; display: flex; justify-content: space-between; align-items: center; padding: max(10px, env(safe-area-inset-top, 0px)) var(--gutter) 2px; background: var(--paper); transition: transform .5s cubic-bezier(.2,.75,.15,1); }
+.top.away { transform: translateY(-110%); }
+.top a { min-height: 44px; display: inline-flex; align-items: center; font-size: 17px; text-transform: uppercase; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 500; }
+.top nav { display: flex; gap: 20px; }
+.top a:hover, .top a[aria-current] { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px; }
+
+.head { padding: clamp(64px, 11vh, 130px) var(--gutter) 0; }
+h1 { margin: 0; font-size: calc(clamp(56px, 9.5vw, 160px) * var(--disp)); line-height: 0.84; text-transform: uppercase; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 700; letter-spacing: -0.02em; }
+
+/* filters: just words; the active one is underlined */
+.filters { position: sticky; top: 0; z-index: 10; background: var(--paper); margin-top: clamp(28px, 4vw, 52px); }
+.filters-in { display: flex; gap: 4px 24px; flex-wrap: wrap; padding: 0 var(--gutter); }
+.filters button { min-height: 46px; display: inline-flex; align-items: center; gap: 5px; font-size: 17px; text-transform: uppercase; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 600; color: var(--ink-soft); }
+.filters button span { border-bottom: 2px solid transparent; padding: 2px 0; }
+.filters button sup { font-size: 11px; color: var(--ink-soft); align-self: flex-start; margin-top: 12px; }
+.filters button:hover { color: var(--ink); }
+.filters button[aria-pressed="true"] { color: var(--ink); }
+.filters button[aria-pressed="true"] span { border-bottom-color: var(--rust); }
+.filters button[aria-pressed="true"] sup { color: var(--rust); }
+
+/* the wall: three columns. A project opens where it sits, across two columns and two rows, and the rest of the wall moves round it. */
+.wall { padding: clamp(18px, 2.4vw, 32px) var(--gutter) clamp(80px, 12vh, 140px); overflow-x: clip; }
+.wall-in { container-type: inline-size; }
+.grid {
+  --gap: clamp(10px, 1.2vw, 18px);
+  --cw: calc((100vw - 2 * var(--gutter) - 2 * var(--gap)) / 3);
+  --cw: calc((100cqw - 2 * var(--gap)) / 3);
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: calc(var(--cw) * 0.75); grid-auto-flow: row dense; gap: var(--gap);
+}
+.cell { position: relative; min-width: 0; min-height: 0; }
+.cell[hidden] { display: none; }
+
+.card { background: var(--paper-2); }
+.card .media { position: absolute; inset: 0; overflow: hidden; background: var(--paper-2); }
+.card .media img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .7s cubic-bezier(.2,.75,.15,1); }
+.card .ph { position: absolute; inset: 0; display: grid; place-items: center; font-size: 13px; color: var(--ink-soft); text-transform: uppercase; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 600; letter-spacing: 0.03em; }
+.card .dot { position: absolute; right: 12px; top: 12px; z-index: 2; width: 9px; height: 9px; border-radius: 50%; background: var(--now); pointer-events: none; }
+.card .dot::after, .f-now .nd::after { content: ""; position: absolute; inset: -5px; border-radius: 50%; border: 1.5px solid var(--now); opacity: 0; animation: ring 2.4s ease-out infinite; }
+@keyframes ring { 0% { transform: scale(.5); opacity: .8; } 100% { transform: scale(1.5); opacity: 0; } }
+.card .hit { position: absolute; inset: 0; z-index: 3; cursor: pointer; }
+.card .hit:focus-visible { outline-offset: 2px; }
+.over { position: absolute; inset: 0; z-index: 2; pointer-events: none; display: flex; flex-direction: column; justify-content: flex-end; gap: 5px; padding: clamp(14px, 1.6vw, 22px); background: rgba(243, 241, 235, 0.86); opacity: 0; transform: translateY(8px); transition: opacity .35s ease, transform .45s cubic-bezier(.2,.75,.15,1); }
+.over h3 { margin: 0; font-size: calc(clamp(22px, 1.9vw, 30px) * var(--body)); font-weight: 600; letter-spacing: -0.025em; line-height: 1.08; }
+.over p { margin: 0; font-size: 14px; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 600; color: var(--ink-soft); }
+.card:hover .over, .hit:focus-visible + .over { opacity: 1; transform: none; }
+.card:hover .media img { transform: scale(1.03); }
+@media (hover: none) { .over { display: none; } }
+
+/* open */
+.info { display: none; }
+.card.open { z-index: 2; grid-column: var(--c0, auto) / span 2; grid-row: span 2; background: none; display: flex; flex-direction: column; }
+.card.open .media { position: relative; inset: auto; flex: 1 1 auto; min-height: 0; }
+.card.open .media.more { cursor: e-resize; }
+.card.open .media.out { cursor: pointer; }
+.card.open .hit, .card.open .over { display: none; }
+.card.open .media img { transform: none; }
+.card.open .info { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 24px; row-gap: 6px; align-items: start; padding: 14px 0 0; }
+.info h3 { margin: 0; font-size: calc(clamp(24px, 2.2vw, 36px) * var(--body)); font-weight: 600; letter-spacing: -0.025em; line-height: 1.05; }
+.info .close, .info .count, .info .foot { font-size: 14px; text-transform: uppercase; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 600; color: var(--ink-soft); }
+.info .close { min-height: 32px; padding: 0 2px; }
+.info .close:hover, .info .count:hover { color: var(--ink); }
+.info .sum { grid-column: 1 / -1; margin: 0; font-size: calc(16px * var(--body)); line-height: 1.4; max-width: 62ch; }
+.info .foot { grid-column: 1 / -1; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 18px; text-transform: none; }
+.info .meta { display: flex; flex-wrap: wrap; gap: 4px 16px; }
+.info .ongo { color: var(--rust); text-transform: uppercase; }
+.info .act { display: flex; gap: 20px; align-items: baseline; text-transform: uppercase; }
+.info .count { font-variant-numeric: tabular-nums; }
+.info .go { color: var(--rust); }
+.info .go.soon { color: var(--ink-soft); }
+.info a.go:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* the in-between cells */
+.fill { color: var(--ink); }
+.f-places { display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; text-align: left; padding: 2px 0; cursor: pointer; }
+.f-places .pl-n { font-size: 14px; color: var(--rust); text-transform: uppercase; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 600; }
+.f-places .pl-c { font-size: calc(var(--cw) * 0.15); line-height: 0.88; text-transform: uppercase; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 700; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+.f-places .pl-i { font-size: 13px; color: var(--ink-soft); font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 600; font-variant-numeric: tabular-nums; }
+.f-line { display: flex; align-items: flex-end; }
+.f-line p { margin: 0; font-family: var(--serif); font-style: italic; font-size: calc(var(--cw) * 0.085 * var(--ser)); line-height: 1.04; max-width: 13ch; }
+.f-water svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.f-water path { fill: none; stroke: var(--water); stroke-width: 1.1; vector-effect: non-scaling-stroke; }
+.f-water path.isle { fill: #FBFAF6; stroke: none; }
+.f-now { display: flex; flex-direction: column; justify-content: space-between; padding: 2px 0; }
+.f-now .nd { position: relative; width: 9px; height: 9px; margin: 4px 0 0 3px; border-radius: 50%; background: var(--now); }
+.f-now p { margin: 0; font-size: calc(15px * var(--body)); line-height: 1.35; max-width: 24ch; }
+
+footer { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 24px; padding: 18px var(--gutter) max(22px, env(safe-area-inset-bottom, 0px)); font-size: 15px; }
+footer .k { color: var(--ink-soft); }
+footer a:hover { color: var(--water); }
+
+@media (max-width: 1000px) {
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: auto; --cw: calc((100vw - 2 * var(--gutter) - var(--gap)) / 2); --cw: calc((100cqw - var(--gap)) / 2); }
+  .cell { aspect-ratio: 4 / 3; }
+  .card.open { aspect-ratio: auto; grid-column: 1 / -1; grid-row: auto; }
+  .card.open .media { flex: none; aspect-ratio: 16 / 10; }
+  .card.open .info { padding-bottom: 10px; }
+  .f-line p { font-size: calc(var(--cw) * 0.1 * var(--ser)); }
+  .f-now p { font-size: clamp(12px, calc(var(--cw) * 0.075), 16px); max-width: none; }
+}
+@media (max-width: 760px) {
+  .top nav { gap: 12px; }
+  .top a { font-size: 15px; }
+  .filters-in { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  .filters button { white-space: nowrap; }
+  .f-places .pl-n, .f-places .pl-i { font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) { .top, .media img, .over { transition: none; } .card .dot::after, .f-now .nd::after { animation: none; } }
+.empty { grid-column: 1 / -1; padding: 28px 0; font-size: 18px; color: var(--ink-soft); }
+</style>
+</head>
+<body>
+<header class="top">
+  <a href="index.html" aria-label="Gautami Kasat, home">GK</a>
+  <nav aria-label="Main">
+    <a href="work.html" aria-current="page">Work</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+</header>
+
+<main>
+  <div class="head">
+    <h1>Drawn, mapped<br>&amp; built</h1>
+  </div>
+  <nav class="filters" aria-label="Filter by category"><div class="filters-in" id="filters"></div></nav>
+  <section class="wall" aria-label="Projects"><div class="wall-in"><div class="grid" id="grid"></div></div></section>
+</main>
+
+<footer>
+  <a href="mailto:gautami.kasat@gmail.com">gautami.kasat@gmail.com</a>
+  <span><a href="https://www.linkedin.com/in/gautamikasat" target="_blank" rel="noopener">LinkedIn</a> <span class="k">|</span> <a href="https://github.com/gautamik01" target="_blank" rel="noopener">GitHub</a></span>
+</footer>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const esc = (t) => String(t ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const EASE = 'cubic-bezier(.2,.75,.15,1)';
+  const GO = { page: 'View project', quarto: 'View notebook', slides: 'View slides', pdf: 'Open PDF', site: 'Visit', github: 'View code' };
+  const pad = (n) => String(n).padStart(2, '0');
+
+  // header: hide on the way down, back on the way up
+  const topBar = document.querySelector('.top');
+  let lastY = scrollY, upRun = 0;
+  addEventListener('scroll', () => {
+    const y = Math.max(0, scrollY), atBottom = y + innerHeight >= document.documentElement.scrollHeight - 4;
+    if (y < 80) { topBar.classList.remove('away'); upRun = 0; }
+    else if (y > lastY) { upRun = 0; topBar.classList.add('away'); }
+    else if (y < lastY && !atBottom) { upRun += lastY - y; if (upRun > 48) topBar.classList.remove('away'); }
+    lastY = y;
+  }, { passive: true });
+
+  const grid = $('grid');
+  let data = null, current = 'all', openEl = null;
+
+  // ---------- project cards ----------
+  function slide(src, i) {
+    return src ? '<img src="' + esc(src) + '" alt="" loading="lazy">' : '<span class="ph">' + (i ? 'Image ' + (i + 1) : 'Cover image') + '</span>';
+  }
+  function makeCard(p) {
+    const el = document.createElement('article');
+    el.className = 'cell card';
+    el.dataset.id = p.id;
+    el.dataset.cats = (p.categories || []).join(' ');
+    const gallery = [p.image || ''].concat(p.images || []);
+    const external = /^https?:/.test(p.link || '') || p.linkType === 'pdf';
+    const where = [p.place, p.year].filter(Boolean).join(' · ');
+    const go = p.link
+      ? '<a class="go" href="' + esc(p.link) + '"' + (external ? ' target="_blank" rel="noopener"' : '') + '>' + esc(GO[p.linkType] || 'Open') + (external ? ' ↗' : ' →') + '</a>'
+      : '<span class="go soon">Coming soon</span>';
+    const meta = [p.status === 'ongoing' ? '<span class="ongo">Ongoing</span>' : '', where ? '<span>' + esc(where) + '</span>' : '', (p.tools || []).length ? '<span>' + esc(p.tools.join(', ')) + '</span>' : ''].join('');
+    el.innerHTML =
+      '<div class="media' + (gallery.length > 1 ? ' more' : p.link ? ' out' : '') + '">' + slide(gallery[0], 0) + '</div>' +
+      (p.status === 'ongoing' ? '<span class="dot" aria-hidden="true"></span>' : '') +
+      '<button type="button" class="hit" aria-expanded="false" aria-label="' + esc(p.title + (where ? ', ' + where : '')) + '"></button>' +
+      '<div class="over" aria-hidden="true"><h3>' + esc(p.title) + '</h3>' + (where ? '<p>' + esc(where) + '</p>' : '') + '</div>' +
+      '<div class="info">' +
+        '<h3>' + esc(p.title) + '</h3><button type="button" class="close">Close</button>' +
+        (p.summary ? '<p class="sum">' + esc(p.summary) + '</p>' : '') +
+        '<div class="foot"><span class="meta">' + meta + '</span><span class="act">' +
+          (gallery.length > 1 ? '<button type="button" class="count" aria-label="Next image">01 / ' + pad(gallery.length) + '</button>' : '') + go +
+        '</span></div>' +
+      '</div>';
+    let i = 0;
+    const media = el.querySelector('.media'), count = el.querySelector('.count');
+    const next = () => {
+      i = (i + 1) % gallery.length;
+      media.innerHTML = slide(gallery[i], i);
+      if (count) count.textContent = pad(i + 1) + ' / ' + pad(gallery.length);
+      if (!reduce) media.firstChild.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 320, easing: 'ease-out' });
+    };
+    el.querySelector('.hit').addEventListener('click', () => open(el));
+    el.querySelector('.close').addEventListener('click', close);
+    if (count) count.addEventListener('click', next);
+    media.addEventListener('click', () => {
+      if (!el.classList.contains('open')) return;
+      if (gallery.length > 1) next();
+      else if (p.link) external ? window.open(p.link, '_blank', 'noopener') : (location.href = p.link);
+    });
+    return el;
+  }
+
+  // ---------- the cells in between ----------
+  const fmt = (v, pos, neg) => Math.abs(v).toFixed(2) + '° ' + (v >= 0 ? pos : neg);
+  const watchers = [];
+  function whenSeen(el, on, off) {
+    const io = new IntersectionObserver(([e]) => (e.isIntersecting && !el.hidden ? on() : off()));
+    io.observe(el); watchers.push(io);
+  }
+  function makeFiller(f) {
+    let el;
+    if (f.kind === 'places' && (f.places || []).length) {
+      el = document.createElement('button');
+      el.type = 'button';
+      el.setAttribute('aria-label', 'Places in this work: ' + f.places.map(q => q.name).join(', '));
+      el.innerHTML = '<span class="pl-n"></span><span class="pl-c"></span><span class="pl-i"></span>';
+      let k = -1, timer = 0;
+      const show = () => {
+        k = (k + 1) % f.places.length;
+        const q = f.places[k];
+        el.querySelector('.pl-n').textContent = q.name;
+        el.querySelector('.pl-c').innerHTML = fmt(q.lat, 'N', 'S') + '<br>' + fmt(q.lon, 'E', 'W');
+        el.querySelector('.pl-i').textContent = pad(k + 1) + ' / ' + pad(f.places.length);
+        if (!reduce && timer !== -1) el.querySelectorAll('.pl-n, .pl-c').forEach(s => s.animate([{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }], { duration: 420, easing: EASE }));
+      };
+      show();
+      el.addEventListener('click', () => { show(); if (timer > 0) { clearInterval(timer); timer = setInterval(show, 3600); } });
+      if (!reduce) whenSeen(el, () => { if (timer <= 0) timer = setInterval(show, 3600); }, () => { clearInterval(timer); timer = 0; });
+    } else if (f.kind === 'line' && f.text) {
+      el = document.createElement('div');
+      el.innerHTML = '<p>' + esc(f.text) + '</p>';
+    } else if (f.kind === 'now' && f.text) {
+      el = document.createElement('div');
+      el.innerHTML = '<span class="nd" aria-hidden="true"></span><p>' + esc(f.text) + '</p>';
+    } else if (f.kind === 'water') {
+      el = document.createElement('div');
+      el.setAttribute('aria-hidden', 'true');
+      el.innerHTML = '<svg viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice"></svg>';
+      const svg = el.firstChild, N = 9, isle = (t) => 15 + 4.5 * Math.sin(3 * t + 0.6) + 2.6 * Math.sin(5 * t + 1.7);
+      const ring = (off, cls) => {
+        let d = '';
+        for (let j = 0; j <= 120; j++) {
+          const t = j / 120 * Math.PI * 2, r = isle(t) * (1 - off / 140) + off;
+          d += (j ? 'L' : 'M') + (100 + r * Math.cos(t) * 1.3).toFixed(1) + ',' + (75 + r * Math.sin(t)).toFixed(1);
+        }
+        return '<path' + (cls ? ' class="' + cls + '"' : '') + ' d="' + d + 'Z"' + '/>';
+      };
+      let phase = 0, raf = 0, last = 0;
+      const draw = () => {
+        let s = ring(0, 'isle');
+        for (let k = 0; k < N; k++) {
+          const off = 4 + ((k + phase) % N) * 8.5;
+          s += ring(off).replace('/>', ' style="opacity:' + Math.max(0, 1 - off / 82).toFixed(2) + '"/>');
+        }
+        svg.innerHTML = s;
+      };
+      const tick = (now) => { if (last) phase = (phase + (now - last) / 1000 * 0.22) % N; last = now; draw(); raf = requestAnimationFrame(tick); };
+      draw();
+      if (!reduce) whenSeen(el, () => { if (!raf) { last = 0; raf = requestAnimationFrame(tick); } }, () => { cancelAnimationFrame(raf); raf = 0; });
+    } else {
+      el = document.createElement('div');
+      el.setAttribute('aria-hidden', 'true');
+    }
+    el.classList.add('cell', 'fill', 'f-' + (f.kind || 'blank'));
+    el.dataset.filler = '1';
+    return el;
+  }
+
+  // ---------- motion: everything that moves glides from where it was ----------
+  function layout(change) {
+    const before = new Map();
+    for (const e of grid.children) if (!e.hidden) before.set(e, e.getBoundingClientRect());
+    grid.getAnimations({ subtree: true }).forEach(a => { if (!(a instanceof CSSAnimation)) a.cancel(); });
+    change();
+    const after = new Map();
+    for (const e of grid.children) if (!e.hidden) after.set(e, e.getBoundingClientRect());
+    if (reduce) return after;
+    after.forEach((a, e) => {
+      const b = before.get(e);
+      if (!b) { e.animate([{ opacity: 0, transform: 'translateY(16px)' }, { opacity: 1, transform: 'none' }], { duration: 480, delay: 90, easing: EASE, fill: 'backwards' }); return; }
+      const dx = b.left - a.left, dy = b.top - a.top;
+      if (a.width > b.width + 2) {
+        e.animate([
+          { transform: 'translate(' + dx + 'px,' + dy + 'px)', clipPath: 'inset(0 ' + (a.width - b.width) + 'px ' + Math.max(0, a.height - b.height) + 'px 0)' },
+          { transform: 'none', clipPath: 'inset(0 0 0 0)' }
+        ], { duration: 700, easing: EASE });
+      } else if (a.width < b.width - 2) {
+        const s = b.width / a.width;
+        e.animate([{ transform: 'translate(' + dx + 'px,' + dy + 'px) scale(' + s + ')', transformOrigin: '0 0', opacity: 0.6 }, { transform: 'none', transformOrigin: '0 0', opacity: 1 }], { duration: 600, easing: EASE });
+      } else if (Math.abs(dx) > 0.5 || Math.abs(dy) > 0.5) {
+        e.animate([{ transform: 'translate(' + dx + 'px,' + dy + 'px)' }, { transform: 'none' }], { duration: 640, easing: EASE });
+      }
+    });
+    return after;
+  }
+  function shut(el) {
+    el.classList.remove('open');
+    el.style.removeProperty('--c0');
+    el.querySelector('.hit').setAttribute('aria-expanded', 'false');
+  }
+  function open(el) {
+    if (openEl === el) return;
+    const prev = openEl;
+    const after = layout(() => {
+      if (prev) shut(prev);
+      const cols = getComputedStyle(grid).gridTemplateColumns.split(' ').length;
+      if (cols >= 3) {
+        const g = grid.getBoundingClientRect(), r = el.getBoundingClientRect();
+        const gap = parseFloat(getComputedStyle(grid).columnGap) || 0;
+        const col = Math.round((r.left - g.left) / ((g.width + gap) / cols));
+        el.style.setProperty('--c0', Math.min(col, cols - 2) + 1);
+      }
+      el.classList.add('open');
+      el.querySelector('.hit').setAttribute('aria-expanded', 'true');
+      openEl = el;
+    });
+    if (!reduce) el.querySelector('.info').animate([{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }], { duration: 420, delay: 320, easing: EASE, fill: 'backwards' });
+    el.querySelector('.close').focus({ preventScroll: true });
+    // bring it into view; the row above tucks under the filters
+    const gap = parseFloat(getComputedStyle(grid).rowGap) || 0;
+    const a = after.get(el), safe = document.querySelector('.filters').offsetHeight + gap - 3;
+    if (a && (a.top < safe || a.bottom > document.documentElement.clientHeight - 8)) {
+      scrollTo({ top: scrollY + a.top - safe, behavior: reduce ? 'auto' : 'smooth' });
+    }
+  }
+  function close() {
+    if (!openEl) return;
+    const el = openEl;
+    layout(() => { shut(el); openEl = null; });
+    el.querySelector('.hit').focus({ preventScroll: true });
+  }
+  addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+
+  // ---------- filters ----------
+  function setFilter(cat, animate) {
+    current = cat;
+    const apply = () => {
+      if (openEl) { shut(openEl); openEl = null; }
+      for (const e of grid.children) {
+        e.hidden = e.dataset.filler ? cat !== 'all' : !(cat === 'all' || e.dataset.cats.split(' ').includes(cat));
+      }
+    };
+    animate ? layout(apply) : apply();
+    document.querySelectorAll('#filters button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.cat === cat)));
+  }
+  function build() {
+    const count = (id) => data.projects.filter(p => id === 'all' || (p.categories || []).includes(id)).length;
+    // a filter only appears once it has work in it
+    const cats = [{ id: 'all', name: 'Everything' }].concat(data.categories.filter(c => count(c.id) > 0));
+    $('filters').innerHTML = cats.map(c => '<button type="button" data-cat="' + c.id + '" aria-pressed="false"><span>' + esc(c.name) + '</span><sup>' + pad(count(c.id)) + '</sup></button>').join('');
+    $('filters').querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+      if (b.dataset.cat === current) return;
+      setFilter(b.dataset.cat, true);
+      history.replaceState(null, '', current === 'all' ? location.pathname : '#' + current);
+    }));
+    // cards in file order, with the in-between cells dropped in after the project they name
+    const fillers = data.fillers || [];
+    const frag = document.createDocumentFragment();
+    for (const f of fillers) if (f.after === 'start') frag.append(makeFiller(f));
+    for (const p of data.projects) {
+      frag.append(makeCard(p));
+      for (const f of fillers) if (f.after === p.id) frag.append(makeFiller(f));
+    }
+    for (const f of fillers) if (f.after !== 'start' && !data.projects.some(p => p.id === f.after)) frag.append(makeFiller(f));
+    grid.replaceChildren(frag);
+  }
+
+  fetch('projects.json').then(r => r.json()).then(d => {
+    data = d;
+    build();
+    const h = location.hash.slice(1);
+    setFilter(h && d.projects.some(p => (p.categories || []).includes(h)) ? h : 'all', false);
+  }).catch(() => { grid.innerHTML = '<p class="empty">The project list could not be loaded.</p>'; });
+})();
+</script>
+<!-- fonts:start -->
+<button type="button" id="ft-open" class="ft-open">Fonts</button>
+<div class="ft" id="ft" hidden>
+  <div class="ft-h"><b>Fonts</b><button type="button" id="ft-x">Hide</button></div>
+  <label for="ft-sans">Main typeface</label>
+  <select id="ft-sans"></select>
+  <label for="ft-cond">Labels and big headings</label>
+  <select id="ft-cond"></select>
+  <label for="ft-serif">Statement</label>
+  <select id="ft-serif"></select>
+  <label for="ft-disp">Big headings <output id="fo-disp" for="ft-disp"></output></label>
+  <input type="range" id="ft-disp" min="60" max="150" step="5">
+  <label for="ft-body">Body text <output id="fo-body" for="ft-body"></output></label>
+  <input type="range" id="ft-body" min="80" max="130" step="5">
+  <label for="ft-ser">Statement size <output id="fo-ser" for="ft-ser"></output></label>
+  <input type="range" id="ft-ser" min="60" max="150" step="5">
+  <div class="ft-row"><span class="ft-note">Applies to every page</span><button type="button" id="ft-reset">Reset</button></div>
+  <div class="ft-sum" id="ft-sum"></div>
+</div>
+<style>
+.ft-open { position: fixed; right: 16px; bottom: 16px; z-index: 40; background: var(--paper); border: 1px solid var(--hair); padding: 0 12px; min-height: 36px; font: inherit; font-size: 13px; text-transform: uppercase; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 700; color: var(--rust); cursor: pointer; }
+.ft-open[hidden], .ft[hidden] { display: none; }
+.ft { position: fixed; right: 16px; bottom: 16px; z-index: 41; width: 252px; max-height: calc(100vh - 96px); overflow-y: auto; background: var(--paper); border: 1px solid var(--hair); padding: 12px 14px 10px; font-family: var(--sans); font-size: 14px; display: grid; gap: 5px; color: var(--ink); }
+.ft-h { display: flex; justify-content: space-between; align-items: center; }
+.ft-h b { font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 700; text-transform: uppercase; color: var(--rust); font-size: 13px; }
+.ft button { font: inherit; background: none; border: 0; padding: 0; cursor: pointer; color: var(--water); font-size: 13px; min-height: 32px; text-transform: uppercase; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 600; }
+.ft label { display: flex; justify-content: space-between; margin-top: 6px; }
+.ft output { color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.ft select { font: inherit; font-size: 14px; color: var(--ink); background: var(--paper); border: 1px solid var(--hair); min-height: 34px; padding: 0 6px; width: 100%; }
+.ft input[type="range"] { width: 100%; accent-color: var(--water); margin: 0; min-height: 26px; }
+.ft-row { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
+.ft-note { font-size: 12px; color: var(--ink-soft); }
+.ft-sum { font-size: 12px; color: var(--ink-soft); border-top: 1px solid var(--hair); padding-top: 6px; line-height: 1.35; }
+@media (max-width: 760px) { .ft { left: 16px; right: 16px; width: auto; max-height: 60vh; } }
+</style>
+<script>
+(() => {
+  const SANS = [
+    ['Instrument Sans', 'Instrument+Sans:wdth,wght@75..100,400..700'],
+    ['Archivo', 'Archivo:wdth,wght@62..125,400..800'],
+    ['Bricolage Grotesque', 'Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800'],
+    ['Schibsted Grotesk', 'Schibsted+Grotesk:wght@400..800'],
+    ['Hanken Grotesk', 'Hanken+Grotesk:wght@400..800'],
+    ['Familjen Grotesk', 'Familjen+Grotesk:wght@400..700']
+  ];
+  // [label, family, stretch, google query]; family null = same as the main typeface
+  const COND = [
+    ['Instrument Sans, condensed', 'Instrument Sans', '75%', 'Instrument+Sans:wdth,wght@75..100,400..700'],
+    ['Archivo, narrow', 'Archivo', '62%', 'Archivo:wdth,wght@62..125,400..800'],
+    ['Barlow Condensed', 'Barlow Condensed', '100%', 'Barlow+Condensed:wght@400;500;600;700'],
+    ['Oswald', 'Oswald', '100%', 'Oswald:wght@400..700'],
+    ['Antonio', 'Antonio', '100%', 'Antonio:wght@400..700'],
+    ['Same as main, not condensed', null, '100%', null]
+  ];
+  const SERIF = [
+    ['Instrument Serif', 'Instrument+Serif:ital@0;1'],
+    ['Newsreader', 'Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600'],
+    ['Fraunces', 'Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600'],
+    ['EB Garamond', 'EB+Garamond:ital,wght@0,400..600;1,400..600'],
+    ['Cormorant Garamond', 'Cormorant+Garamond:ital,wght@0,400..600;1,400..600'],
+    ['Same as main typeface', null]
+  ];
+  const FALLBACK = '"Helvetica Neue", Helvetica, Arial, sans-serif', SERIF_FB = '"Times New Roman", Times, serif';
+  const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
+  const D = { sans: 0, cond: 0, serif: 0, disp: 100, body: 100, ser: 100 };
+  const S = {}; for (const k in D) { const v = store.get('gk-ft-' + k); S[k] = v === null || v === '' ? D[k] : +v; }
+  const root = document.documentElement, $ = (id) => document.getElementById(id);
+  const loaded = new Set(['Instrument+Sans:wdth,wght@75..100,400..700', 'Instrument+Serif:ital@0;1']);
+  function load(q) {
+    if (!q || loaded.has(q)) return; loaded.add(q);
+    const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://fonts.googleapis.com/css2?family=' + q + '&display=swap';
+    l.onload = () => { if (document.fonts) document.fonts.ready.then(() => dispatchEvent(new Event('resize'))); };
+    document.head.appendChild(l);
+  }
+  function apply() {
+    const sans = SANS[S.sans] || SANS[0], cond = COND[S.cond] || COND[0], serif = SERIF[S.serif] || SERIF[0];
+    load(sans[1]); load(cond[3]); load(serif[1]);
+    const sansStack = '"' + sans[0] + '", ' + FALLBACK;
+    root.style.setProperty('--sans', sansStack);
+    root.style.setProperty('--cond', cond[1] ? '"' + cond[1] + '", ' + sansStack : sansStack);
+    root.style.setProperty('--cond-stretch', cond[2]);
+    root.style.setProperty('--serif', serif[1] ? '"' + serif[0] + '", ' + SERIF_FB : sansStack);
+    root.style.setProperty('--disp', S.disp / 100); root.style.setProperty('--body', S.body / 100); root.style.setProperty('--ser', S.ser / 100);
+    if (!$('ft-sans')) return;
+    $('ft-sans').value = S.sans; $('ft-cond').value = S.cond; $('ft-serif').value = S.serif;
+    $('ft-disp').value = S.disp; $('ft-body').value = S.body; $('ft-ser').value = S.ser;
+    $('fo-disp').textContent = S.disp + '%'; $('fo-body').textContent = S.body + '%'; $('fo-ser').textContent = S.ser + '%';
+    $('ft-sum').textContent = 'Main ' + sans[0] + ' · labels ' + cond[0] + ' · statement ' + serif[0] + ' · headings ' + S.disp + '% · body ' + S.body + '% · statement ' + S.ser + '%';
+    dispatchEvent(new Event('resize'));
+  }
+  const fill = (id, list) => { $(id).innerHTML = list.map((o, i) => '<option value="' + i + '">' + o[0] + '</option>').join(''); };
+  fill('ft-sans', SANS); fill('ft-cond', COND); fill('ft-serif', SERIF);
+  const set = (k, v) => { S[k] = v; store.set('gk-ft-' + k, String(v)); apply(); };
+  ['sans', 'cond', 'serif'].forEach(k => $('ft-' + k).addEventListener('change', (e) => set(k, +e.target.value)));
+  ['disp', 'body', 'ser'].forEach(k => $('ft-' + k).addEventListener('input', (e) => set(k, +e.target.value)));
+  $('ft-reset').addEventListener('click', () => { for (const k in D) { S[k] = D[k]; store.set('gk-ft-' + k, ''); } apply(); });
+  $('ft-open').addEventListener('click', () => { $('ft').hidden = false; $('ft-open').hidden = true; });
+  $('ft-x').addEventListener('click', () => { $('ft').hidden = true; $('ft-open').hidden = false; });
+  apply();
+})();
+</script>
+<!-- fonts:end -->
+</body>
+</html>

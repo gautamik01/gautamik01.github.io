@@ -1,0 +1,776 @@
+<meta charset="utf-8">
+<title>Gautami Kasat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wdth,wght@75..100,400..700&family=Instrument+Serif:ital@0;1&display=swap">
+<style>
+/* Layout: Hero: live waterlines, name block bottom-left, tiny globe right, hairline + Scroll. Then a statement paragraph and Selected Projects, after thelupoconcept.com. */
+:root {
+  --paper: #F3F1EB;
+  --paper-2: #E7E4DC;
+  --ink: #151515;
+  --ink-soft: #5B5953;
+  --hair: rgba(21, 21, 21, 0.18);
+  --water: #2F45C6;
+  --now: #EF5A2A;
+  --rust: #B9400F;
+  --land: #FBFAF6;
+  --sans: "Instrument Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --serif: "Instrument Serif", "Times New Roman", Times, serif;
+  --gutter: clamp(16px, 1.4vw, 24px);
+  --name: 96px;
+  --small: 20px;
+  --gx: 95%;
+  --gy: 50%;
+  --gs: 84px;
+  --cond: var(--sans); --cond-stretch: 75%; --disp: 1; --body: 1; --ser: 1;
+  color-scheme: light;
+}
+html { background: var(--paper); }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+:focus-visible { outline: 1.5px solid var(--water); outline-offset: 3px; }
+.cond { font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 600; letter-spacing: -0.005em; }
+
+/* ---------- header: fixed, inverts over whatever is under it ---------- */
+.top { position: fixed; top: 0; left: 0; right: 0; z-index: 20; display: flex; justify-content: space-between; align-items: center; padding: max(10px, env(safe-area-inset-top, 0px)) var(--gutter) 0; color: #fff; mix-blend-mode: difference; pointer-events: none; }
+.top.solid { mix-blend-mode: normal; color: var(--ink); background: var(--paper); padding-bottom: 2px; box-shadow: 0 1px 0 var(--hair); pointer-events: auto; }
+.top.away { transform: translateY(-110%); }
+.top a { pointer-events: auto; min-height: 44px; display: inline-flex; align-items: center; font-size: 17px; text-transform: uppercase; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 500; letter-spacing: 0; }
+.top .mark { letter-spacing: -0.02em; }
+.top nav { display: flex; gap: 20px; }
+.top a:hover { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px; }
+
+/* ---------- hero ---------- */
+main { position: relative; }
+.hero { position: relative; height: 100vh; height: 100svh; min-height: 560px; overflow: hidden; }
+#field { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.hero-frame { position: absolute; inset: 0; display: grid; grid-template-rows: 1fr auto auto; pointer-events: none; }
+.hero-frame > * { pointer-events: auto; }
+.namebox { padding: 0 var(--gutter) clamp(18px, 3vh, 32px); justify-self: start; }
+.namebox .s { font-size: var(--small); line-height: 1.1; }
+.namebox .role { color: var(--rust); }
+h1 { margin: 0.06em 0 0.12em; font-weight: 700; line-height: 0.82; letter-spacing: -0.045em; text-transform: uppercase; white-space: nowrap; font-size: var(--name); outline: none; }
+.scrollcue { display: flex; justify-content: center; }
+.scrollcue a { font-size: 14px; color: var(--ink-soft); min-height: 46px; display: inline-flex; align-items: center; padding: 0 20px; }
+.scrollcue a:hover { color: var(--ink); }
+
+.globe { position: absolute; left: var(--gx); top: var(--gy); width: var(--gs); height: var(--gs); transform: translate(-50%, -50%); }
+.globe.dragging { outline: 1px dashed var(--rust); outline-offset: 6px; cursor: grab; }
+.globe.dragging #globe { cursor: grab; }
+#globe { width: 100%; height: 100%; display: block; touch-action: manipulation; }
+#gtip { position: absolute; right: calc(100% + 10px); top: 50%; transform: translateY(-50%); z-index: 2; width: 236px; padding: 10px 12px 9px; background: var(--paper); pointer-events: none; opacity: 0; transition: opacity .18s; font-variant-numeric: tabular-nums; }
+#gtip.on { opacity: 1; }
+.glabel { position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); text-align: center; font-size: 15px; white-space: nowrap; letter-spacing: 0.01em; transition: opacity .35s; pointer-events: none; }
+.glabel.fade { opacity: 0; }
+.globe.tip-right #gtip { right: auto; left: calc(100% + 10px); }
+.globe.tip-below #gtip { right: auto; left: 50%; top: calc(100% + 8px); transform: translateX(-50%); }
+#gtip .n { font-weight: 700; font-size: 18px; letter-spacing: -0.02em; line-height: 1.1; }
+#gtip .w { color: var(--water); font-size: 14px; line-height: 1.3; margin-top: 4px; }
+#gtip .t { font-size: 14px; margin-top: 4px; }
+#gtip .x { color: var(--ink-soft); font-size: 13px; margin-top: 2px; }
+#tag { position: fixed; left: 0; top: 0; pointer-events: none; font-size: 13px; background: var(--paper); padding: 2px 7px 3px; white-space: nowrap; transform: translate(-9999px, 0); font-variant-numeric: tabular-nums; z-index: 15; }
+#tag b { font-weight: 700; color: var(--rust); }
+
+/* ---------- statement ---------- */
+.statement { display: grid; grid-template-columns: minmax(0, 23%) minmax(0, 1fr); gap: 24px; padding: clamp(96px, 16vh, 180px) var(--gutter) clamp(110px, 18vh, 200px); }
+.label { font-size: 15px; color: var(--rust); text-transform: uppercase; margin: 0; padding-top: 0.6em; }
+.statement p em { font-style: italic; }
+.statement p { font-family: var(--serif); font-weight: 400; font-size: calc(clamp(30px, 3.1vw, 52px) * var(--ser)); line-height: 1.14; letter-spacing: -0.01em; margin: 0; text-indent: 15%; text-wrap: pretty; max-width: 30em; }
+.learn { margin-top: 44px; display: inline-flex; align-items: center; gap: 12px; font-size: 18px; text-transform: uppercase; border-bottom: 1.5px solid var(--rust); padding-bottom: 4px; min-height: 32px; }
+.learn::before { content: ""; width: 8px; height: 8px; background: var(--rust); }
+.learn:hover { color: var(--rust); }
+
+/* ---------- selected projects ---------- */
+.selected { padding: 0 var(--gutter) clamp(80px, 12vh, 140px); }
+.selected .label { text-align: center; padding: 0; }
+.selected h2 { margin: 14px 0 clamp(48px, 7vw, 96px); text-align: center; font-size: calc(clamp(54px, 9vw, 150px) * var(--disp)); line-height: 0.86; text-transform: uppercase; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 700; letter-spacing: -0.02em; }
+.grid { display: flex; justify-content: space-between; align-items: flex-start; gap: 1.1vw; }
+.p { display: block; min-width: 0; }
+.p .img { aspect-ratio: var(--ar, 0.72); background: var(--paper-2); position: relative; overflow: hidden; }
+.p .img span { position: absolute; left: 10px; bottom: 8px; font-size: 13px; color: var(--ink-soft); }
+.p .cap { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 8px 0; }
+.p .num { font-size: 17px; color: var(--ink-soft); font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 500; }
+.p .nm { font-size: calc(19px * var(--body)); font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 700; text-align: right; line-height: 1.05; }
+.p:hover .nm { color: var(--water); }
+.p:hover .img { background: #DCD8CE; }
+.p1 { width: 23.4%; --ar: 0.72; }
+.p2 { width: 11.6%; --ar: 0.72; }
+.p3 { width: 11.8%; --ar: 0.72; margin-top: 15vw; }
+.p4 { width: 23.6%; --ar: 0.84; margin-top: 6.8vw; }
+.p5 { width: 11.5%; --ar: 0.72; margin-top: 6.8vw; }
+.p6 { width: 11.5%; --ar: 0.72; margin-top: 5.6vw; }
+.all { display: flex; justify-content: center; margin-top: 56px; }
+
+footer { border-top: 1px solid var(--hair); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 24px; padding: 18px var(--gutter) max(22px, env(safe-area-inset-bottom, 0px)); font-size: 15px; }
+footer .k { color: var(--ink-soft); }
+footer a:hover { color: var(--water); }
+
+/* ---------- arrival ---------- */
+.top.hold, .pre .namebox, .pre .globe, .pre .scrollcue { opacity: 0; }
+.pre .namebox { transform: translateY(16px); }
+.namebox, .globe, .scrollcue { transition: opacity .9s ease, transform 1s cubic-bezier(.2,.75,.15,1); }
+.top { transition: opacity .9s ease, transform .5s cubic-bezier(.2,.75,.15,1); }
+.namebox { transition-delay: .12s; }
+.scrollcue { transition-delay: .3s; }
+.globe { transition-delay: .45s; }
+
+
+/* ---------- type tuner (for choosing sizes; remove before launch) ---------- */
+.tune { position: fixed; left: 16px; top: 64px; max-height: calc(100vh - 88px); overflow-y: auto; z-index: 25; width: 236px; background: var(--paper); border: 1px solid var(--hair); padding: 12px 14px 10px; font-size: 14px; display: grid; gap: 6px; }
+.tune[hidden] { display: none; }
+.tune-h { display: flex; justify-content: space-between; align-items: center; }
+.tune-h b { font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 700; text-transform: uppercase; color: var(--rust); font-size: 13px; }
+.tune label { display: flex; justify-content: space-between; margin-top: 4px; }
+.tune output { font-variant-numeric: tabular-nums; color: var(--ink-soft); }
+.tune input[type="range"] { width: 100%; accent-color: var(--water); margin: 0; min-height: 28px; }
+.tune .row { display: flex; justify-content: space-between; align-items: center; }
+.tune .sec { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--hair); font-size: 12px; text-transform: uppercase; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 700; color: var(--ink-soft); letter-spacing: .02em; }
+.tune .sec:first-of-type { border-top: 0; margin-top: 0; padding-top: 0; }
+.past-hero .tune, .past-hero #tune-open { visibility: hidden; }
+.tune .sum { font-size: 12px; color: var(--ink-soft); border-top: 1px solid var(--hair); padding-top: 6px; font-variant-numeric: tabular-nums; }
+.tune button[aria-pressed="true"] { color: var(--rust); }
+.tune button { color: var(--water); font-size: 13px; min-height: 32px; text-transform: uppercase; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 600; }
+#tune-open { position: fixed; left: 16px; top: 64px; z-index: 25; background: var(--paper); border: 1px solid var(--hair); padding: 0 12px; min-height: 36px; font-size: 13px; text-transform: uppercase; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 700; color: var(--rust); }
+#tune-open[hidden] { display: none; }
+
+@media (max-width: 760px) {
+  .top nav { gap: 12px; }
+  .top a { font-size: 15px; }
+  #gtip { width: min(236px, calc(100vw - 32px)); }
+  h1 { white-space: normal; }
+  h1 .w { display: block; }
+  .statement { grid-template-columns: 1fr; }
+  .statement p { text-indent: 0; }
+  .grid { flex-wrap: wrap; gap: 14px 4%; }
+  .p { width: 48% !important; margin-top: 0 !important; }
+  .p:nth-child(even) { margin-top: 48px !important; }
+  .tune { left: 16px; right: 16px; width: auto; top: 136px; max-height: 52vh; }
+  #tune-open { top: 136px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .top, .namebox, .globe, .scrollcue { transition: none; }
+}
+</style>
+
+<header class="top hold">
+  <a class="mark" href="index.html#home" aria-label="Gautami Kasat, home">GK</a>
+  <nav aria-label="Main">
+    <a href="work.html">Work</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+</header>
+
+<main id="site" class="pre">
+  <section class="hero" aria-label="Introduction">
+    <canvas id="field" aria-hidden="true"></canvas>
+    <div class="hero-frame">
+      <div></div>
+      <div class="namebox">
+        <div class="s cond">Hello, I am</div>
+        <h1 id="name" tabindex="-1"><span class="w">Gautami</span> <span class="w">Kasat</span></h1>
+        <div class="s cond role">Urban Spatial Analyst | Urban Designer</div>
+      </div>
+      <div class="scrollcue"><a href="#statement">Scroll</a></div>
+    </div>
+    <div class="globe">
+      <div class="glabel cond" id="glabel" aria-live="polite"></div>
+      <canvas id="globe" aria-label="Small globe marking the three waters in this portfolio: Mumbai, the Belgian coast and Philadelphia. Point at an orange dot for the place and its local time."></canvas>
+      <div id="gtip" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section class="statement" id="statement">
+    <h2 class="label cond">[Strategy]</h2>
+    <div>
+      <p><em>An urbanist who codes.</em> Data-informed urban strategist, building maps, dashboards, and AI prototypes across mobility, public space, climate hazard, infrastructure and climate tech, turning spatial data into evidence that changes what gets built.</p>
+      <a class="learn" href="about.html">Learn more</a>
+    </div>
+  </section>
+
+  <section class="selected" aria-labelledby="h-selected">
+    <p class="label cond">[Work]</p>
+    <h2 id="h-selected">Selected projects</h2>
+    <div class="grid">
+      <a class="p p1" href="work.html"><div class="img"><span class="cond">Image</span></div><div class="cap"><span class="num">01/</span><span class="nm">Living in a Floodable Park</span></div></a>
+      <a class="p p2" href="work.html"><div class="img"><span class="cond">Image</span></div><div class="cap"><span class="num">02/</span><span class="nm">Urban Capillaries</span></div></a>
+      <a class="p p3" href="work.html"><div class="cap"><span class="num">03/</span><span class="nm">Food Landscapes</span></div><div class="img"><span class="cond">Image</span></div></a>
+      <a class="p p4" href="work.html"><div class="img"><span class="cond">Image</span></div><div class="cap"><span class="num">04/</span><span class="nm">Haverford Avenue Reimagined</span></div></a>
+      <a class="p p5" href="work.html"><div class="img"><span class="cond">Image</span></div><div class="cap"><span class="num">05/</span><span class="nm">Campus Forest</span></div></a>
+      <a class="p p6" href="work.html"><div class="cap"><span class="num">06/</span><span class="nm">Godavari River Edge</span></div><div class="img"><span class="cond">Image</span></div></a>
+    </div>
+    <div class="all"><a class="learn" href="work.html">All work</a></div>
+  </section>
+
+  <footer>
+    <a href="mailto:gautami.kasat@gmail.com">gautami.kasat@gmail.com</a>
+    <span><a href="https://www.linkedin.com/in/gautamikasat" target="_blank" rel="noopener">LinkedIn</a> <span class="k">|</span> <a href="https://github.com/gautamik01" target="_blank" rel="noopener">GitHub</a></span>
+  </footer>
+</main>
+<div id="tag" class="cond" aria-hidden="true"></div>
+
+
+<div class="tune" id="tune" hidden>
+  <div class="tune-h"><b>Tune</b><button type="button" id="tune-x">Hide</button></div>
+  <div class="sec">Type</div>
+  <label for="t-name">Name <output id="o-name" for="t-name"></output></label>
+  <input type="range" id="t-name" min="32" max="260" step="1">
+  <label for="t-small">Hello + role <output id="o-small" for="t-small"></output></label>
+  <input type="range" id="t-small" min="12" max="40" step="1">
+  <div class="sec">Globe</div>
+  <label for="t-gx">Across <output id="o-gx" for="t-gx"></output></label>
+  <input type="range" id="t-gx" min="4" max="96" step="0.5">
+  <label for="t-gy">Up and down <output id="o-gy" for="t-gy"></output></label>
+  <input type="range" id="t-gy" min="8" max="92" step="0.5">
+  <label for="t-gs">Size <output id="o-gs" for="t-gs"></output></label>
+  <input type="range" id="t-gs" min="40" max="220" step="1">
+  <div class="row"><button type="button" id="tune-drag" aria-pressed="false">Drag the globe</button></div>
+  <div class="sec">Motion</div>
+  <label for="t-dwell">Time on each place <output id="o-dwell" for="t-dwell"></output></label>
+  <input type="range" id="t-dwell" min="4" max="40" step="1">
+  <label for="t-morph">Transition length <output id="o-morph" for="t-morph"></output></label>
+  <input type="range" id="t-morph" min="0.8" max="10" step="0.2">
+  <label for="t-drift">Line drift <output id="o-drift" for="t-drift"></output></label>
+  <input type="range" id="t-drift" min="0" max="6" step="0.1">
+  <div class="row"><span></span><button type="button" id="tune-reset">Reset all</button></div>
+  <div class="sum"><span id="tune-sum"></span><br><span id="tune-sum2"></span></div>
+</div>
+<button type="button" id="tune-open" hidden>Tune</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+<script>
+(() => {
+  const SITES = [
+    { key: 'mumbai', short: 'Mumbai, IN', place: 'Mumbai, IN', lat: 19.02, lon: 72.885, tz: 'Asia/Kolkata', water: 'Arabian Sea, Mahim Bay, Thane Creek, Mumbai Harbour', focus: [0.57, 0.6], zoom: 1.05, density: 8, edge: 'shore' },
+    { key: 'coast', short: 'Oostende, BE', place: 'Middelkerke to Oostende, BE', lat: 51.212, lon: 2.925, tz: 'Europe/Brussels', water: 'North Sea and the port of Oostende', focus: [0.45, 0.5], zoom: 1.0, density: 8, edge: 'shore' },
+    { key: 'philadelphia', short: 'Philadelphia, US', place: 'Philadelphia, US', lat: 39.952, lon: -75.165, tz: 'America/New_York', water: 'The Schuylkill and the Delaware', focus: [0.55, 0.5], zoom: 1.0, density: 20, edge: 'riverbank' }
+  ];
+  const N0 = 8.0, D0 = 0.06;
+  let DWELL = 14000, MORPH = 3600, DRIFT = 0.055;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const RAD = Math.PI / 180, DEG = 180 / Math.PI;
+  const $ = (id) => document.getElementById(id);
+  // the place name sits centred over the globe; near a screen edge it slides in just enough to stay readable
+  function keepLabelIn() {
+    const el = $('glabel'); if (!el) return;
+    el.style.marginLeft = '0px';
+    const r = el.getBoundingClientRect(), w = document.documentElement.clientWidth, m = 10;
+    const shift = r.right > w - m ? (w - m) - r.right : r.left < m ? m - r.left : 0;
+    el.style.marginLeft = shift + 'px';
+  }
+  addEventListener('resize', () => keepLabelIn());
+  const root = document.documentElement;
+  const css = getComputedStyle(root);
+  const tok = (n) => css.getPropertyValue(n).trim();
+  const C = { paper: tok('--paper'), paper2: tok('--paper-2'), ink: tok('--ink'), water: tok('--water'), now: tok('--now'), land: tok('--land') };
+  const site = $('site'), hero = document.querySelector('.hero');
+  const field = {};
+  const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
+
+  // ---------- sun + time ----------
+  function sunPos(ms) {
+    const n = ms / 86400000 + 2440587.5 - 2451545.0;
+    const L = (280.460 + 0.9856474 * n) % 360, g = ((357.528 + 0.9856003 * n) % 360) * RAD;
+    const lam = (L + 1.915 * Math.sin(g) + 0.020 * Math.sin(2 * g)) * RAD, eps = (23.439 - 0.0000004 * n) * RAD;
+    const dec = Math.asin(Math.sin(eps) * Math.sin(lam)), ra = Math.atan2(Math.cos(eps) * Math.sin(lam), Math.cos(lam));
+    const gmst = (280.46061837 + 360.98564736629 * n) % 360;
+    let lon = ra * DEG - gmst; lon = ((lon % 360) + 540) % 360 - 180;
+    return { lat: dec * DEG, lon };
+  }
+  function sunAlt(lat, lon, ms) {
+    const s = sunPos(ms), H = (lon - s.lon) * RAD;
+    return Math.asin(Math.sin(lat * RAD) * Math.sin(s.lat * RAD) + Math.cos(lat * RAD) * Math.cos(s.lat * RAD) * Math.cos(H)) * DEG;
+  }
+  const fmts = {};
+  const localTime = (tz) => (fmts[tz] ||= new Intl.DateTimeFormat('en-GB', { timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: false })).format(new Date());
+  function nowLine(s) {
+    const a = sunAlt(s.lat, s.lon, Date.now());
+    return localTime(s.tz) + ' local, sun ' + (a >= 0 ? '+' : '−') + Math.abs(Math.round(a)) + '°' + (a < -6 ? ', night' : a < 0 ? ', twilight' : '');
+  }
+
+  // ---------- name size + tuner ----------
+  const nameEl = $('name');
+  const textWidth = (el) => { const r = document.createRange(); r.selectNodeContents(el); return r.getBoundingClientRect().width; };
+  function defaultNamePx() {
+    // about 45% of the screen width on a laptop; two stacked lines at about 60% on a phone
+    const W = innerWidth, phone = W <= 760;
+    const prev = nameEl.style.fontSize; nameEl.style.fontSize = '100px';
+    const words = [...nameEl.querySelectorAll('.w')];
+    const nat = phone ? Math.max(...words.map(textWidth)) : textWidth(nameEl);
+    nameEl.style.fontSize = prev;
+    return Math.round(100 * W * (phone ? 0.6 : 0.45) / nat);
+  }
+  const tName = $('t-name'), tSmall = $('t-small'), oName = $('o-name'), oSmall = $('o-small');
+  const tGx = $('t-gx'), tGy = $('t-gy'), tGs = $('t-gs'), globeBox = document.querySelector('.globe');
+  const U = { name: +store.get('gk-name') || 0, small: +store.get('gk-small') || 0, gx: +store.get('gk-gx') || 0, gy: +store.get('gk-gy') || 0, gs: +store.get('gk-gs') || 0 };
+  const phone = () => innerWidth <= 760;
+  function applyType() {
+    const np = U.name || defaultNamePx(), sp = U.small || (phone() ? 16 : 20);
+    const gs = U.gs || (phone() ? 60 : 84);
+    const gx = U.gx || (phone() ? 100 - (16 + gs / 2) / innerWidth * 100 : 100 - (24 + gs / 2) / innerWidth * 100);
+    const gy = U.gy || (phone() ? (64 + gs / 2) / Math.max(560, innerHeight) * 100 : 50);
+    root.style.setProperty('--name', np + 'px'); root.style.setProperty('--small', sp + 'px');
+    root.style.setProperty('--gx', gx.toFixed(2) + '%'); root.style.setProperty('--gy', gy.toFixed(2) + '%'); root.style.setProperty('--gs', gs + 'px');
+    globeBox.classList.toggle('tip-below', phone());
+    globeBox.classList.toggle('tip-right', !phone() && gx < 50);
+    tName.value = np; tSmall.value = sp; tGx.value = gx; tGy.value = gy; tGs.value = gs;
+    const nw = Math.round(textWidth(nameEl) / innerWidth * 100);
+    oName.textContent = np + 'px, ' + nw + '% wide';
+    oSmall.textContent = sp + 'px';
+    $('o-gx').textContent = Math.round(gx) + '% from left'; $('o-gy').textContent = Math.round(gy) + '% from top'; $('o-gs').textContent = gs + 'px';
+    $('tune-sum').textContent = 'Name ' + np + 'px · small ' + sp + 'px · globe ' + Math.round(gx) + '% / ' + Math.round(gy) + '% / ' + gs + 'px';
+    if (globe.resize) globe.resize();
+  }
+  function setU(k, v) { U[k] = v; store.set('gk-' + k, v || ''); applyType(); }
+  // motion: stored with explicit defaults, since 0 is a real value for drift
+  const numOr = (k, d) => { const v = store.get('gk-' + k); return v === null || v === '' ? d : +v; };
+  const M = { dwell: numOr('dwell', 14), morph: numOr('morph', 3.6), drift: numOr('drift', 1) };
+  const tDwell = $('t-dwell'), tMorph = $('t-morph'), tDrift = $('t-drift');
+  function applyMotion() {
+    DWELL = M.dwell * 1000; MORPH = M.morph * 1000; DRIFT = 0.055 * M.drift;
+    tDwell.value = M.dwell; tMorph.value = M.morph; tDrift.value = M.drift;
+    $('o-dwell').textContent = M.dwell + ' s'; $('o-morph').textContent = M.morph.toFixed(1) + ' s'; $('o-drift').textContent = M.drift === 0 ? 'still' : M.drift.toFixed(1) + '×';
+    $('tune-sum2').textContent = 'Each place ' + M.dwell + ' s · transition ' + M.morph.toFixed(1) + ' s · drift ' + M.drift.toFixed(1) + '×';
+  }
+  const setM = (k, v) => { M[k] = v; store.set('gk-' + k, String(v)); applyMotion(); };
+  tDwell.addEventListener('input', () => setM('dwell', +tDwell.value));
+  tMorph.addEventListener('input', () => setM('morph', +tMorph.value));
+  tDrift.addEventListener('input', () => setM('drift', +tDrift.value));
+  applyMotion();
+  addEventListener('resize', applyType);
+  if (document.fonts) document.fonts.ready.then(applyType);
+  tName.addEventListener('input', () => setU('name', +tName.value));
+  tSmall.addEventListener('input', () => setU('small', +tSmall.value));
+  tGx.addEventListener('input', () => setU('gx', +tGx.value));
+  tGy.addEventListener('input', () => setU('gy', +tGy.value));
+  tGs.addEventListener('input', () => setU('gs', +tGs.value));
+  $('tune-reset').addEventListener('click', () => { ['name', 'small', 'gx', 'gy', 'gs'].forEach(k => { U[k] = 0; store.set('gk-' + k, ''); }); ['dwell', 'morph', 'drift'].forEach(k => store.set('gk-' + k, '')); Object.assign(M, { dwell: 14, morph: 3.6, drift: 1 }); applyType(); applyMotion(); });
+  // drag the globe straight on the page
+  const dragBtn = $('tune-drag');
+  let dragMode = false, dragging = false;
+  dragBtn.addEventListener('click', () => { dragMode = !dragMode; dragBtn.setAttribute('aria-pressed', String(dragMode)); dragBtn.textContent = dragMode ? 'Done dragging' : 'Drag the globe'; globeBox.classList.toggle('dragging', dragMode); });
+  globeBox.addEventListener('pointerdown', (e) => { if (!dragMode) return; dragging = true; root.style.userSelect = 'none'; globeBox.setPointerCapture(e.pointerId); e.preventDefault(); });
+  globeBox.addEventListener('pointermove', (e) => {
+    if (!dragging) return;
+    const r = hero.getBoundingClientRect();
+    U.gx = Math.min(96, Math.max(4, (e.clientX - r.left) / r.width * 100)); U.gy = Math.min(92, Math.max(8, (e.clientY - r.top) / r.height * 100));
+    applyType();
+  });
+  globeBox.addEventListener('pointerup', () => { if (!dragging) return; dragging = false; root.style.userSelect = ''; store.set('gk-gx', U.gx); store.set('gk-gy', U.gy); });
+  globeBox.style.touchAction = 'none';
+  $('tune-x').addEventListener('click', () => { $('tune').hidden = true; $('tune-open').hidden = false; });
+  $('tune-open').addEventListener('click', () => { $('tune').hidden = false; $('tune-open').hidden = true; });
+
+  // ---------- header: over the hero it floats on the drawing; further down it hides on the way down and returns, on paper, on the way up ----------
+  const topBar = document.querySelector('.top');
+  let lastY = scrollY, upRun = 0;
+  function onScroll() {
+    const y = Math.max(0, scrollY), hh = hero.offsetHeight, atBottom = y + innerHeight >= document.documentElement.scrollHeight - 4;
+    document.body.classList.toggle('past-hero', y > hh * 0.6);
+    if (y < hh - 60) { topBar.classList.remove('solid', 'away'); upRun = 0; }
+    else {
+      const dy = y - lastY;
+      if (dy > 0) { upRun = 0; topBar.classList.add('away'); }
+      else if (dy < 0 && !atBottom) { upRun -= dy; if (upRun > 48) topBar.classList.remove('away'); }
+      topBar.classList.add('solid');
+    }
+    lastY = y;
+  }
+  addEventListener('scroll', onScroll, { passive: true });
+
+  // ---------- arrival: the hero fades in on load ----------
+  let ready = false;
+  function finish() {
+    site.classList.remove('pre'); document.querySelector('.top').classList.remove('hold');
+    $('tune-open').hidden = false;
+    ready = true;
+    field.restartDwell && field.restartDwell();
+  }
+  if (location.hash) history.replaceState(null, '', location.pathname + location.search);
+  requestAnimationFrame(() => requestAnimationFrame(finish));
+
+  // ---------- water field ----------
+  const canvas = $('field'), tag = $('tag');
+  function loadImage(src) { return new Promise((ok, no) => { const im = new Image(); im.onload = () => ok(im); im.onerror = no; im.src = src; }); }
+  async function loadField(meta, key) {
+    const im = await loadImage('fields/' + key + '.png');
+    const c = document.createElement('canvas'); c.width = im.width; c.height = im.height;
+    const cx = c.getContext('2d', { willReadFrequently: true }); cx.drawImage(im, 0, 0);
+    const px = cx.getImageData(0, 0, im.width, im.height).data, n = im.width, vv = new Float32Array(n * n);
+    for (let i = 0; i < n * n; i++) vv[i] = (px[i * 4] * 256 + px[i * 4 + 1]) / 65535;
+    let wim = null;
+    if (meta[key].water) { try { wim = await loadImage('fields/' + key + '-water.png'); } catch (e) {} }
+    return { im, wim, n, v: vv, meta: meta[key] };
+  }
+  function sdAt(f, u, w) {
+    const n = f.n, x = Math.min(n - 1.001, Math.max(0, u * n - 0.5)), y = Math.min(n - 1.001, Math.max(0, w * n - 0.5));
+    const i = Math.floor(x), j = Math.floor(y), fx = x - i, fy = y - j, V = f.v;
+    const a = V[j * n + i], b = V[j * n + i + 1], c = V[(j + 1) * n + i], d = V[(j + 1) * n + i + 1];
+    const q = (a * (1 - fx) + b * fx) * (1 - fy) + (c * (1 - fx) + d * fx) * fy;
+    const m = Math.abs(q - 0.5) * 2; return Math.sign(q - 0.5) * m * m * f.meta.dmax;
+  }
+  const lineIndex = (sd, n0) => { const d = Math.max(sd, 0) / 1000; return n0 * (Math.sqrt(d + D0) - Math.sqrt(D0)); };
+  const lineDist = (s, n0) => { const q = s / n0 + Math.sqrt(D0); return Math.max(0, q * q - D0); };
+
+  const VS = 'attribute vec2 p; void main(){ gl_Position = vec4(p, 0.0, 1.0); }';
+  const FS = `
+#extension GL_OES_standard_derivatives : enable
+precision highp float;
+uniform sampler2D uA, uB, uWA, uWB;
+uniform float uHasWA, uHasWB;
+uniform vec2 uRes;
+uniform vec3 uMapA, uMapB;
+uniform float uMix, uPhase, uN0, uD0, uDmaxA, uDmaxB, uHi, uDpr, uTime, uNight;
+uniform vec3 uMouse;
+uniform vec3 cPaper, cWater, cInk, cNow;
+const float N = 1024.0;
+float dv(vec4 c){ return (c.r * 65280.0 + c.g * 255.0) / 65535.0; }
+float field(sampler2D t, vec2 uv){
+  vec2 q = clamp(uv, 0.0, 1.0) * N - 0.5;
+  vec2 f = fract(q), b = (floor(q) + 0.5) / N, e = vec2(1.0 / N, 0.0);
+  float a = dv(texture2D(t, b)), c = dv(texture2D(t, b + e.xy)), d = dv(texture2D(t, b + e.yx)), g = dv(texture2D(t, b + vec2(e.x, e.x)));
+  return mix(mix(a, c, f.x), mix(d, g, f.x), f.y);
+}
+float decode(float v, float dmax){ float m = abs(v - 0.5) * 2.0; return sign(v - 0.5) * m * m * dmax; }
+float hash(vec2 p){ return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
+void main(){
+  vec2 px = vec2(gl_FragCoord.x, uRes.y - gl_FragCoord.y);
+  float grain = hash(floor(px / max(uDpr, 1.0)));
+  vec3 col = cPaper * (1.0 - 0.035 * grain);
+  float sd = mix(decode(field(uA, (px - uMapA.xy) / uMapA.z), uDmaxA), decode(field(uB, (px - uMapB.xy) / uMapB.z), uDmaxB), uMix);
+  float dkm = max(sd, 0.0) / 1000.0;
+  float s = uN0 * (sqrt(dkm + uD0) - sqrt(uD0)) - uPhase;
+  float rr = length(px - uMouse.xy) / uDpr;
+  s += uMouse.z * 0.55 * exp(-rr * rr / 26000.0) * sin(rr * 0.05 - uTime * 2.4);
+  float fw = max(fwidth(s), 1e-4);
+  float k = floor(s + 0.5);
+  float d = abs(s - k) / fw;
+  bool idx = mod(k, 5.0) < 0.5;
+  bool hi = abs(k - uHi) < 0.5;
+  float halfw = (hi ? 1.1 : (idx ? 0.85 : 0.42)) * uDpr;
+  float a = clamp(halfw + 0.5 - d, 0.0, 1.0);
+  a *= mix(1.0, 0.38, smoothstep(0.0, 15.0, dkm));
+  a *= (idx || hi) ? 1.0 : 0.82;
+  a *= mix(1.0, 0.72, uNight);
+  float sfw = max(fwidth(sd), 1.0);
+  a *= smoothstep(0.0, sfw, sd);
+  a *= 0.86 + 0.14 * grain;
+  col = mix(col, hi ? cNow : cWater, a);
+  float shore = 1.0 - smoothstep(0.2 * sfw, 1.0 * sfw, abs(sd));
+  col = mix(col, cInk, shore * 0.7);
+  // narrow water: polder ditches, creeks, river surfaces, in see-through blue
+  vec2 uvA = clamp((px - uMapA.xy) / uMapA.z, 0.0, 1.0), uvB = clamp((px - uMapB.xy) / uMapB.z, 0.0, 1.0);
+  float wt = mix(uHasWA * texture2D(uWA, uvA).r, uHasWB * texture2D(uWB, uvB).r, uMix);
+  col = mix(col, cWater, wt * mix(0.6, 0.48, uNight));
+  gl_FragColor = vec4(col, 1.0);
+}`;
+  const hex = (h) => { const n = parseInt(h.slice(1), 16); return [(n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255]; };
+  const state = { cur: 0, next: 0, mix: 0, morphing: false, ring: [] };
+
+  async function boot() {
+    let meta;
+    try { meta = await (await fetch('fields/fields.json')).json(); } catch (e) { meta = {}; }
+    SITES.forEach(s => { s.hasField = !!meta[s.key]; });
+    state.ring = SITES.map((s, i) => i).filter(i => SITES[i].hasField);
+    state.cur = state.next = state.ring[0] ?? 0;
+    globe.init();
+    if (!state.ring.length) return;
+    const fields = {};
+    await Promise.all(state.ring.map(async i => { fields[i] = await loadField(meta, SITES[i].key); }));
+
+    const gl = canvas.getContext('webgl', { antialias: false });
+    if (!gl || !gl.getExtension('OES_standard_derivatives')) return;
+    const prog = gl.createProgram();
+    for (const [type, src] of [[gl.VERTEX_SHADER, VS], [gl.FRAGMENT_SHADER, FS]]) {
+      const sh = gl.createShader(type); gl.shaderSource(sh, src); gl.compileShader(sh);
+      if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) { console.error(gl.getShaderInfoLog(sh)); return; }
+      gl.attachShader(prog, sh);
+    }
+    gl.linkProgram(prog); gl.useProgram(prog);
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+    const loc = gl.getAttribLocation(prog, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    const U = {}; ['uA', 'uB', 'uWA', 'uWB', 'uHasWA', 'uHasWB', 'uRes', 'uMapA', 'uMapB', 'uMix', 'uPhase', 'uN0', 'uD0', 'uDmaxA', 'uDmaxB', 'uHi', 'uDpr', 'uTime', 'uNight', 'uMouse', 'cPaper', 'cWater', 'cInk', 'cNow'].forEach(n => U[n] = gl.getUniformLocation(prog, n));
+    const tex = {}, wtex = {};
+    for (const i of state.ring) {
+      const t = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, t);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, fields[i].im);
+      [gl.TEXTURE_MIN_FILTER, gl.TEXTURE_MAG_FILTER].forEach(p => gl.texParameteri(gl.TEXTURE_2D, p, gl.NEAREST));
+      [gl.TEXTURE_WRAP_S, gl.TEXTURE_WRAP_T].forEach(p => gl.texParameteri(gl.TEXTURE_2D, p, gl.CLAMP_TO_EDGE));
+      tex[i] = t;
+      if (fields[i].wim) {
+        const w = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, w);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, fields[i].wim);
+        [gl.TEXTURE_MIN_FILTER, gl.TEXTURE_MAG_FILTER].forEach(p => gl.texParameteri(gl.TEXTURE_2D, p, gl.LINEAR));
+        [gl.TEXTURE_WRAP_S, gl.TEXTURE_WRAP_T].forEach(p => gl.texParameteri(gl.TEXTURE_2D, p, gl.CLAMP_TO_EDGE));
+        wtex[i] = w;
+      }
+    }
+    const blank = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, blank);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 255]));
+    gl.uniform1i(U.uWA, 2); gl.uniform1i(U.uWB, 3);
+    gl.uniform3fv(U.cPaper, hex(C.paper)); gl.uniform3fv(U.cWater, hex(C.water)); gl.uniform3fv(U.cInk, hex(C.ink)); gl.uniform3fv(U.cNow, hex(C.now));
+    gl.uniform1f(U.uN0, N0); gl.uniform1f(U.uD0, D0); gl.uniform1i(U.uA, 0); gl.uniform1i(U.uB, 1);
+
+    let W = 0, H = 0, dpr = 1, visible = true;
+    function resize() {
+      dpr = Math.min(devicePixelRatio || 1, innerWidth < 760 ? 1.5 : 2);
+      W = Math.round(hero.clientWidth * dpr); H = Math.round(hero.clientHeight * dpr);
+      canvas.width = W; canvas.height = H; gl.viewport(0, 0, W, H);
+    }
+    resize(); addEventListener('resize', resize);
+    if ('IntersectionObserver' in window) new IntersectionObserver(([e]) => { visible = e.isIntersecting; }).observe(hero);
+    function mapFor(i) {
+      const s = SITES[i], size = Math.max(W, H) * s.zoom;
+      return [Math.min(0, Math.max(W - size, W / 2 - s.focus[0] * size)), Math.min(0, Math.max(H - size, H / 2 - s.focus[1] * size)), size];
+    }
+
+    let morphT0 = -1, dwellT0 = performance.now(), mouse = null, lastTag = 0;
+    const t0 = performance.now();
+    let phaseAcc = 0, lastNow = t0;
+    field.restartDwell = () => { dwellT0 = performance.now(); };
+    state.go = (i) => {
+      if (!SITES[i].hasField) return;
+      if (i === state.cur && morphT0 < 0) return;
+      if (morphT0 >= 0) { state.cur = state.next; state.mix = 0; }
+      state.next = i; morphT0 = performance.now(); state.morphing = true;
+    };
+    const hideTag = () => { tag.style.transform = 'translate(-9999px,0)'; };
+    addEventListener('pointermove', e => {
+      if (e.pointerType !== 'mouse' || !ready) { mouse = null; hideTag(); return; }
+      const r = canvas.getBoundingClientRect();
+      const inside = e.clientY >= r.top && e.clientY <= r.bottom;
+      const ui = !inside || !!(e.target.closest && e.target.closest('.top, .namebox, .globe, .scrollcue, .tune, #tune-open'));
+      mouse = { x: e.clientX - r.left, y: e.clientY - r.top, cx: e.clientX, cy: e.clientY, ui };
+      if (ui) hideTag();
+    });
+    addEventListener('scroll', () => { mouse = null; hideTag(); }, { passive: true });
+    document.addEventListener('pointerleave', () => { mouse = null; hideTag(); });
+
+    function frame(now) {
+      requestAnimationFrame(frame);
+      if (!visible) return;
+      const t = (now - t0) / 1000;
+      if (ready && morphT0 < 0 && !reduce && now - dwellT0 > DWELL && state.ring.length > 1) {
+        const k = state.ring.indexOf(state.cur); state.go(state.ring[(k + 1) % state.ring.length]);
+      }
+      if (morphT0 >= 0) {
+        const k = Math.min(1, (now - morphT0) / MORPH); state.mix = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+        if (k >= 1) { state.cur = state.next; state.mix = 0; morphT0 = -1; dwellT0 = now; state.morphing = false; }
+      }
+      const ia = state.cur, ib = morphT0 >= 0 ? state.next : state.cur, mix = state.mix;
+      phaseAcc += reduce ? 0 : Math.min(0.1, (now - lastNow) / 1000) * DRIFT; lastNow = now;
+      const phase = phaseAcc, mA = mapFor(ia), mB = mapFor(ib), fa = fields[ia], fb = fields[ib];
+      gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, tex[ia]);
+      gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, tex[ib]);
+      gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D, wtex[ia] || blank);
+      gl.activeTexture(gl.TEXTURE3); gl.bindTexture(gl.TEXTURE_2D, wtex[ib] || blank);
+      gl.uniform1f(U.uHasWA, wtex[ia] ? 1 : 0); gl.uniform1f(U.uHasWB, wtex[ib] ? 1 : 0);
+      gl.uniform2f(U.uRes, W, H); gl.uniform3f(U.uMapA, mA[0], mA[1], mA[2]); gl.uniform3f(U.uMapB, mB[0], mB[1], mB[2]);
+      const n0 = SITES[ia].density + (SITES[ib].density - SITES[ia].density) * mix;
+      gl.uniform1f(U.uN0, n0);
+      gl.uniform1f(U.uMix, mix); gl.uniform1f(U.uPhase, phase); gl.uniform1f(U.uTime, t); gl.uniform1f(U.uDpr, dpr);
+      gl.uniform1f(U.uDmaxA, fa.meta.dmax); gl.uniform1f(U.uDmaxB, fb.meta.dmax);
+      const sNow = SITES[mix > 0.5 ? ib : ia];
+      gl.uniform1f(U.uNight, Math.min(1, Math.max(0, -sunAlt(sNow.lat, sNow.lon, Date.now()) / 12)));
+      let hi = -999;
+      const live = mouse && !mouse.ui && !reduce;
+      if (live) {
+        const uA = (mouse.x * dpr - mA[0]) / mA[2], vA = (mouse.y * dpr - mA[1]) / mA[2];
+        const uB = (mouse.x * dpr - mB[0]) / mB[2], vB = (mouse.y * dpr - mB[1]) / mB[2];
+        const sd = sdAt(fa, uA, vA) * (1 - mix) + sdAt(fb, uB, vB) * mix;
+        const f = mix > 0.5 ? fb : fa, m = f.meta, u = mix > 0.5 ? uB : uA, w = mix > 0.5 ? vB : vA;
+        const lon = m.lon0 + (u - 0.5) * m.side / (Math.cos(m.lat0 * RAD) * 111320), lat = m.lat0 + (0.5 - w) * m.side / 110540;
+        let txt;
+        const edge = SITES[mix > 0.5 ? ib : ia].edge, fmtD = (km) => km < 1 ? Math.round(km * 1000) + ' m' : km.toFixed(2) + ' km';
+        if (sd > 0) { hi = Math.round(lineIndex(sd, n0) - phase); const km = lineDist(hi + phase, n0); txt = '<b>' + fmtD(km) + '</b> from the ' + edge; }
+        else txt = 'Land, ' + fmtD(-sd / 1000) + ' from the water';
+        if (now - lastTag > 60) {
+          lastTag = now;
+          tag.innerHTML = txt + '&nbsp;&nbsp;' + lat.toFixed(4) + '°N ' + Math.abs(lon).toFixed(4) + '°' + (lon >= 0 ? 'E' : 'W');
+          tag.style.transform = 'translate(' + Math.min(innerWidth - tag.offsetWidth - 12, mouse.cx + 16) + 'px,' + (mouse.cy + 18) + 'px)';
+        }
+      }
+      gl.uniform1f(U.uHi, hi);
+      gl.uniform3f(U.uMouse, mouse ? mouse.x * dpr : -9999, mouse ? mouse.y * dpr : -9999, live ? 1 : 0);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      globe.draw(now);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  // ---------- globe: paper sphere, pale continents, night side shaded, no colour but the dots ----------
+  const globe = (() => {
+    const cv = $('globe'), tip = $('gtip');
+    let ctx, size = 0, dpr = 1, land = null, proj, path, hover = -1, rot = null, ok = false, lastTip = 0, shownLabel = -1;
+    function fit() {
+      const r = cv.getBoundingClientRect(); dpr = Math.min(3, devicePixelRatio || 1); size = r.width;
+      cv.width = Math.round(size * dpr); cv.height = Math.round(size * dpr);
+      if (proj) proj.scale(size / 2 - 1.5).translate([size / 2, size / 2]);
+    }
+    async function init() {
+      ctx = cv.getContext('2d'); fit(); addEventListener('resize', fit);
+      if (!window.d3 || !window.topojson) return;
+      try { const topo = await (await fetch('data/land-110m.json')).json(); land = topojson.feature(topo, topo.objects.land); } catch (e) { return; }
+      proj = d3.geoOrthographic().clipAngle(90).precision(0.5); fit();
+      path = d3.geoPath(proj, ctx);
+      const s = SITES[state.cur]; rot = [-s.lon, -s.lat * 0.75];
+      ok = true;
+      cv.addEventListener('pointermove', (e) => { if (dragMode) { hover = -1; showTip(); return; } hover = pick(e); cv.style.cursor = hover >= 0 ? 'pointer' : 'default'; showTip(); });
+      cv.addEventListener('pointerleave', () => { hover = -1; showTip(); });
+      cv.addEventListener('click', (e) => { if (dragMode) return; const i = pick(e); if (i >= 0) { hover = i; showTip(); state.go && state.go(i); } });
+    }
+    function pick(e) {
+      const r = cv.getBoundingClientRect(), x = (e.clientX - r.left) * size / r.width, y = (e.clientY - r.top) * size / r.height;
+      let best = -1, bd = 14;
+      SITES.forEach((s, i) => {
+        if (d3.geoDistance([s.lon, s.lat], [-rot[0], -rot[1]]) > Math.PI / 2 - 0.05) return;
+        const p = proj([s.lon, s.lat]), d = Math.hypot(p[0] - x, p[1] - y); if (d < bd) { bd = d; best = i; }
+      });
+      return best;
+    }
+    function showTip() {
+      if (hover < 0) { tip.classList.remove('on'); return; }
+      const s = SITES[hover];
+      tip.innerHTML = '<div class="n">' + s.place + '</div><div class="w">' + s.water + '</div><div class="t cond">' + nowLine(s) + '</div>' + (s.hasField ? '' : '<div class="x cond">Drawing in progress</div>');
+      tip.classList.add('on'); lastTip = performance.now();
+    }
+    const lerpAngle = (a, b, t) => a + ((((b - a) % 360) + 540) % 360 - 180) * t;
+    function draw(now) {
+      if (!ok) return;
+      const a = SITES[state.cur], b = SITES[state.morphing ? state.next : state.cur], m = state.morphing ? state.mix : 0;
+      const target = [lerpAngle(-a.lon, -b.lon, m), -(a.lat + (b.lat - a.lat) * m) * 0.75];
+      rot = [lerpAngle(rot[0], target[0], 0.08), rot[1] + (target[1] - rot[1]) * 0.08];
+      proj.rotate(rot);
+      const c = ctx, R = size / 2 - 1.5;
+      c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, size, size);
+      c.fillStyle = C.paper2; c.beginPath(); c.arc(size / 2, size / 2, R, 0, 6.2832); c.fill();
+      c.beginPath(); path(land); c.fillStyle = C.land; c.fill(); c.lineWidth = 0.5; c.strokeStyle = C.ink; c.globalAlpha = 0.35; c.stroke(); c.globalAlpha = 1;
+      const sun = sunPos(Date.now());
+      c.beginPath(); path(d3.geoCircle().center([sun.lon + 180, -sun.lat]).radius(90)()); c.globalAlpha = 0.12; c.fillStyle = C.ink; c.fill(); c.globalAlpha = 1;
+      c.beginPath(); c.arc(size / 2, size / 2, R, 0, 6.2832); c.lineWidth = 0.75; c.strokeStyle = C.ink; c.globalAlpha = 0.55; c.stroke(); c.globalAlpha = 1;
+      const active = state.morphing ? (m > 0.5 ? state.next : state.cur) : state.cur;
+      if (active !== shownLabel) { shownLabel = active; const el = $('glabel'); el.classList.add('fade'); setTimeout(() => { el.textContent = SITES[active].short; keepLabelIn(); el.classList.remove('fade'); }, 250); }
+      SITES.forEach((s, i) => {
+        if (d3.geoDistance([s.lon, s.lat], [-rot[0], -rot[1]]) > Math.PI / 2 - 0.02) return;
+        const p = proj([s.lon, s.lat]), r = i === hover ? 3.4 : 2.6;
+        c.fillStyle = C.now; c.beginPath(); c.arc(p[0], p[1], r, 0, 6.2832); c.fill();
+        if (i === active && !reduce) {
+          const q = (now % 2400) / 2400;
+          c.strokeStyle = C.now; c.lineWidth = 1; c.globalAlpha = 1 - q; c.beginPath(); c.arc(p[0], p[1], r + 2 + q * 9, 0, 6.2832); c.stroke(); c.globalAlpha = 1;
+        }
+      });
+      if (hover >= 0 && now - lastTip > 1000) showTip();
+    }
+    return { init, draw, resize: fit };
+  })();
+
+  applyType();
+  boot();
+})();
+</script>
+<!-- fonts:start -->
+<button type="button" id="ft-open" class="ft-open">Fonts</button>
+<div class="ft" id="ft" hidden>
+  <div class="ft-h"><b>Fonts</b><button type="button" id="ft-x">Hide</button></div>
+  <label for="ft-sans">Main typeface</label>
+  <select id="ft-sans"></select>
+  <label for="ft-cond">Labels and big headings</label>
+  <select id="ft-cond"></select>
+  <label for="ft-serif">Statement</label>
+  <select id="ft-serif"></select>
+  <label for="ft-disp">Big headings <output id="fo-disp" for="ft-disp"></output></label>
+  <input type="range" id="ft-disp" min="60" max="150" step="5">
+  <label for="ft-body">Body text <output id="fo-body" for="ft-body"></output></label>
+  <input type="range" id="ft-body" min="80" max="130" step="5">
+  <label for="ft-ser">Statement size <output id="fo-ser" for="ft-ser"></output></label>
+  <input type="range" id="ft-ser" min="60" max="150" step="5">
+  <div class="ft-row"><span class="ft-note">Applies to every page</span><button type="button" id="ft-reset">Reset</button></div>
+  <div class="ft-sum" id="ft-sum"></div>
+</div>
+<style>
+.ft-open { position: fixed; right: 16px; bottom: 16px; z-index: 40; background: var(--paper); border: 1px solid var(--hair); padding: 0 12px; min-height: 36px; font: inherit; font-size: 13px; text-transform: uppercase; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 700; color: var(--rust); cursor: pointer; }
+.ft-open[hidden], .ft[hidden] { display: none; }
+.ft { position: fixed; right: 16px; bottom: 16px; z-index: 41; width: 252px; max-height: calc(100vh - 96px); overflow-y: auto; background: var(--paper); border: 1px solid var(--hair); padding: 12px 14px 10px; font-family: var(--sans); font-size: 14px; display: grid; gap: 5px; color: var(--ink); }
+.ft-h { display: flex; justify-content: space-between; align-items: center; }
+.ft-h b { font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 700; text-transform: uppercase; color: var(--rust); font-size: 13px; }
+.ft button { font: inherit; background: none; border: 0; padding: 0; cursor: pointer; color: var(--water); font-size: 13px; min-height: 32px; text-transform: uppercase; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 600; }
+.ft label { display: flex; justify-content: space-between; margin-top: 6px; }
+.ft output { color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.ft select { font: inherit; font-size: 14px; color: var(--ink); background: var(--paper); border: 1px solid var(--hair); min-height: 34px; padding: 0 6px; width: 100%; }
+.ft input[type="range"] { width: 100%; accent-color: var(--water); margin: 0; min-height: 26px; }
+.ft-row { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
+.ft-note { font-size: 12px; color: var(--ink-soft); }
+.ft-sum { font-size: 12px; color: var(--ink-soft); border-top: 1px solid var(--hair); padding-top: 6px; line-height: 1.35; }
+@media (max-width: 760px) { .ft { left: 16px; right: 16px; width: auto; max-height: 60vh; } }
+</style>
+<script>
+(() => {
+  const SANS = [
+    ['Instrument Sans', 'Instrument+Sans:wdth,wght@75..100,400..700'],
+    ['Archivo', 'Archivo:wdth,wght@62..125,400..800'],
+    ['Bricolage Grotesque', 'Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800'],
+    ['Schibsted Grotesk', 'Schibsted+Grotesk:wght@400..800'],
+    ['Hanken Grotesk', 'Hanken+Grotesk:wght@400..800'],
+    ['Familjen Grotesk', 'Familjen+Grotesk:wght@400..700']
+  ];
+  // [label, family, stretch, google query]; family null = same as the main typeface
+  const COND = [
+    ['Instrument Sans, condensed', 'Instrument Sans', '75%', 'Instrument+Sans:wdth,wght@75..100,400..700'],
+    ['Archivo, narrow', 'Archivo', '62%', 'Archivo:wdth,wght@62..125,400..800'],
+    ['Barlow Condensed', 'Barlow Condensed', '100%', 'Barlow+Condensed:wght@400;500;600;700'],
+    ['Oswald', 'Oswald', '100%', 'Oswald:wght@400..700'],
+    ['Antonio', 'Antonio', '100%', 'Antonio:wght@400..700'],
+    ['Same as main, not condensed', null, '100%', null]
+  ];
+  const SERIF = [
+    ['Instrument Serif', 'Instrument+Serif:ital@0;1'],
+    ['Newsreader', 'Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600'],
+    ['Fraunces', 'Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600'],
+    ['EB Garamond', 'EB+Garamond:ital,wght@0,400..600;1,400..600'],
+    ['Cormorant Garamond', 'Cormorant+Garamond:ital,wght@0,400..600;1,400..600'],
+    ['Same as main typeface', null]
+  ];
+  const FALLBACK = '"Helvetica Neue", Helvetica, Arial, sans-serif', SERIF_FB = '"Times New Roman", Times, serif';
+  const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
+  const D = { sans: 0, cond: 0, serif: 0, disp: 100, body: 100, ser: 100 };
+  const S = {}; for (const k in D) { const v = store.get('gk-ft-' + k); S[k] = v === null || v === '' ? D[k] : +v; }
+  const root = document.documentElement, $ = (id) => document.getElementById(id);
+  const loaded = new Set(['Instrument+Sans:wdth,wght@75..100,400..700', 'Instrument+Serif:ital@0;1']);
+  function load(q) {
+    if (!q || loaded.has(q)) return; loaded.add(q);
+    const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://fonts.googleapis.com/css2?family=' + q + '&display=swap';
+    l.onload = () => { if (document.fonts) document.fonts.ready.then(() => dispatchEvent(new Event('resize'))); };
+    document.head.appendChild(l);
+  }
+  function apply() {
+    const sans = SANS[S.sans] || SANS[0], cond = COND[S.cond] || COND[0], serif = SERIF[S.serif] || SERIF[0];
+    load(sans[1]); load(cond[3]); load(serif[1]);
+    const sansStack = '"' + sans[0] + '", ' + FALLBACK;
+    root.style.setProperty('--sans', sansStack);
+    root.style.setProperty('--cond', cond[1] ? '"' + cond[1] + '", ' + sansStack : sansStack);
+    root.style.setProperty('--cond-stretch', cond[2]);
+    root.style.setProperty('--serif', serif[1] ? '"' + serif[0] + '", ' + SERIF_FB : sansStack);
+    root.style.setProperty('--disp', S.disp / 100); root.style.setProperty('--body', S.body / 100); root.style.setProperty('--ser', S.ser / 100);
+    if (!$('ft-sans')) return;
+    $('ft-sans').value = S.sans; $('ft-cond').value = S.cond; $('ft-serif').value = S.serif;
+    $('ft-disp').value = S.disp; $('ft-body').value = S.body; $('ft-ser').value = S.ser;
+    $('fo-disp').textContent = S.disp + '%'; $('fo-body').textContent = S.body + '%'; $('fo-ser').textContent = S.ser + '%';
+    $('ft-sum').textContent = 'Main ' + sans[0] + ' · labels ' + cond[0] + ' · statement ' + serif[0] + ' · headings ' + S.disp + '% · body ' + S.body + '% · statement ' + S.ser + '%';
+    dispatchEvent(new Event('resize'));
+  }
+  const fill = (id, list) => { $(id).innerHTML = list.map((o, i) => '<option value="' + i + '">' + o[0] + '</option>').join(''); };
+  fill('ft-sans', SANS); fill('ft-cond', COND); fill('ft-serif', SERIF);
+  const set = (k, v) => { S[k] = v; store.set('gk-ft-' + k, String(v)); apply(); };
+  ['sans', 'cond', 'serif'].forEach(k => $('ft-' + k).addEventListener('change', (e) => set(k, +e.target.value)));
+  ['disp', 'body', 'ser'].forEach(k => $('ft-' + k).addEventListener('input', (e) => set(k, +e.target.value)));
+  $('ft-reset').addEventListener('click', () => { for (const k in D) { S[k] = D[k]; store.set('gk-ft-' + k, ''); } apply(); });
+  $('ft-open').addEventListener('click', () => { $('ft').hidden = false; $('ft-open').hidden = true; });
+  $('ft-x').addEventListener('click', () => { $('ft').hidden = true; $('ft-open').hidden = false; });
+  apply();
+})();
+</script>
+<!-- fonts:end -->

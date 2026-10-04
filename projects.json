@@ -1,0 +1,283 @@
+{
+  "about": "Every card on the Work page comes from this file. Add a project by copying one entry. 'link' is where the card goes: a project's own HTML (for example a Quarto render), 'project.html#<id>' for a simple image page built from 'images' below, a PDF, or an outside URL. Leave 'link' empty and the card shows as coming soon. 'image' is the cover thumbnail; leave it empty for a grey placeholder.",
+  "categories": [
+    {
+      "id": "urban-design",
+      "name": "Places & landscapes"
+    },
+    {
+      "id": "research",
+      "name": "Research"
+    },
+    {
+      "id": "cartography",
+      "name": "Maps"
+    },
+    {
+      "id": "data",
+      "name": "Data stories"
+    },
+    {
+      "id": "ai",
+      "name": "AI experiments"
+    },
+    {
+      "id": "climate",
+      "name": "Climate"
+    }
+  ],
+  "projects": [
+    {
+      "id": "raasta",
+      "title": "Raasta",
+      "summary": "A walking-route tool that plans for time and intent, not speed.",
+      "place": "Philadelphia, US",
+      "year": "2026",
+      "status": "ongoing",
+      "categories": [
+        "ai",
+        "cartography"
+      ],
+      "tools": [
+        "Claude Code",
+        "Mapbox"
+      ],
+      "image": "",
+      "link": "",
+      "linkType": "site",
+      "featured": true
+    },
+    {
+      "id": "haverford-avenue",
+      "title": "Haverford Avenue Reimagined",
+      "summary": "GIS analysis of circulation, transit, cycling and parking for a West Philadelphia corridor.",
+      "place": "West Philadelphia, US",
+      "year": "2026",
+      "status": "ongoing",
+      "categories": [
+        "cartography",
+        "urban-design"
+      ],
+      "tools": [
+        "ArcGIS"
+      ],
+      "image": "",
+      "link": "project.html#haverford-avenue",
+      "linkType": "page",
+      "images": [
+        "",
+        "",
+        ""
+      ],
+      "featured": true
+    },
+    {
+      "id": "locally-sourced",
+      "title": "Locally Sourced, Issue 05",
+      "summary": "Seven identity directions for AIGA Philadelphia's annual publication, explored with Figma and Claude inside a fixed system.",
+      "place": "Philadelphia, US",
+      "year": "2026",
+      "categories": [
+        "ai"
+      ],
+      "tools": [
+        "Figma",
+        "Claude",
+        "Illustrator"
+      ],
+      "image": "",
+      "link": "project.html#locally-sourced",
+      "linkType": "page",
+      "images": [
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "forested-university",
+      "title": "Forested University",
+      "summary": "AI walkthrough videos grown from the original Campus Forest massing and renders.",
+      "place": "Leuven, BE",
+      "year": "2026",
+      "categories": [
+        "ai",
+        "urban-design"
+      ],
+      "tools": [
+        "Meta AI"
+      ],
+      "image": "",
+      "link": "https://lnkd.in/p/empM6enT",
+      "linkType": "site"
+    },
+    {
+      "id": "floodable-park",
+      "title": "Living in a Floodable Park",
+      "summary": "Climate-adaptive coastal landscapes for Middelkerke. MSc thesis, selected for the UDL Thesis Publication 2026.",
+      "place": "Middelkerke, BE",
+      "year": "2024–25",
+      "categories": [
+        "urban-design",
+        "research",
+        "climate"
+      ],
+      "tools": [],
+      "image": "",
+      "link": "project.html#floodable-park",
+      "linkType": "page",
+      "images": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "featured": true
+    },
+    {
+      "id": "urban-capillaries",
+      "title": "Urban Capillaries",
+      "summary": "Post-industrial canal edges at Biestebroek recast as productive public ground.",
+      "place": "Brussels, BE",
+      "year": "2024–25",
+      "categories": [
+        "urban-design"
+      ],
+      "tools": [],
+      "image": "",
+      "link": "project.html#urban-capillaries",
+      "linkType": "page",
+      "images": [
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "food-landscapes",
+      "title": "Projecting Food Landscapes",
+      "summary": "Food, water and housing for a dry valley in the Western Cape, exhibited at the SNFCC in Athens.",
+      "place": "Worcester, ZA",
+      "year": "2024",
+      "categories": [
+        "urban-design",
+        "research",
+        "climate"
+      ],
+      "tools": [],
+      "image": "",
+      "link": "project.html#food-landscapes",
+      "linkType": "page",
+      "images": [
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "campus-forest",
+      "title": "Campus Forest",
+      "summary": "Ecological gradients from forest to marshland across a university campus.",
+      "place": "Leuven, BE",
+      "year": "",
+      "categories": [
+        "urban-design"
+      ],
+      "tools": [],
+      "image": "",
+      "link": "project.html#campus-forest",
+      "linkType": "page",
+      "images": [
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "the-overlap",
+      "title": "The Overlap",
+      "summary": "Essay on rivers and landscapes as fluid, shared ground, published in FOLIO by ThinkMatter.",
+      "place": "",
+      "year": "2021",
+      "categories": [
+        "research"
+      ],
+      "tools": [],
+      "image": "",
+      "link": "",
+      "linkType": "site"
+    },
+    {
+      "id": "godavari-river-edge",
+      "title": "Godavari River Edge",
+      "summary": "River edge and floodplain work on the Godavari. Working title.",
+      "place": "Nashik, IN",
+      "year": "",
+      "categories": [
+        "urban-design"
+      ],
+      "tools": [],
+      "image": "",
+      "link": "",
+      "linkType": "page"
+    },
+    {
+      "id": "that-sinking-feeling",
+      "title": "That Sinking Feeling",
+      "summary": "Pilot project on monsoon flooding in Mumbai's R-Ward, featured in Mid-Day.",
+      "place": "Mumbai, IN",
+      "year": "2019",
+      "categories": [
+        "research",
+        "climate"
+      ],
+      "tools": [],
+      "image": "",
+      "link": "",
+      "linkType": "site"
+    }
+  ],
+  "fillersAbout": "Cells that sit between projects on the Everything view, to keep the wall playful. 'after' is the project id they follow ('start' puts one first). Kinds: 'blank' (white space), 'places' (coordinates that tick through the list), 'water' (moving waterlines round an island), 'line' (one sentence in serif), 'now' (orange dot and a short note). Delete or move them freely.",
+  "fillers": [
+    {
+      "after": "haverford-avenue",
+      "kind": "places",
+      "places": [
+        {
+          "name": "Mumbai, IN",
+          "lat": 19.076,
+          "lon": 72.878
+        },
+        {
+          "name": "Middelkerke, BE",
+          "lat": 51.183,
+          "lon": 2.817
+        },
+        {
+          "name": "Worcester, ZA",
+          "lat": -33.646,
+          "lon": 19.448
+        },
+        {
+          "name": "Philadelphia, US",
+          "lat": 39.952,
+          "lon": -75.165
+        }
+      ]
+    },
+    {
+      "after": "locally-sourced",
+      "kind": "blank"
+    },
+    {
+      "after": "urban-capillaries",
+      "kind": "line",
+      "text": "What holds a city together when conditions shift?"
+    },
+    {
+      "after": "urban-capillaries",
+      "kind": "water"
+    },
+    {
+      "after": "the-overlap",
+      "kind": "now",
+      "text": "Coming next: data stories in R, Python and Quarto from my MUSA year at Penn."
+    }
+  ]
+}
