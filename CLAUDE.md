@@ -3,6 +3,16 @@
 Static site, no build step. Plain HTML, CSS and JS. Hosted target: GitHub Pages.
 Owner: Gautami Kasat, landscape urbanist and urban spatial analyst (MSc KU Leuven, MUSA at Penn Weitzman).
 
+## Working with Gautami
+
+- She's an architect and landscape urbanist, very strong visually, learning Python and R at Penn, newer to git. Explain in plain, short steps; casual and warm, no jargon dumps.
+- She works on Windows. Her folder: `D:\00_MUSA_EVERTHING\Gautami_Portfolio\gautamikasat01`. She commits and pushes with **GitHub Desktop**; after a change, tell her the one-line commit summary to use. Don't push for her unless she asks.
+- Show before you change the look of anything: describe it or preview it, then build. One change at a time, then check desktop (1440 px) and phone (390 px).
+- She cares about details and will notice a misplaced line. Match the reference sites she likes: thelupoconcept.com, maximiliankaspar.com, jenniferluu6.github.io, lifeisanillusion.com.
+- Never invent facts about her work (titles, dates, clients, awards). Leave fields empty and ask.
+- Copy: warm, human, precise. No em dashes, no clichés or marketing phrases. Statements can be a little poetic; everything else plain.
+- To add a project, use `/add-project`.
+
 ## Pages
 
 | File | What it is |
@@ -12,6 +22,11 @@ Owner: Gautami Kasat, landscape urbanist and urban spatial analyst (MSc KU Leuve
 | `work.html` | Heading "Drawn, mapped & built", word filters, then a wall (3 columns, 2 on tablet and phone). Tiles are images only; the name, place and year appear on hover. Clicking (or tapping) a tile opens it in place across two columns and two rows with its summary, meta, an image counter and the link; the rest of the wall glides round it (FLIP animation, `grid-auto-flow: dense`). Escape or Close shuts it. A few in-between cells keep it playful. Reads `projects.json`. |
 | `project.html` | Simple image-led project page, built from one `projects.json` entry: `project.html#<id>`. |
 | `contact.html` | Email, LinkedIn. Still a stand-in. |
+| `404.html` | Shown by GitHub Pages for any missing address. Root-relative links (`/work.html`) so it works at any depth. |
+| `og.jpg`, `favicon.svg`, `apple-touch-icon.png` | Share preview image (1200 × 630, the Mumbai hero) and icons. Every page links them in its `<head>` with Open Graph and Twitter tags pointing at https://gautamik01.github.io/. |
+| `robots.txt`, `sitemap.xml` | For search engines. Add new top-level pages to the sitemap. |
+| `tools/prep_images.py` | Turns a folder of originals into `projects/<id>/cover.jpg` (4:3, 1600 × 1200) and a gallery (`01.jpg…`, long edge 2000 px). Needs Pillow. |
+| `.claude/skills/add-project/` | The `/add-project` command: the step-by-step way to add a project. |
 
 ## Design system
 
@@ -24,7 +39,7 @@ Owner: Gautami Kasat, landscape urbanist and urban spatial analyst (MSc KU Leuve
 
 ## Adding work
 
-All Work cards come from `projects.json`. One entry per project:
+Use `/add-project` (`.claude/skills/add-project/SKILL.md`), which walks through facts, images, notebooks, the JSON entry and the browser check. All Work cards come from `projects.json`. One entry per project:
 
 ```json
 {
@@ -56,7 +71,7 @@ All Work cards come from `projects.json`. One entry per project:
 - `fillers` (top level) are the in-between cells on the Everything view: `blank`, `places` (coordinates that tick through a list), `water` (moving waterlines round an island), `line` (one serif sentence) and `now` (orange dot plus a short note). `after` is the project id they follow. They hide when a filter is picked.
 - Covers: 4:3, roughly 1600 × 1200, JPG or WebP under ~300 KB. Put assets in `projects/<id>/`.
 
-Planned: a small script (`tools/build_projects.py`) that scans `projects/*/meta.json` and merges them with hand-written entries into `projects.json`, so a new Quarto project only needs its folder plus a `meta.json`. `featured: true` should also drive the home page Selected Projects grid, which is still hard-coded.
+`featured: true` will drive the home page Selected Projects once item 1 in the list below is done.
 
 ## Water fields (home hero)
 
@@ -74,7 +89,7 @@ The Tune and Fonts panels are gone; their values are now the defaults.
 - Home, laptop and up: name one line about 34% of the screen wide (65px at 1440px), "Hello, I am" and role at 21px, globe 97px centred at 93% across and 84% down. Phones keep their own layout (name on two lines, 60px globe top right, low enough that the place name clears the menu). See `LAPTOP` in `index.html`.
 - Motion: 6 s on each place, 3.6 s transition, line drift 1x (`DWELL`, `MORPH`, `DRIFT`).
 - Type scale on every page: `--disp: 0.6` (big headings), `--body: 0.85` (body text, back to 1 on phones), `--ser: 1`. Faces: Instrument Sans, Instrument Sans condensed, Instrument Serif.
-- `tools/fontpanel.html` and `tools/inject_fonts.py` are retired and can be deleted.
+- `tools/fontpanel.html` and `tools/inject_fonts.py` are retired and can be deleted if they're still in the folder.
 - Every page must keep its own `<!doctype html>` and `<meta name="viewport">`; without the viewport tag phones render the page at desktop width.
 
 ## Local folder
@@ -82,6 +97,20 @@ The Tune and Fonts panels are gone; their values are now the defaults.
 Gautami's working copy lives at `D:\00_MUSA_EVERTHING\Gautami_Portfolio\gautamikasat01`. Its `References/` folder is her moodboard of other sites and images; it is not part of the site and `.gitignore` keeps it out of the repo.
 
 GitHub: user `gautamik01`. The site is meant to publish from the repo `gautamik01.github.io` (GitHub Pages, branch `main`, root), live at https://gautamik01.github.io. Gautami uses GitHub Desktop to commit and push.
+
+## Next: make it more professional (work through in this order, one at a time, showing Gautami each)
+
+1. **Home Selected Projects from `projects.json`.** The tiles on `index.html` are still hand-written placeholders. Read the `featured` projects (up to 6), keep the staggered Lupo-style layout and hover thumbnails, and make each tile open that project on the Work page.
+2. **Direct links to a project.** Support `work.html#p=<id>` (keep `#<category>` for filters): on load, open that tile in place and scroll to it; update the hash when a tile opens and clear it on close. She'll paste these links into applications.
+3. **Notebooks that look like the site.** A small Quarto theme in `tools/quarto/` (an `.scss` with the paper, ink, blue and orange tokens and the Instrument fonts, plus a header include with GK, a "Back to work" link and the footer) so Data stories feel like part of the portfolio. Document the front matter to use in `/add-project`.
+4. **Images done properly** once real covers exist: `width`/`height` on every `<img>` to stop layout jumps, `decoding="async"`, a smaller 800 px version via `srcset` for the wall, and an `alt` field per project in `projects.json` used as alt text.
+5. **Contact page.** Still a stand-in. Design it in the same language (big condensed heading, email with copy, LinkedIn, GitHub, CV); ask Gautami what else she wants on it.
+6. **CV button** on About: put the PDF in the root and set `CV_URL`.
+7. **Quality pass.** Run Lighthouse on all pages (performance, accessibility, best practices, SEO, aim for 90+), tab through the Work wall and About box with the keyboard, check contrast of `--ink-soft` text at its small sizes, and fix what comes up.
+8. **Speed.** Self-host the two Google fonts as woff2 in `fonts/` (drops a third-party request), load d3/topojson with `defer` where possible, keep total page weight for Home under ~2 MB.
+9. **Later, only if she wants:** her own domain (then Adobe Fonts), privacy-friendly visit counts (e.g. GoatCounter), and per-project share previews (static stubs in `projects/<id>/`).
+
+Ground rules: static files only, no frameworks or build step unless she agrees; keep the design system above; no shadows, gradients or rounded cards; test at 1440 and 390 px before saying it's done.
 
 ## Open items
 
@@ -91,7 +120,6 @@ GitHub: user `gautamik01`. The site is meant to publish from the repo `gautamik0
 - Links for Raasta's project site, The Overlap and That Sinking Feeling.
 - Contact page design.
 - Fonts: Adobe Fonts (e.g. Neue Haas Grotesk) can replace Instrument Sans once the site has its own domain and an Adobe web project.
-- Home page Selected Projects should read `projects.json` (`featured`).
 - Optional: carry the new coast and Philadelphia fields into the bead-hero alternative (`dots/`).
 
 ## Writing rules for site copy

@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Off the map, Gautami Kasat</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#F3F1EB">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wdth,wght@75..100,400..700&family=Instrument+Serif:ital@0;1&display=swap">
+<style>
+/* GitHub Pages serves this for any address that doesn't exist. Links are root-relative so they work from any depth. */
+:root {
+  --paper: #F3F1EB; --ink: #151515; --ink-soft: #5B5953; --water: #2F45C6; --now: #EF5A2A; --rust: #B9400F;
+  --sans: "Instrument Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --serif: "Instrument Serif", "Times New Roman", Times, serif;
+  --cond: var(--sans); --cond-stretch: 75%; --disp: 0.6; --body: 0.85;
+  --gutter: clamp(16px, 1.4vw, 24px);
+  color-scheme: light;
+}
+@media (max-width: 760px) { :root { --body: 1; } }
+html, body { margin: 0; min-height: 100%; background: var(--paper); color: var(--ink); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+body { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; }
+a { color: inherit; text-decoration: none; }
+.top { display: flex; justify-content: space-between; align-items: center; padding: max(10px, env(safe-area-inset-top, 0px)) var(--gutter) 2px; }
+.top a { min-height: 44px; display: inline-flex; align-items: center; font-size: 17px; text-transform: uppercase; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 500; }
+.top nav { display: flex; gap: 20px; }
+.top a:hover { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px; }
+main { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 48px var(--gutter) 64px; }
+.label { margin: 0 0 18px; font-size: 15px; color: var(--rust); text-transform: uppercase; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 600; display: flex; align-items: center; gap: 10px; }
+.label i { width: 9px; height: 9px; border-radius: 50%; background: var(--now); display: inline-block; }
+h1 { margin: 0; font-size: calc(clamp(56px, 12vw, 200px) * var(--disp)); line-height: 0.84; text-transform: uppercase; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 700; letter-spacing: -0.02em; }
+p { margin: 22px 0 0; font-family: var(--serif); font-size: clamp(22px, 2.2vw, 32px); line-height: 1.15; max-width: 26ch; }
+.go { margin-top: 32px; display: flex; gap: 28px; font-size: 15px; text-transform: uppercase; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 600; }
+.go a { color: var(--rust); }
+.go a:hover { text-decoration: underline; text-underline-offset: 3px; }
+svg { display: block; width: min(320px, 70vw); height: auto; margin-top: 40px; }
+svg path { fill: none; stroke: var(--water); stroke-width: 1.2; vector-effect: non-scaling-stroke; }
+footer { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 24px; padding: 18px var(--gutter) max(22px, env(safe-area-inset-bottom, 0px)); font-size: 15px; }
+footer .k { color: var(--ink-soft); }
+footer a:hover { color: var(--water); }
+</style>
+</head>
+<body>
+<header class="top">
+  <a href="/" aria-label="Gautami Kasat, home">GK</a>
+  <nav aria-label="Main"><a href="/work.html">Work</a><a href="/about.html">About</a><a href="/contact.html">Contact</a></nav>
+</header>
+<main>
+  <p class="label"><i aria-hidden="true"></i>404</p>
+  <h1>Off the map</h1>
+  <p>This page isn't here. It may have moved while the site grows.</p>
+  <div class="go"><a href="/">Back home</a><a href="/work.html">See the work</a></div>
+  <svg viewBox="0 0 320 60" aria-hidden="true">
+    <path d="M0 30 C40 18 80 42 120 30 S200 18 240 30 S300 42 320 30"/>
+    <path d="M0 40 C40 28 80 52 120 40 S200 28 240 40 S300 52 320 40" opacity=".6"/>
+    <path d="M0 50 C40 38 80 62 120 50 S200 38 240 50 S300 62 320 50" opacity=".3"/>
+  </svg>
+</main>
+<footer>
+  <a href="mailto:gautami.kasat@gmail.com">gautami.kasat@gmail.com</a>
+  <span><a href="https://www.linkedin.com/in/gautamikasat" target="_blank" rel="noopener">LinkedIn</a> <span class="k">|</span> <a href="https://github.com/gautamik01" target="_blank" rel="noopener">GitHub</a></span>
+</footer>
+</body>
+</html>
