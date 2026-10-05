@@ -6,12 +6,13 @@ Owner: Gautami Kasat, landscape urbanist and urban spatial analyst (MSc KU Leuve
 ## Working with Gautami
 
 - She's an architect and landscape urbanist, very strong visually, learning Python and R at Penn, newer to git. Explain in plain, short steps; casual and warm, no jargon dumps.
-- She works on Windows. Her folder: `D:\00_MUSA_EVERTHING\Gautami_Portfolio\gautamikasat01`. She commits and pushes with **GitHub Desktop**; after a change, tell her the one-line commit summary to use. Don't push for her unless she asks.
+- She works on Windows. She commits and pushes with **GitHub Desktop**; after a change, tell her the one-line commit summary to use. Don't push for her unless she asks.
 - Show before you change the look of anything: describe it or preview it, then build. One change at a time, then check desktop (1440 px) and phone (390 px).
 - She cares about details and will notice a misplaced line. Match the reference sites she likes: thelupoconcept.com, maximiliankaspar.com, jenniferluu6.github.io, lifeisanillusion.com.
 - Never invent facts about her work (titles, dates, clients, awards). Leave fields empty and ask.
 - Copy: warm, human, precise. No em dashes, no clichés or marketing phrases. Statements can be a little poetic; everything else plain.
 - To add a project, use `/add-project`.
+- Python (the tools scripts) runs in her conda environment `geospatial`. Each command is a fresh shell, so don't rely on `conda activate`: call that environment's `python.exe` directly (`conda env list` shows where it lives) or use `conda run -n geospatial`. Ask before installing anything into it.
 
 ## Pages
 
@@ -94,7 +95,7 @@ The Tune and Fonts panels are gone; their values are now the defaults.
 
 ## Local folder
 
-Gautami's working copy lives at `D:\00_MUSA_EVERTHING\Gautami_Portfolio\gautamikasat01`. Its `References/` folder is her moodboard of other sites and images; it is not part of the site and `.gitignore` keeps it out of the repo.
+The `References/` folder in Gautami's working copy is her moodboard of other sites and images; it is not part of the site and `.gitignore` keeps it out of the repo. This file is public, so no personal file paths or machine details go in it.
 
 GitHub: user `gautamik01`. The site is meant to publish from the repo `gautamik01.github.io` (GitHub Pages, branch `main`, root), live at https://gautamik01.github.io. Gautami uses GitHub Desktop to commit and push.
 

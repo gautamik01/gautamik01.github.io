@@ -3,4 +3,5 @@ References/
 Thumbs.db
 desktop.ini
 .claude/settings.local.json
+.claude/launch.json
 __pycache__/
