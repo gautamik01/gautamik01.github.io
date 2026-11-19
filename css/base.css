@@ -858,6 +858,7 @@ html.js:not(.reduced) [data-split] { visibility: hidden; }
 }
 
 /* ------------------------------------------------------------------ home: project browser */
+/* the headline and the thumbnail group sit together, centred in the viewport (equal padding above and below) */
 .hero--browser {
   position: relative;
   min-height: 100svh;
@@ -865,32 +866,32 @@ html.js:not(.reduced) [data-split] { visibility: hidden; }
   align-content: center;
   justify-items: center;
   text-align: center;
-  padding: calc(var(--header-h) + 32px) var(--gutter) 160px;
+  padding: calc(var(--header-h) + 32px) var(--gutter);
   overflow: hidden;
 }
-/* the thumbnail group sits in the right half, its left edge on the centre line, just below the headline */
+/* the thumbnail group is centred under the headline: its label, the row of thumbnails and the counter */
 .browser {
   justify-self: stretch;
   width: 100%;
   margin-top: 48px;
-  padding-left: 50%;
   display: grid;
-  justify-items: start;
+  justify-items: center;
   gap: 12px;
-  text-align: left;
+  text-align: center;
 }
-.browser__thumbs { display: flex; gap: 12px; }
+.browser__thumbs { position: relative; display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+.browser__clips { position: absolute; width: 0; height: 0; overflow: hidden; }   /* the tilted-oval clipPaths (js/hero.js) */
 .thumb {
   display: block;
   width: clamp(110px, 9.7vw, 160px);
   aspect-ratio: 4 / 5;
   overflow: hidden;
   opacity: 0.8;
-  transition: opacity 250ms, transform 250ms;
+  transition: opacity 250ms;     /* the oval itself is an SVG ellipse tweened by hero.js */
 }
 .thumb img { width: 100%; height: 100%; object-fit: cover; }
 .thumb:hover, .thumb:focus-visible, .thumb.is-active { opacity: 1; }
-.thumb.is-active { transform: translateY(-4px); }
+.thumb.is-oval { border-radius: 50%; }   /* without GSAP: a plain oval */
 .hero__note {
   position: absolute;
   left: var(--gutter);
@@ -901,56 +902,10 @@ html.js:not(.reduced) [data-split] { visibility: hidden; }
   color: var(--muted-c);
   text-align: left;
 }
-.panel {
-  position: fixed;
-  top: 0; left: 0;
-  height: 100vh;
-  width: 40vw;
-  max-width: 100vw;
-  z-index: 60;                     /* over the hero, under the header */
-  overflow: hidden;
-  background: var(--ink);
-  color: var(--white);
-  transform: translateX(-100%);
-  cursor: pointer;
-}
-/* darker bands top and bottom keep the header (difference blend) and the panel labels readable on any image */
-.panel::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(to bottom, rgba(11, 11, 11, 0.78), rgba(11, 11, 11, 0.4) 12%, transparent 28%, transparent 72%, rgba(11, 11, 11, 0.6));
-}
-.panel__media { position: absolute; inset: 0; }
-.panel__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.panel__top, .panel__bottom {
-  position: absolute;
-  left: 16px; right: 16px;
-  text-align: center;
-  z-index: 1;
-  white-space: normal;
-}
-.panel__top { top: calc(var(--header-h) + 8px); }
-.panel__bottom { bottom: 24px; }
-.panel__full {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  display: grid;
-  align-content: center;
-  justify-items: center;
-  gap: 24px;
-  padding: var(--gutter);
-  text-align: center;
-  opacity: 0;
-  visibility: hidden;
-}
-.panel__title { font-size: calc(var(--display-size) * 0.8 * var(--display-scale)); }
-.panel__kicker { max-width: 42ch; }
 @media (max-width: 760px) {
-  .browser { padding-left: 0; justify-items: center; text-align: center; margin-top: 36px; }
-  .thumb { width: clamp(64px, 20vw, 110px); }
+  .browser { margin-top: 36px; }
+  .browser__thumbs { gap: 8px; }
+  .thumb { width: clamp(56px, calc((100vw - 2 * var(--gutter) - 4 * 8px) / 5), 110px); }   /* five in one row on a phone */
   .hero__note { position: static; margin-top: 40px; text-align: center; max-width: 36ch; }
 }
 
@@ -1036,7 +991,7 @@ html.js:not(.reduced) [data-split] { visibility: hidden; }
   transition: opacity 300ms;
 }
 /* hidden on the home hero (its note sits in that corner), over the footer, and while a caption passes under it */
-html.panel-open .scalebar, html.footer-in-view .scalebar, html.scalebar-clash .scalebar, html.opener-credit .scalebar, html[data-page="home"] .scalebar { opacity: 0; }
+html.footer-in-view .scalebar, html.scalebar-clash .scalebar, html.opener-credit .scalebar, html[data-page="home"] .scalebar { opacity: 0; }
 .scalebar__track {
   position: relative;
   height: 7px;
