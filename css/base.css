@@ -399,24 +399,21 @@ html.js:not(.reduced) [data-split] { visibility: hidden; }
 }
 
 /* ------------------------------------------------------------------ work: the headline, the filters and the grid */
-.work {
-  position: relative;
-  background: var(--ink);
-  color: var(--white);
-  --muted-c: var(--muted-dark);
-}
+/* on paper, like the other pages: the colours come from the main's theme, with sage for the active tab's rule */
+.work { position: relative; }
 /* the head leaves room under the headline for the filter bar's top padding (see .work__filters) */
 .work__head { padding: calc(var(--header-h) + 32px) var(--gutter) calc(var(--header-h) + 20px); }
 .work__title { margin-top: 24px; }
-/* the filter bar sticks to the top of the viewport: its top padding is the header's band, painted ink, so the header's
-   labels keep reading over it while the grid scrolls underneath; a negative margin takes that padding back in the flow */
+/* the filter bar sticks to the top of the viewport: its top padding is the header's band, painted in the page colour, so
+   the header's labels keep reading over it while the grid scrolls underneath; a negative margin takes that padding back
+   in the flow */
 .work__filters {
   position: sticky;
   top: 0;
   z-index: 5;
   margin-top: calc(-1 * var(--header-h));
   padding: var(--header-h) var(--gutter) 12px;
-  background: var(--ink);
+  background: var(--bg);
   display: flex;
   flex-wrap: wrap;
   gap: 4px 24px;
@@ -432,8 +429,8 @@ html.js:not(.reduced) [data-split] { visibility: hidden; }
 }
 .work__filter:hover, .work__filter:focus-visible, .work__filter[aria-pressed="true"] { color: var(--fg); }
 .work__filter:focus-visible { outline-offset: 2px; }
-.work__filter-name { border-bottom: 1px solid transparent; padding-bottom: 2px; transition: border-color 250ms; }
-.work__filter[aria-pressed="true"] .work__filter-name { border-bottom-color: currentColor; }
+.work__filter-name { border-bottom: 2px solid transparent; padding-bottom: 2px; transition: border-color 250ms; }
+.work__filter[aria-pressed="true"] .work__filter-name { border-bottom-color: var(--sage); }
 .work__filter-count { font-size: 9px; letter-spacing: 0.06em; line-height: 1; margin-top: 1px; }
 /* the grid: three columns of 4:5 cells (the tiles' own ratio, so nothing is cropped), two under 1000px */
 .work__grid {
@@ -444,7 +441,7 @@ html.js:not(.reduced) [data-split] { visibility: hidden; }
 }
 .cell { position: relative; min-width: 0; aspect-ratio: 4 / 5; container-type: inline-size; }
 .cell[hidden] { display: none; }
-.card { display: block; overflow: hidden; background: #1a1a1a; }
+.card { display: block; overflow: hidden; background: rgba(179, 183, 173, 0.35); }   /* a sage wash until the image lands */
 .card img {
   width: 100%;
   height: 100%;
@@ -461,8 +458,8 @@ html.js:not(.reduced) [data-split] { visibility: hidden; }
   justify-content: flex-end;
   gap: 6px;
   padding: clamp(14px, 1.6vw, 22px);
-  background: rgba(11, 11, 11, 0.86);
-  color: var(--white);
+  background: rgba(231, 228, 224, 0.86);
+  color: var(--ink);
   opacity: 0;
   transform: translateY(8px);
   transition: opacity 350ms ease, transform 450ms cubic-bezier(.2,.75,.15,1);
