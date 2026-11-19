@@ -1,402 +1,176 @@
-/* work.js : the work view.
+/* work.js : the work page.
  *
- * Tiles from data/work.json, every published project's tiles mixed into one
- * strip so no two neighbours come from the same project, on an infinite
- * horizontal loop with equal gaps. Entering: black screen with FEATURED over
- * PROJECTS, the words drop out of their masks, the header fades in, the tiles
- * grow up from their bottom edges one after another, then the pill appears.
- * Hover: the tile becomes a tilted oval (an SVG clipPath whose ellipse is
- * tweened from a circle that covers the whole tile into an ellipse leaning
- * OVAL_TILT degrees clockwise), its project's tiles stay bright, everything
- * else dims, and the project's number, title and labels fade in under the
- * strip. Click: everything but the oval fades to black, the oval straightens
- * and grows into a rectangle at the centre, then fills the screen with its
- * image scaling up, and the project opens with that image as its hero (?h=).
- * Vertical scroll, drag and horizontal trackpad all move the strip, with
- * inertia. Touch devices get a native horizontal swipe with scroll-snap; one
- * tap highlights, a second opens.
+ * Under the headline: five filter tabs with counts, then a grid of the tiles
+ * in data/work.json, three to a row (two under 1000px), every tile a plain
+ * link to its project page: app.js rolls the page in and falls back to a
+ * normal navigation after ROLL.SAFETY_MS. Hovering a tile raises its project's
+ * name and place over the image. The tabs filter by each tile's "categories";
+ * the counts come from the data, an empty tab shows 00 and a one-line note,
+ * and the chosen tab goes into the URL hash (#fun-maps). On the Everything
+ * view a cell among the tiles ticks through the projects' coordinates, every
+ * PLACES_EVERY_MS while it is in view, or on a click. When the filter changes,
+ * cells that stay glide to their new place and cells that appear rise in.
  */
 
 export const WORK = {
-  TILE_VW: 22,            // tile width (the aspect is 4:5, see base.css)
-  GAP_VW: 2,              // between every tile, the same everywhere
-  HOLD_S: 0.2,            // the two words sit on black this long
-  WORD_OUT_S: 0.5,        // each word drops out of its mask
-  WORD_STAGGER_S: 0.1,    // FEATURED follows PROJECTS by this much
-  HEADER_IN_S: 0.5,
-  TILE_IN_S: 0.5,         // each tile grows up from its bottom edge
-  TILE_STAGGER_S: 0.1,
-  TILES_START_S: 0.35,
-  PILL_IN_S: 0.4,
-  OVAL_S: 0.6,            // rectangle to tilted oval on hover (power3.out)
-  OVAL_OUT_S: 0.45,       // and back
-  OVAL_TILT: 20,          // degrees clockwise from vertical, top leaning right
-  OVAL_RX: 0.47,          // the oval's radii as fractions of the tile's width and height
-  OVAL_RY: 0.48,
-  COVER: 0.72,            // radii (as fractions) at which the ellipse clears a rectangle's corners: 1/sqrt(2), plus a hair
-  DIM_S: 0.3,
-  DIM_TO: 0.55,
-  CLICK_FADE_S: 0.4,      // 0 to 0.4: everything but the oval fades to black
-  CLICK_MID_S: 0.4,       // 0.4 to 0.8: the oval straightens into a rectangle at the centre, about MID_VW wide
-  CLICK_FILL_S: 0.5,      // 0.8 to 1.3: fills the screen
-  CLICK_SAFETY_MS: 2200,  // if the morph has not handed over to the router by then, the link is followed plainly
-  MID_VW: 50,
-  SCROLL_RATE: 1,         // strip px per scrolled px
-  LOOPS: 1,               // how many full loops of vertical scrolling before the footer
-  DRAG_FRICTION: 0.94,    // inertia decay per frame after a drag
-  DRAG_CLICK_PX: 6,       // a pointer that moved more than this is a drag, not a click
-  SHUFFLE_SEED: 7,        // the mix is the same on every visit
+  CATEGORIES: [
+    { id: "data-visualisation", name: "Data Visualisation" },
+    { id: "spatial-analysis-gis", name: "Spatial Analysis & GIS" },
+    { id: "ai-prototyping", name: "AI & Prototyping" },
+    { id: "fun-maps", name: "Fun Maps" },
+  ],
+  PLACES_AFTER: 2,         // the coordinates cell follows this many tiles
+  PLACES_EVERY_MS: 3600,   // next place while the cell is in view
+  EAGER: 6,                // tiles that load at once; the rest load lazily
+  MOVE_MS: 640,            // a cell gliding to its new place
+  ENTER_MS: 480,           // a cell appearing (opacity and a 16px rise)
+  ENTER_DELAY_MS: 90,
+  STAGGER_MS: 40,          // between cells on the page's first reveal
+  EASE: "cubic-bezier(.2,.75,.15,1)",
 };
 
 const pad2 = (n) => String(n).padStart(2, "0");
 const esc = (t) => String(t ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-const mod = (a, n) => ((a % n) + n) % n;
+const notTodo = (s) => (s && !/^TODO/i.test(s) ? s : "");
 
-// a seeded shuffle, retried until no two neighbours share a project (the loop seam included)
-export function mix(tiles, seed) {
-  const projects = new Set(tiles.map((t) => t.project));
-  if (projects.size < 2) return tiles;
-  let s = seed >>> 0;
-  const rnd = () => {
-    s = (s + 0x6D2B79F5) >>> 0;
-    let t = Math.imul(s ^ (s >>> 15), 1 | s);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-  const clean = (arr) => arr.every((t, i) => t.project !== arr[(i + 1) % arr.length].project);
-  let best = tiles;
-  for (let attempt = 0; attempt < 400; attempt++) {
-    const arr = [...tiles];
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(rnd() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-    if (clean(arr)) return arr;
-    best = arr;
-  }
-  return best;
-}
-
-export function initWork(main, { projects, tiles, navigate, entered }) {
-  const html = document.documentElement;
+export function initWork(main, { projects, tiles, url, entered }) {
   const root = main.querySelector("#work");
   if (!root) return null;
-  const hasGsap = typeof window.gsap !== "undefined";
+  const filters = root.querySelector(".work__filters");
+  const grid = root.querySelector(".work__grid");
+  if (!filters || !grid) return null;
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const motion = hasGsap && !reduced;
-  const touch = !matchMedia("(hover: hover) and (pointer: fine)").matches;
-  const header = document.querySelector(".site-header");
-
-  // ---------------------------------------------------------------- markup
   const bySlug = Object.fromEntries(projects.map((p, i) => [p.slug, { p, i }]));
-  const mixed = mix(tiles.filter((t) => bySlug[t.project]), WORK.SHUFFLE_SEED);
-  const n = mixed.length;
-  const copies = touch ? 1 : 2;      // the desktop loop needs the strip twice
-  const tileMarkup = (t, k) => {
+  const cats = [{ id: "all", name: "Everything" }, ...WORK.CATEGORIES];
+  const inCat = (t, id) => id === "all" || (t.categories || []).includes(id);
+  const count = (id) => tiles.filter((t) => inCat(t, id)).length;
+
+  // ---------------------------------------------------------------- the tiles
+  const cardMarkup = (t, k) => {
     const { p } = bySlug[t.project];
+    const where = [notTodo(p.location), notTodo(p.year)].filter(Boolean).join(" · ");
     return `
-      <a class="tile${motion ? " is-hidden" : ""}" href="project.html?p=${esc(p.slug)}&h=${esc(t.src)}" data-cursor="open"
-         data-project="${esc(p.slug)}" data-k="${k}" data-src="${esc(t.src)}" aria-label="${esc(p.title)}, ${esc(t.label || "")}">
-        <img src="${esc(t.src)}" alt="${esc(t.alt || "")}" loading="eager" decoding="async">
+      <a class="cell card" href="project.html?p=${esc(p.slug)}" data-cursor="open" data-cats="${esc((t.categories || []).join(" "))}"
+         aria-label="${esc(p.title)}${where ? `, ${esc(where)}` : ""}${t.label ? `. ${esc(t.label)}` : ""}">
+        <img src="${esc(t.src)}" alt="${esc(t.alt || "")}" loading="${k < WORK.EAGER ? "eager" : "lazy"}" decoding="async">
+        <span class="card__over" aria-hidden="true">
+          <span class="card__name">${esc(p.title)}</span>
+          ${where ? `<span class="label card__where">${esc(where)}</span>` : ""}
+        </span>
       </a>`;
   };
-  const clipMarkup = (k) => `<clipPath id="oval-${k}" clipPathUnits="userSpaceOnUse"><ellipse cx="0" cy="0" rx="0" ry="0"/></clipPath>`;
-  const total = n * copies;
-  root.innerHTML = `
-    <svg class="work__clips" aria-hidden="true" focusable="false"><defs>${Array.from({ length: total }, (_, k) => clipMarkup(k)).join("")}</defs></svg>
-    <div class="work__intro" aria-hidden="true">
-      <div class="work__mask"><span class="display work__word">Featured</span></div>
-      <div class="work__mask"><span class="punch work__word work__word--punch">Projects</span></div>
-    </div>
-    <div class="work__stage">
-      <div class="work__track">${Array.from({ length: copies }, (_, c) => mixed.map((t, k) => tileMarkup(t, c * n + k)).join("")).join("")}</div>
-      <p class="work__caption label" aria-live="polite"></p>
-      <button class="work__pill label" type="button">( ALL PROJECTS )</button>
-    </div>`;
-  root.classList.toggle("is-touch", touch);
 
-  const intro = root.querySelector(".work__intro");
-  const words = [...root.querySelectorAll(".work__word")];
-  const stage = root.querySelector(".work__stage");
-  const track = root.querySelector(".work__track");
-  const caption = root.querySelector(".work__caption");
-  const pill = root.querySelector(".work__pill");
-  const tileEls = [...track.querySelectorAll(".tile")];
-  const ellipses = [...root.querySelectorAll(".work__clips ellipse")];
-  track.style.gap = `${WORK.GAP_VW}vw`;
+  // the coordinates cell: every published project with coordinates, in order; "( 39.95° N, 75.16° W )" becomes two lines
+  const places = projects
+    .map((p) => ({ name: notTodo(p.location) || p.title, lines: String(p.coords || "").replace(/^\(\s*|\s*\)$/g, "").split(/,\s*/) }))
+    .filter((q) => q.lines.length === 2 && q.lines.every(Boolean));
+  const placesMarkup = places.length ? `
+      <button class="cell cell--places" type="button" data-places aria-label="Places in this work: ${esc(places.map((q) => q.name).join(", "))}">
+        <span class="label places__name"></span>
+        <span class="places__coords" aria-hidden="true"></span>
+        <span class="label muted places__count"></span>
+      </button>` : "";
 
-  // ---------------------------------------------------------------- the loop (desktop)
-  let loopW = 0, sectionTop = 0, gutter = 24, pos = 0, drag = 0, velocity = 0, dragging = false, raf = 0;
-  let pointerStart = null, pointerLast = 0, moved = 0;
+  const cells = tiles.map(cardMarkup);
+  cells.splice(Math.min(WORK.PLACES_AFTER, cells.length), 0, placesMarkup);
+  grid.innerHTML = cells.join("") + `<p class="work__empty label muted" hidden>( NOTHING IN THIS CATEGORY YET )</p>`;
+  const cellEls = [...grid.querySelectorAll(".cell")];
+  const placesEl = grid.querySelector("[data-places]");
+  const empty = grid.querySelector(".work__empty");
 
-  function measure() {
-    if (touch) return;
-    gutter = parseFloat(getComputedStyle(html).getPropertyValue("--gutter")) || 24;
-    const first = tileEls[0], second = tileEls[n];
-    loopW = second ? second.offsetLeft - first.offsetLeft : track.scrollWidth;
-    sectionTop = root.offsetTop + (main.offsetTop || 0);   // layout position: unaffected by the roll's transform
-    root.style.height = `${window.innerHeight + loopW * WORK.LOOPS}px`;
-    render();
+  // ---------------------------------------------------------------- the coordinates cell
+  let placeK = -1, placeTimer = 0, seen = null;
+  function showPlace(animate = true) {
+    if (!placesEl) return;
+    placeK = (placeK + 1) % places.length;
+    const q = places[placeK];
+    placesEl.querySelector(".places__name").textContent = `( ${q.name} )`;
+    placesEl.querySelector(".places__coords").innerHTML = `${esc(q.lines[0])}<br>${esc(q.lines[1])}`;
+    placesEl.querySelector(".places__count").textContent = `( ${pad2(placeK + 1)} / ${pad2(places.length)} )`;
+    if (animate && !reduced) placesEl.querySelectorAll(".places__name, .places__coords").forEach((s) =>
+      s.animate([{ opacity: 0, transform: "translateY(6px)" }, { opacity: 1, transform: "none" }], { duration: 420, easing: WORK.EASE }));
+  }
+  const startPlaces = () => { if (!placeTimer && !reduced) placeTimer = setInterval(showPlace, WORK.PLACES_EVERY_MS); };
+  const stopPlaces = () => { clearInterval(placeTimer); placeTimer = 0; };
+  const onPlacesClick = () => { showPlace(); if (placeTimer) { stopPlaces(); startPlaces(); } };
+  if (placesEl) {
+    showPlace(false);
+    placesEl.addEventListener("click", onPlacesClick);
+    seen = new IntersectionObserver(([e]) => (e.isIntersecting && !placesEl.hidden ? startPlaces() : stopPlaces()));
+    seen.observe(placesEl);
   }
 
-  function render() {
-    if (touch || !loopW) return;
-    const sy = Math.min(Math.max(window.scrollY - sectionTop, 0), loopW * WORK.LOOPS);
-    pos = mod(sy * WORK.SCROLL_RATE + drag, loopW);
-    track.style.transform = `translate3d(${gutter - pos}px, -50%, 0)`;
-  }
-
-  function inertia() {
-    cancelAnimationFrame(raf);
-    const step = () => {
-      if (dragging) return;
-      velocity *= WORK.DRAG_FRICTION;
-      if (Math.abs(velocity) < 0.05) { velocity = 0; render(); return; }
-      drag += velocity;
-      render();
-      raf = requestAnimationFrame(step);
-    };
-    raf = requestAnimationFrame(step);
-  }
-
-  const onPointerDown = (e) => {
-    if (touch || e.button !== 0) return;
-    dragging = true;
-    moved = 0;
-    velocity = 0;
-    pointerStart = e.clientX;
-    pointerLast = e.clientX;
-    cancelAnimationFrame(raf);
-    // no pointer capture: it would retarget the click to the stage and the tile would never open
-  };
-  const onPointerMove = (e) => {
-    if (!dragging) return;
-    const dx = e.clientX - pointerLast;
-    pointerLast = e.clientX;
-    moved += Math.abs(dx);
-    drag -= dx;              // the strip follows the pointer
-    velocity = -dx;
-    render();
-  };
-  const onPointerUp = () => {
-    if (!dragging) return;
-    dragging = false;
-    if (Math.abs(velocity) > 0.5) inertia();
-  };
-  const onWheel = (e) => {
-    if (touch) return;
-    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {    // horizontal trackpad: move the strip directly
-      e.preventDefault();
-      drag += e.deltaX;
-      velocity = e.deltaX * 0.4;
-      render();
-      inertia();
-    }
-  };
-  const onScroll = () => render();
-  const onResize = () => measure();
-
-  // ---------------------------------------------------------------- the tilted oval: one SVG ellipse per tile
-  // Each tile's clip starts as a circle big enough to show the whole rectangle and is tweened into the leaning
-  // ellipse; the clip-path is only attached while the oval is on, so the strip stays cheap to move.
-  const ovals = new Map();   // tile -> { state, tween }
-  const setEllipse = (el, w, h, rxf, ryf, rot) => {
-    el.setAttribute("cx", (w / 2).toFixed(2));
-    el.setAttribute("cy", (h / 2).toFixed(2));
-    el.setAttribute("rx", (rxf * w).toFixed(2));
-    el.setAttribute("ry", (ryf * h).toFixed(2));
-    el.setAttribute("transform", `rotate(${rot.toFixed(2)} ${(w / 2).toFixed(2)} ${(h / 2).toFixed(2)})`);
-  };
-  const coverFractions = (w, h) => {
-    const r = Math.hypot(w, h) / 2 * 1.02;      // a circle through the corners
-    return { rxf: r / w, ryf: r / h };
-  };
-  function ovalOf(tile) {
-    let o = ovals.get(tile);
-    if (!o) {
-      const k = Number(tile.dataset.k);
-      const c = coverFractions(tile.offsetWidth, tile.offsetHeight);
-      o = { k, el: ellipses[k], state: { rxf: c.rxf, ryf: c.ryf, rot: 0 }, tween: null };
-      ovals.set(tile, o);
-    }
-    return o;
-  }
-  function ovalOn(tile) {
-    if (!motion) { tile.classList.add("is-oval"); return; }
-    const o = ovalOf(tile);
-    const w = tile.offsetWidth, h = tile.offsetHeight;
-    tile.style.clipPath = `url(#oval-${o.k})`;
-    o.tween?.kill();
-    setEllipse(o.el, w, h, o.state.rxf, o.state.ryf, o.state.rot);
-    o.tween = gsap.to(o.state, {
-      rxf: WORK.OVAL_RX, ryf: WORK.OVAL_RY, rot: WORK.OVAL_TILT, duration: WORK.OVAL_S, ease: "power3.out",
-      onUpdate: () => setEllipse(o.el, w, h, o.state.rxf, o.state.ryf, o.state.rot),
-    });
-  }
-  function ovalOff(tile) {
-    tile.classList.remove("is-oval");
-    if (!motion) return;
-    const o = ovals.get(tile);
-    if (!o) return;
-    const w = tile.offsetWidth, h = tile.offsetHeight;
-    const c = coverFractions(w, h);
-    o.tween?.kill();
-    o.tween = gsap.to(o.state, {
-      rxf: c.rxf, ryf: c.ryf, rot: 0, duration: WORK.OVAL_OUT_S, ease: "power3.out",
-      onUpdate: () => setEllipse(o.el, w, h, o.state.rxf, o.state.ryf, o.state.rot),
-      onComplete: () => { tile.style.clipPath = ""; },
+  // ---------------------------------------------------------------- motion: everything that moves glides from where it was
+  function layout(change) {
+    const before = new Map();
+    cellEls.forEach((e) => { if (!e.hidden) before.set(e, e.getBoundingClientRect()); });
+    grid.getAnimations({ subtree: true }).forEach((a) => a.cancel());
+    change();
+    if (reduced) return;
+    cellEls.forEach((e) => {
+      if (e.hidden) return;
+      const a = e.getBoundingClientRect();
+      const b = before.get(e);
+      if (!b) {
+        e.animate([{ opacity: 0, transform: "translateY(16px)" }, { opacity: 1, transform: "none" }],
+          { duration: WORK.ENTER_MS, delay: WORK.ENTER_DELAY_MS, easing: WORK.EASE, fill: "backwards" });
+        return;
+      }
+      const dx = b.left - a.left, dy = b.top - a.top;
+      if (Math.abs(dx) > 0.5 || Math.abs(dy) > 0.5) {
+        e.animate([{ transform: `translate(${dx}px, ${dy}px)` }, { transform: "none" }], { duration: WORK.MOVE_MS, easing: WORK.EASE });
+      }
     });
   }
 
-  // ---------------------------------------------------------------- hover and highlight
-  let hot = null;
-  function highlight(tile) {
-    if (hot && hot !== tile) ovalOff(hot);
-    hot = tile;
-    const slug = tile.dataset.project;
-    const { p, i } = bySlug[slug];
-    tileEls.forEach((t) => t.classList.toggle("is-dim", t.dataset.project !== slug));
-    ovalOn(tile);
-    caption.textContent = `( ${pad2(i + 1)} )   ${p.title}   ${(p.labels || []).join("  ")}`;
-    if (hasGsap) gsap.to(caption, { autoAlpha: 1, duration: 0.3, overwrite: true });
-    else caption.style.opacity = "1";
-  }
-  function unhighlight() {
-    if (hot) ovalOff(hot);
-    hot = null;
-    tileEls.forEach((t) => t.classList.remove("is-dim"));
-    if (hasGsap) gsap.to(caption, { autoAlpha: 0, duration: 0.3, overwrite: true });
-    else caption.style.opacity = "0";
-  }
-  const onOver = (e) => { if (touch) return; const t = e.target.closest(".tile"); if (t && t !== hot) highlight(t); };
-  const onOut = (e) => { if (touch) return; const t = e.target.closest(".tile"); if (t && !t.contains(e.relatedTarget) && !e.relatedTarget?.closest?.(".tile")) unhighlight(); };
+  // ---------------------------------------------------------------- the filters
+  let current = "all";
+  const buttons = new Map();
+  filters.innerHTML = cats.map((c) =>
+    `<button class="work__filter label" type="button" data-cat="${esc(c.id)}" aria-pressed="false">` +
+      `<span class="work__filter-name">( ${esc(c.name.toUpperCase())} )</span><span class="work__filter-count">${pad2(count(c.id))}</span>` +
+    `</button>`).join("");
+  filters.querySelectorAll(".work__filter").forEach((b) => buttons.set(b.dataset.cat, b));
 
-  // ---------------------------------------------------------------- click: the morph into the project
-  // The clone starts as the tile's tilted oval, straightens into a rectangle at the centre while it grows, then
-  // fills the screen. Its clip is its own ellipse, re-fitted to the clone's size on every frame.
-  let opening = false;
-  function openTile(tile) {
-    if (opening) return;
-    opening = true;
-    const url = tile.getAttribute("href");
-    if (!motion) {
-      if (navigate) navigate(url); else location.href = url;
-      return;
-    }
-    const r = tile.getBoundingClientRect();
-    const o = ovalOf(tile);
-    const clone = document.createElement("div");
-    clone.className = "work__morph";
-    clone.innerHTML = `
-      <svg class="work__clips" aria-hidden="true" focusable="false"><defs><clipPath id="oval-morph" clipPathUnits="userSpaceOnUse"><ellipse cx="0" cy="0" rx="0" ry="0"/></clipPath></defs></svg>
-      <img src="${esc(tile.dataset.src)}" alt="">`;
-    Object.assign(clone.style, { left: `${r.left}px`, top: `${r.top}px`, width: `${r.width}px`, height: `${r.height}px`, clipPath: "url(#oval-morph)" });
-    document.body.append(clone);
-    const ell = clone.querySelector("ellipse");
-    const shape = { rxf: o.state.rxf, ryf: o.state.ryf, rot: o.state.rot };
-    const fit = () => setEllipse(ell, clone.offsetWidth, clone.offsetHeight, shape.rxf, shape.ryf, shape.rot);
-    fit();
-    tile.style.visibility = "hidden";
-    const vw = window.innerWidth, vh = window.innerHeight;
-    const midW = (vw * WORK.MID_VW) / 100, midH = Math.min(vh * 0.62, midW * 1.1);
-    const others = [track, caption, pill, header].filter(Boolean);
-    let handed = false;
-    const safety = setTimeout(() => { if (!handed) { handed = true; location.href = url; } }, WORK.CLICK_SAFETY_MS);
-    const tl = gsap.timeline({
-      defaults: { ease: "power3.inOut" },
-      onUpdate: fit,
-      onComplete: () => {
-        if (handed) return;
-        handed = true;
-        clearTimeout(safety);
-        if (navigate) navigate(url, { flipFrom: clone }); else location.href = url;
-      },
+  function apply(cat) {
+    cellEls.forEach((e) => {
+      e.hidden = e.hasAttribute("data-places") ? cat !== "all" : !(cat === "all" || e.dataset.cats.split(" ").includes(cat));
     });
-    tl.to(others, { autoAlpha: 0, duration: WORK.CLICK_FADE_S }, 0)
-      .to(clone, { left: (vw - midW) / 2, top: (vh - midH) / 2, width: midW, height: midH, duration: WORK.CLICK_MID_S }, WORK.CLICK_FADE_S)
-      .to(shape, { rxf: WORK.COVER, ryf: WORK.COVER, rot: 0, duration: WORK.CLICK_MID_S }, WORK.CLICK_FADE_S)
-      .set(clone, { clipPath: "none" }, WORK.CLICK_FADE_S + WORK.CLICK_MID_S)   // a rectangle now: the clip has nothing left to do
-      .to(clone, { left: 0, top: 0, width: vw, height: vh, duration: WORK.CLICK_FILL_S }, WORK.CLICK_FADE_S + WORK.CLICK_MID_S);
-    timelines.push(tl);
+    empty.hidden = count(cat) > 0;
+    if (placesEl && placesEl.hidden) stopPlaces();
   }
-  const onClick = (e) => {
-    const tile = e.target.closest(".tile");
-    if (!tile) return;
-    e.preventDefault();
-    if (moved > WORK.DRAG_CLICK_PX) return;                        // that was a drag
-    if (touch && hot !== tile) { highlight(tile); return; }        // first tap highlights
-    openTile(tile);
+  function setFilter(cat, animate) {
+    current = cat;
+    animate ? layout(() => apply(cat)) : apply(cat);
+    buttons.forEach((b, id) => b.setAttribute("aria-pressed", String(id === cat)));
+  }
+  const onFilterClick = (e) => {
+    const b = e.target.closest(".work__filter");
+    if (!b || b.dataset.cat === current) return;
+    setFilter(b.dataset.cat, true);
+    history.replaceState(history.state, "", current === "all" ? location.pathname + location.search : `#${current}`);
   };
-  const onPillClick = () => {
-    if (touch) { track.scrollTo({ left: 0, behavior: reduced ? "auto" : "smooth" }); return; }
-    if (hasGsap) gsap.to({ d: drag }, { d: 0, duration: 0.8, ease: "power3.inOut", onUpdate() { drag = this.targets()[0].d; render(); } });
-    else { drag = 0; render(); }
-    const lenis = window.__shell?.lenis;
-    if (lenis) lenis.scrollTo(sectionTop, { duration: 1 }); else window.scrollTo({ top: sectionTop, behavior: "smooth" });
-  };
+  filters.addEventListener("click", onFilterClick);
 
-  // ---------------------------------------------------------------- entering
-  const timelines = [];
+  const hash = (url?.hash || "").slice(1);
+  setFilter(WORK.CATEGORIES.some((c) => c.id === hash) ? hash : "all", false);
+
+  // ---------------------------------------------------------------- entering: the visible cells rise in, one after another
   function enter() {
-    if (!motion) {
-      intro.style.display = "none";
-      tileEls.forEach((t) => t.classList.remove("is-hidden"));
-      return;
-    }
-    const visible = tileEls.filter((t) => { const b = t.getBoundingClientRect(); return b.right > 0 && b.left < window.innerWidth; });
-    const rest = tileEls.filter((t) => !visible.includes(t));
-    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-    tl.to(words[1], { yPercent: 110, duration: WORK.WORD_OUT_S, ease: "power3.in" }, WORK.HOLD_S)
-      .to(words[0], { yPercent: 110, duration: WORK.WORD_OUT_S, ease: "power3.in" }, WORK.HOLD_S + WORK.WORD_STAGGER_S)
-      .set(intro, { autoAlpha: 0 }, WORK.HOLD_S + WORK.WORD_STAGGER_S + WORK.WORD_OUT_S)
-      .fromTo(header, { autoAlpha: 0 }, { autoAlpha: 1, duration: WORK.HEADER_IN_S }, WORK.HOLD_S + 0.25)
-      .to(visible, {
-        clipPath: "inset(0% 0% 0% 0%)", duration: WORK.TILE_IN_S, stagger: WORK.TILE_STAGGER_S,
-        onComplete: () => visible.forEach((t) => { t.classList.remove("is-hidden"); t.style.clipPath = ""; }),
-      }, WORK.TILES_START_S)
-      .set(rest, { clipPath: "inset(0% 0% 0% 0%)", onComplete: () => rest.forEach((t) => { t.classList.remove("is-hidden"); t.style.clipPath = ""; }) }, WORK.TILES_START_S + 0.2)
-      .fromTo(pill, { autoAlpha: 0 }, { autoAlpha: 1, duration: WORK.PILL_IN_S }, WORK.TILES_START_S + WORK.TILE_IN_S + 0.1);
-    timelines.push(tl);
+    if (reduced) return;
+    cellEls.filter((e) => !e.hidden).forEach((e, i) => {
+      e.animate([{ opacity: 0, transform: "translateY(16px)" }, { opacity: 1, transform: "none" }],
+        { duration: WORK.ENTER_MS, delay: i * WORK.STAGGER_MS, easing: WORK.EASE, fill: "backwards" });
+    });
   }
-
-  // ---------------------------------------------------------------- wire up
-  if (motion && header) gsap.set(header, { autoAlpha: 0 });     // the enter sequence fades it in
-  if (hasGsap) gsap.set([caption, pill], { autoAlpha: 0 });
-  measure();
-  requestAnimationFrame(measure);                                 // once images and fonts have a layout
-  window.addEventListener("resize", onResize, { passive: true });
-  window.addEventListener("scroll", onScroll, { passive: true });
-  stage.addEventListener("pointerdown", onPointerDown);
-  window.addEventListener("pointermove", onPointerMove, { passive: true });
-  window.addEventListener("pointerup", onPointerUp);
-  window.addEventListener("pointercancel", onPointerUp);
-  stage.addEventListener("wheel", onWheel, { passive: false });
-  track.addEventListener("mouseover", onOver);
-  track.addEventListener("mouseout", onOut);
-  track.addEventListener("click", onClick);
-  pill.addEventListener("click", onPillClick);
-  track.addEventListener("dragstart", (e) => e.preventDefault());
-
-  const onEnter = () => { measure(); enter(); };
+  const onEnter = () => enter();
   if (entered) enter(); else main.addEventListener("page:enter", onEnter, { once: true });
 
   return function cleanup() {
-    cancelAnimationFrame(raf);
-    timelines.forEach((t) => t.kill());
-    ovals.forEach((o) => o.tween?.kill());
+    stopPlaces();
+    seen?.disconnect();
+    placesEl?.removeEventListener("click", onPlacesClick);
+    filters.removeEventListener("click", onFilterClick);
     main.removeEventListener("page:enter", onEnter);
-    window.removeEventListener("resize", onResize);
-    window.removeEventListener("scroll", onScroll);
-    stage.removeEventListener("pointerdown", onPointerDown);
-    window.removeEventListener("pointermove", onPointerMove);
-    window.removeEventListener("pointerup", onPointerUp);
-    window.removeEventListener("pointercancel", onPointerUp);
-    stage.removeEventListener("wheel", onWheel);
-    track.removeEventListener("mouseover", onOver);
-    track.removeEventListener("mouseout", onOut);
-    track.removeEventListener("click", onClick);
-    pill.removeEventListener("click", onPillClick);
-    // the header comes back with the next page (it was faded by the enter or click sequences)
-    if (hasGsap && header) gsap.to(header, { autoAlpha: 1, duration: 0.6, delay: 0.2, overwrite: true });
   };
 }

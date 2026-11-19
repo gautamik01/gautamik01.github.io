@@ -398,107 +398,118 @@ html.js:not(.reduced) [data-split] { visibility: hidden; }
   .project__meta > :nth-child(2) { grid-column: 1 / -1; order: 3; }
 }
 
-/* ------------------------------------------------------------------ work: the tile strip */
+/* ------------------------------------------------------------------ work: the headline, the filters and the grid */
 .work {
   position: relative;
   background: var(--ink);
   color: var(--white);
   --muted-c: var(--muted-dark);
 }
-.work__intro {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%;
-  height: 100svh;        /* the section itself is much taller: it holds the scroll distance of the loop */
-  z-index: 5;
-  background: transparent;   /* the page is already ink; the tiles must show through while the words drop */
-  display: grid;
-  align-content: center;
-  justify-items: center;
-  text-align: center;
-  padding: var(--gutter);
-  pointer-events: none;
-}
-.work__mask { overflow: hidden; padding-inline: 0.06em; }
-.work__word { display: block; line-height: 1; }
-.work__word--punch { font-size: calc(var(--display-size) * 0.86 * var(--display-scale)); }
-.work__stage {
+/* the head leaves room under the headline for the filter bar's top padding (see .work__filters) */
+.work__head { padding: calc(var(--header-h) + 32px) var(--gutter) calc(var(--header-h) + 20px); }
+.work__title { margin-top: 24px; }
+/* the filter bar sticks to the top of the viewport: its top padding is the header's band, painted ink, so the header's
+   labels keep reading over it while the grid scrolls underneath; a negative margin takes that padding back in the flow */
+.work__filters {
   position: sticky;
   top: 0;
-  height: 100svh;
-  overflow: hidden;
-  touch-action: pan-y;
-  user-select: none;
-}
-.work__track {
-  position: absolute;
-  top: 50%;
-  left: 0;
+  z-index: 5;
+  margin-top: calc(-1 * var(--header-h));
+  padding: var(--header-h) var(--gutter) 12px;
+  background: var(--ink);
   display: flex;
+  flex-wrap: wrap;
+  gap: 4px 24px;
+}
+.work__filter {
+  display: inline-flex;
   align-items: flex-start;
-  gap: 2vw;                      /* work.js sets this from WORK.GAP_VW; every gap is the same */
-  transform: translate3d(var(--gutter), -50%, 0);
-  will-change: transform;
+  gap: 5px;
+  min-height: 40px;
+  padding: 10px 0 8px;
+  color: var(--muted-c);
+  transition: color 250ms;
 }
-.work__clips { position: absolute; width: 0; height: 0; overflow: hidden; }   /* the tilted-oval clipPaths */
-.tile {
-  position: relative;
-  flex: none;
-  width: 22vw;
-  aspect-ratio: 4 / 5;
-  overflow: hidden;
-  background: #1a1a1a;
-  transition: opacity 300ms;     /* the oval itself is an SVG ellipse tweened by work.js */
+.work__filter:hover, .work__filter:focus-visible, .work__filter[aria-pressed="true"] { color: var(--fg); }
+.work__filter:focus-visible { outline-offset: 2px; }
+.work__filter-name { border-bottom: 1px solid transparent; padding-bottom: 2px; transition: border-color 250ms; }
+.work__filter[aria-pressed="true"] .work__filter-name { border-bottom-color: currentColor; }
+.work__filter-count { font-size: 9px; letter-spacing: 0.06em; line-height: 1; margin-top: 1px; }
+/* the grid: three columns of 4:5 cells (the tiles' own ratio, so nothing is cropped), two under 1000px */
+.work__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--gap);
+  padding: 20px var(--gutter) clamp(64px, 10vw, 140px);
 }
-.tile img { width: 100%; height: 100%; object-fit: cover; }
-.tile.is-oval { border-radius: 50%; }   /* without GSAP: a plain oval */
-.tile.is-dim { opacity: 0.55; }
-.tile.is-hidden { clip-path: inset(100% 0% 0% 0%); }     /* grows up from its bottom edge on entering; units match the GSAP target */
-.work__caption {
+.cell { position: relative; min-width: 0; aspect-ratio: 4 / 5; container-type: inline-size; }
+.cell[hidden] { display: none; }
+.card { display: block; overflow: hidden; background: #1a1a1a; }
+.card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 700ms cubic-bezier(.2,.75,.15,1);
+}
+.card:hover img, .card:focus-visible img { transform: scale(1.03); }
+/* the name and place rise over the image on hover (and keyboard focus); none of this on touch screens */
+.card__over {
   position: absolute;
-  left: var(--gutter); right: var(--gutter);
-  bottom: 14vh;
-  text-align: center;
-  white-space: normal;
-}
-.work__pill {
-  position: absolute;
-  left: 50%;
-  bottom: 36px;
-  transform: translateX(-50%);
-  border: 1px solid currentColor;
-  border-radius: 999px;
-  padding: 12px 22px;
-  line-height: 1;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 6px;
+  padding: clamp(14px, 1.6vw, 22px);
+  background: rgba(11, 11, 11, 0.86);
   color: var(--white);
-}
-.work__pill:hover { background: var(--white); color: var(--ink); }
-.work__morph {
-  position: fixed;
-  z-index: 70;
-  overflow: hidden;
-  background: #1a1a1a;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 350ms ease, transform 450ms cubic-bezier(.2,.75,.15,1);
   pointer-events: none;
 }
-.work__morph img { width: 100%; height: 100%; object-fit: cover; }
-/* touch devices: a native horizontal swipe with snap, no sticky loop */
-.work.is-touch .work__stage { position: relative; height: auto; min-height: 100svh; display: grid; align-content: center; padding: calc(var(--header-h) + 24px) 0 96px; }
-.work.is-touch .work__track {
-  position: static;
-  transform: none;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  padding: 36px var(--gutter) 0;
-  scrollbar-width: none;
+.card:hover .card__over, .card:focus-visible .card__over { opacity: 1; transform: none; }
+.card__name {
+  font-family: var(--font-display);
+  font-size: clamp(22px, 1.9vw, 30px);
+  line-height: 1;
+  letter-spacing: var(--display-track);
+  text-transform: uppercase;
+  text-wrap: balance;
 }
-.work.is-touch .work__track::-webkit-scrollbar { display: none; }
-.work.is-touch .tile { width: 72vw; scroll-snap-align: start; }
-.work.is-touch .work__track { gap: 3vw !important; }
-.work.is-touch .work__caption { position: static; margin-top: 28px; }
-.work.is-touch .work__pill { position: static; transform: none; justify-self: center; margin-top: 28px; }
+@media (hover: none) { .card__over { display: none; } }
+/* the coordinates cell: a place name, its coordinates on two lines in the display serif, and a counter */
+.cell--places {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  text-align: left;
+  padding: 2px 0;
+  color: var(--fg);
+}
+.cell--places:focus-visible { outline-offset: 4px; }
+.places__coords {
+  font-family: var(--font-display);
+  font-size: clamp(26px, 15cqw, 64px);
+  line-height: 0.92;
+  letter-spacing: var(--display-track);
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+.work__empty { grid-column: 1 / -1; padding: 28px 0; }
+.work__empty[hidden] { display: none; }
+@media (max-width: 1000px) {
+  .work__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+/* a phone: the header band is 96px and the tabs take three rows, so the bar scrolls with the page instead of sticking */
+@media (max-width: 760px) {
+  .work__head { padding-bottom: 28px; }
+  .work__filters { position: static; margin-top: 0; padding-top: 0; gap: 2px 18px; }
+  .work__filter { min-height: 36px; padding: 8px 0 6px; white-space: nowrap; }
+}
 @media (prefers-reduced-motion: reduce) {
-  .tile { transition: none; }
-  .work__intro { display: none; }
+  .card img, .card__over, .work__filter, .work__filter-name { transition: none; }
 }
 
 /* ------------------------------------------------------------------ project opener */

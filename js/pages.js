@@ -47,7 +47,7 @@ async function home(ctx) {
   return initBrowser(root, projects);
 }
 
-// ---------------------------------------------------------------- work: the tile strip (js/work.js)
+// ---------------------------------------------------------------- work: the filters and the grid (js/work.js)
 async function work(ctx) {
   if (!ctx.main.querySelector("#work")) return null;
   const [projects, tiles] = await Promise.all([loadProjects(), loadTiles()]);
@@ -55,7 +55,7 @@ async function work(ctx) {
   return initWork(ctx.main, {
     projects,
     tiles: tiles.filter((t) => published.has(t.project)),   // unpublished projects' tiles stay hidden
-    navigate: ctx.navigate,
+    url: ctx.url || new URL(location.href),                  // #<category> picks a filter
     entered: ctx.main.dataset.entered === "1",
   });
 }
