@@ -868,9 +868,9 @@ html.js:not(.reduced) [data-split] { visibility: hidden; }
   .site-header__links a { padding: 4px 0; }
 }
 
-/* ------------------------------------------------------------------ home: project browser */
-/* the headline and the thumbnail group sit together, centred in the viewport (equal padding above and below) */
-.hero--browser {
+/* ------------------------------------------------------------------ home: the hero, then the selected projects */
+/* the first screen: the headline alone, centred, with the note in the bottom-left corner */
+.hero--home {
   position: relative;
   min-height: 100svh;
   display: grid;
@@ -880,21 +880,33 @@ html.js:not(.reduced) [data-split] { visibility: hidden; }
   padding: calc(var(--header-h) + 32px) var(--gutter);
   overflow: hidden;
 }
-/* the thumbnail group is centred under the headline: its label, the row of thumbnails and the counter */
-.browser {
-  justify-self: stretch;
-  width: 100%;
-  margin-top: 48px;
+.hero__note {
+  position: absolute;
+  left: var(--gutter);
+  bottom: 40px;                  /* the scale bar is hidden while the hero is in view, so the corner is the note's */
+  max-width: 30ch;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--muted-c);
+  text-align: left;
+}
+/* the second screen: the label, one row of thumbnails and the counter, centred both ways; on desktop hero.js snaps
+   the page between the two screens. Each thumbnail is about one and a half times the old size: 209px wide at 1440,
+   278px at 1920, always five in one row from 768px up */
+.selected {
+  min-height: 100svh;
   display: grid;
+  align-content: center;
   justify-items: center;
-  gap: 12px;
+  gap: 16px;
+  padding: calc(var(--header-h) + 32px) var(--gutter) 72px;
   text-align: center;
 }
-.browser__thumbs { position: relative; display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
-.browser__clips { position: absolute; width: 0; height: 0; overflow: hidden; }   /* the tilted-oval clipPaths (js/hero.js) */
+.selected__thumbs { position: relative; display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; }
+.selected__clips { position: absolute; width: 0; height: 0; overflow: hidden; }   /* the tilted-oval clipPaths (js/hero.js) */
 .thumb {
   display: block;
-  width: clamp(110px, 9.7vw, 160px);
+  width: clamp(120px, 14.5vw, 280px);
   aspect-ratio: 4 / 5;
   overflow: hidden;
   opacity: 0.8;
@@ -903,21 +915,12 @@ html.js:not(.reduced) [data-split] { visibility: hidden; }
 .thumb img { width: 100%; height: 100%; object-fit: cover; }
 .thumb:hover, .thumb:focus-visible, .thumb.is-active { opacity: 1; }
 .thumb.is-oval { border-radius: 50%; }   /* without GSAP: a plain oval */
-.hero__note {
-  position: absolute;
-  left: var(--gutter);
-  bottom: 40px;                  /* the scale bar is hidden on the home hero, so the corner is the note's */
-  max-width: 30ch;
-  font-size: 13px;
-  line-height: 1.45;
-  color: var(--muted-c);
-  text-align: left;
-}
-@media (max-width: 760px) {
-  .browser { margin-top: 36px; }
-  .browser__thumbs { gap: 8px; }
-  .thumb { width: clamp(56px, calc((100vw - 2 * var(--gutter) - 4 * 8px) / 5), 110px); }   /* five in one row on a phone */
+/* a phone: no snap, the section takes its own height, and the thumbnails sit three to a row with the last two centred */
+@media (max-width: 767px) {
   .hero__note { position: static; margin-top: 40px; text-align: center; max-width: 36ch; }
+  .selected { min-height: 0; padding: 40px var(--gutter) 72px; gap: 14px; }
+  .selected__thumbs { gap: 12px; }
+  .thumb { width: calc((100% - 24px) / 3); }
 }
 
 /* ------------------------------------------------------------------ contact footer */
@@ -1001,8 +1004,8 @@ html.js:not(.reduced) [data-split] { visibility: hidden; }
   text-transform: none;          /* "1 km", not "1 KM" */
   transition: opacity 300ms;
 }
-/* hidden on the home hero (its note sits in that corner), over the footer, and while a caption passes under it */
-html.footer-in-view .scalebar, html.scalebar-clash .scalebar, html.opener-credit .scalebar, html[data-page="home"] .scalebar { opacity: 0; }
+/* hidden while the home hero is in view (its note sits in that corner), over the footer, and while a caption passes under it */
+html.footer-in-view .scalebar, html.scalebar-clash .scalebar, html.opener-credit .scalebar, html.hero-in-view .scalebar { opacity: 0; }
 .scalebar__track {
   position: relative;
   height: 7px;

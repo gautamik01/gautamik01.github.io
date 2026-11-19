@@ -23,15 +23,15 @@
 </head>
 <body>
   <main id="main" data-theme="paper" data-page="home">
-    <!-- the home page is the hero: headline, and the project thumbnails centred under it (js/hero.js) -->
-    <section class="hero hero--browser" id="browser">
+    <!-- two screens: the headline alone, then the selected projects; on desktop the wheel snaps between them (js/hero.js) -->
+    <section class="hero hero--home" id="hero">
       <h1 class="display hero__title" data-split>An urbanist who<br><span class="punch">Codes</span></h1>
-      <div class="browser">
-        <p class="label muted">( SELECTED PROJECTS )</p>
-        <div class="browser__thumbs"></div>
-        <p class="label browser__counter">( 01 / 05 )</p>
-      </div>
       <p class="hero__note">Gautami Kasat. Cartography, 3D environments and spatial data. Philadelphia.</p>
+    </section>
+    <section class="selected" id="selected" aria-label="Selected projects">
+      <p class="label muted">( SELECTED PROJECTS )</p>
+      <div class="selected__thumbs"></div>
+      <p class="label selected__counter">( 01 / 05 )</p>
     </section>
   </main>
   <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>

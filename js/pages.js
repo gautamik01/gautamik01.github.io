@@ -29,22 +29,22 @@ const media = (src, poster, alt, autoplay = true) => /\.mp4$/i.test(src)
 const safeHero = (h) => (h && /^assets\/[\w\-./]+\.(webp|jpg|jpeg|png)$/i.test(h) ? h : null);
 const notTodo = (s) => (s && !/^TODO/i.test(s) ? s : "");
 
-// ---------------------------------------------------------------- home: the project browser
+// ---------------------------------------------------------------- home: the selected projects screen (js/hero.js)
 async function home(ctx) {
-  const root = ctx.main.querySelector("#browser");
+  const root = ctx.main.querySelector("#selected");
   if (!root) return null;
   const projects = await loadProjects();
   // one clipPath per thumbnail for the tilted-oval hover, then the thumbnails: plain links that app.js rolls in
   // (a roll that stalls past ROLL.SAFETY_MS gives way to a normal navigation)
-  root.querySelector(".browser__thumbs").innerHTML =
-    `<svg class="browser__clips" aria-hidden="true" focusable="false"><defs>` +
+  root.querySelector(".selected__thumbs").innerHTML =
+    `<svg class="selected__clips" aria-hidden="true" focusable="false"><defs>` +
       projects.map((_, i) => `<clipPath id="hero-oval-${i}" clipPathUnits="userSpaceOnUse"><ellipse cx="0" cy="0" rx="0" ry="0"/></clipPath>`).join("") +
     `</defs></svg>` +
     projects.map((p, i) =>
       `<a class="thumb" href="project.html?p=${esc(p.slug)}" data-cursor="open" data-k="${i}" aria-label="${esc(p.title)}">` +
         `<img src="${esc(p.card)}" alt="" loading="eager" decoding="async"></a>`).join("");
-  root.querySelector(".browser__counter").textContent = `( 01 / ${pad2(projects.length)} )`;
-  return initBrowser(root, projects);
+  root.querySelector(".selected__counter").textContent = `( 01 / ${pad2(projects.length)} )`;
+  return initBrowser(ctx.main, projects);
 }
 
 // ---------------------------------------------------------------- work: the filters and the grid (js/work.js)

@@ -1,29 +1,46 @@
-/* hero.js : the home hero project browser.
+/* hero.js : the home page.
  *
- * Under the headline, centred: one thumbnail per published project and a
- * counter. Hovering (or focusing) a thumbnail turns it into the tilted oval
+ * Two screens. The first (#hero) is the headline alone. The second
+ * (#selected) holds one thumbnail per published project in a row, with a
+ * counter: hovering (or focusing) a thumbnail turns it into the tilted oval
  * the work tiles use, an SVG clipPath whose ellipse is tweened from a circle
  * that covers the whole rectangle into an ellipse leaning OVAL_TILT degrees
  * clockwise, brightens it and sets the counter to its number. Every
  * thumbnail is a plain link to project.html?p=<slug>: app.js rolls the
  * project page in and falls back to a normal navigation after ROLL.SAFETY_MS.
+ *
+ * On desktop (a fine pointer, SNAP_MIN_PX and up, motion allowed) the wheel
+ * snaps between the two screens through Lenis: one tick down from the hero
+ * lands on the selected projects, one tick up from there returns to the
+ * hero; below the second screen the page scrolls normally. Phones, touch
+ * screens and reduced motion scroll plainly. The scale bar stays hidden while
+ * the hero is in view, since its note sits in that corner.
  */
 
 export const BROWSER = {
-  OVAL_S: 0.6,         // rectangle to tilted oval on hover (power3.out)
-  OVAL_OUT_S: 0.45,    // and back
-  OVAL_TILT: 20,       // degrees clockwise from vertical, top leaning right
-  OVAL_RX: 0.47,       // the oval's radii as fractions of the thumbnail's width and height
+  OVAL_S: 0.6,            // rectangle to tilted oval on hover (power3.out)
+  OVAL_OUT_S: 0.45,       // and back
+  OVAL_TILT: 20,          // degrees clockwise from vertical, top leaning right
+  OVAL_RX: 0.47,          // the oval's radii as fractions of the thumbnail's width and height
   OVAL_RY: 0.48,
+  SNAP_S: 1.0,            // seconds, the wheel snap between the two screens
+  SNAP_COOLDOWN_MS: 450,  // wheel ticks are ignored this long after a snap (trackpad inertia)
+  SNAP_MIN_PX: 768,       // viewport width from which the snap is on
+  SNAP_ZONE: 0.9,         // a tick up within the top this fraction of the second screen first settles on its top
+  HERO_IN_VIEW: 0.4,      // the hero counts as in view (scale bar hidden) above this visible fraction
 };
 
 const pad2 = (n) => String(n).padStart(2, "0");
 
-export function initBrowser(root, projects) {
-  const thumbs = root.querySelector(".browser__thumbs");
-  const counter = root.querySelector(".browser__counter");
+export function initBrowser(main, projects) {
+  const html = document.documentElement;
+  const hero = main.querySelector("#hero");
+  const root = main.querySelector("#selected");
+  if (!root) return null;
+  const thumbs = root.querySelector(".selected__thumbs");
+  const counter = root.querySelector(".selected__counter");
   const thumbEls = [...thumbs.querySelectorAll(".thumb")];
-  const ellipses = [...root.querySelectorAll(".browser__clips ellipse")];
+  const ellipses = [...root.querySelectorAll(".selected__clips ellipse")];
   const hasGsap = typeof window.gsap !== "undefined";
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const motion = hasGsap && !reduced;
@@ -108,11 +125,60 @@ export function initBrowser(root, projects) {
   thumbs.addEventListener("focusin", onFocusIn);
   thumbs.addEventListener("focusout", onFocusOut);
 
+  // ---------------------------------------------------------------- the scale bar: off while the hero is in view
+  let heroSeen = null;
+  if (hero) {
+    heroSeen = new IntersectionObserver(([e]) => html.classList.toggle("hero-in-view", e.isIntersecting), { threshold: BROWSER.HERO_IN_VIEW });
+    heroSeen.observe(hero);
+  }
+
+  // ---------------------------------------------------------------- the snap between the two screens (desktop, wheel)
+  // The wheel event is caught before Lenis sees it. Down from the hero: Lenis scrolls to the second screen's top and
+  // locks until it arrives. Up from that top (or from anywhere between the two screens): back to the hero. Up from
+  // within the upper part of the second screen: to its top first, so a scroll back from the footer settles there.
+  // Everything else is Lenis as usual.
+  const lenis = window.__shell?.lenis;
+  const snapping = Boolean(lenis) && motion && !touch && matchMedia(`(min-width: ${BROWSER.SNAP_MIN_PX}px)`).matches;
+  let busy = false, cooldownUntil = 0, safety = 0;
+  const selectedTop = () => Math.round(root.getBoundingClientRect().top + window.scrollY);
+  function snapTo(target) {
+    busy = true;
+    const done = () => {
+      clearTimeout(safety);
+      busy = false;
+      cooldownUntil = performance.now() + BROWSER.SNAP_COOLDOWN_MS;
+    };
+    safety = setTimeout(done, BROWSER.SNAP_S * 1000 + 400);   // in case Lenis never reports completion
+    lenis.scrollTo(target, { duration: BROWSER.SNAP_S, lock: true, force: true, onComplete: done });
+  }
+  const onWheel = (e) => {
+    if (e.ctrlKey) return;                                   // a pinch zoom
+    if (busy || performance.now() < cooldownUntil) { e.preventDefault(); e.stopImmediatePropagation(); return; }
+    const dy = e.deltaY;
+    if (Math.abs(dy) < 1) return;
+    const top = selectedTop();
+    const y = window.scrollY;
+    const zone = root.offsetHeight * BROWSER.SNAP_ZONE;
+    let target = null;
+    if (dy > 0 && y < top - 1) target = top;                             // down, from the hero or between the screens
+    else if (dy < 0 && y > 0 && y <= top + 1) target = 0;                // up, from the second screen's top or between
+    else if (dy < 0 && y > top + 1 && y < top + zone) target = top;     // up, from inside the second screen: settle on its top
+    if (target === null || Math.abs(target - y) < 1) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    snapTo(target);
+  };
+  if (snapping) window.addEventListener("wheel", onWheel, { capture: true, passive: false });
+
   return function cleanup() {
     ovals.forEach((o) => o.tween?.kill());
     thumbs.removeEventListener("mouseover", onOver);
     thumbs.removeEventListener("mouseout", onOut);
     thumbs.removeEventListener("focusin", onFocusIn);
     thumbs.removeEventListener("focusout", onFocusOut);
+    heroSeen?.disconnect();
+    html.classList.remove("hero-in-view");
+    if (snapping) window.removeEventListener("wheel", onWheel, { capture: true });
+    clearTimeout(safety);
   };
 }
