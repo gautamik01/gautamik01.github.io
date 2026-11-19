@@ -1,128 +1,81 @@
-# Gautami Kasat, portfolio site
+# Project: cartography (portfolio for Apple Maps, Cartographic Designer)
 
-Static site, no build step. Plain HTML, CSS and JS. Hosted target: GitHub Pages.
-Owner: Gautami Kasat, landscape urbanist and urban spatial analyst (MSc KU Leuven, MUSA at Penn Weitzman).
+## Audience and goal
+Apple design reviewers and recruiters, about 90 seconds on the site. It has to show a cartographic designer with craft in colour, type and graphic systems across scales, with 3D environments, prototypes built with real data and code, and tools and agentic workflows. Featured projects only. No archive.
 
-## Working with Gautami
+## How this repo relates to my other repos (important)
+- This repo is a showcase. Each project's interactive portal stays where it already lives and is embedded or linked live. Never copy whole repos in here.
+- You may READ my other repos freely: raw.githubusercontent.com links, or a shallow clone into a temp folder OUTSIDE this repo that you delete afterwards. Never commit, push to or modify any repo except this one.
+- Only curated presentation media lives here, in assets/projects/<slug>/.
+- If a project needs a site-only variant of something (a restyled map, say), copy ONLY that file into portals/<slug>/, edit it there, and record its origin in projects.json under "source". The original is never touched.
+- references/ is git-ignored and never published.
 
-- She's an architect and landscape urbanist, very strong visually, learning Python and R at Penn, newer to git. Explain in plain, short steps; casual and warm, no jargon dumps.
-- She works on Windows. She commits and pushes with **GitHub Desktop**; after a change, tell her the one-line commit summary to use. Don't push for her unless she asks.
-- Show before you change the look of anything: describe it or preview it, then build. One change at a time, then check desktop (1440 px) and phone (390 px).
-- She cares about details and will notice a misplaced line. Match the reference sites she likes: thelupoconcept.com, maximiliankaspar.com, jenniferluu6.github.io, lifeisanillusion.com.
-- Never invent facts about her work (titles, dates, clients, awards). Leave fields empty and ask.
-- Copy: warm, human, precise. No em dashes, no clichés or marketing phrases. Statements can be a little poetic; everything else plain.
-- To add a project, use `/add-project`.
-- Python (the tools scripts) runs in her conda environment `geospatial`. Each command is a fresh shell, so don't rely on `conda activate`: call that environment's `python.exe` directly (`conda env list` shows where it lives) or use `conda run -n geospatial`. Ask before installing anything into it.
+## Stack (no build step)
+- Plain HTML, CSS and vanilla JS (ES modules). Has to run from `python -m http.server` and on GitHub Pages as-is.
+- GSAP 3.13 (core, ScrollTrigger, Flip, SplitText) and Lenis, from jsDelivr, pinned to exact versions.
+- All content comes from data/projects.json. One template, project.html?p=<slug>, renders any project. Projects with "published": false are hidden everywhere, and the counters adjust.
+- Media: tools/prepare_media.py (Pillow + imageio-ffmpeg, so there's no separate ffmpeg install). Images: WebP, max 2400px long edge, quality 82. Videos: H.264 MP4, sharpness first and size second: full-screen openers 1920px wide (never upscaled) at CRF 22, clips beside text or in galleries 1600px max at CRF 23, a 720px `-720.mp4` copy of each at CRF 24; all -preset slow, no audio, faststart, a keyframe every 2s, the last 0.3s crossfaded into the start so the loop has no jump, and a WebP poster that is the encoded file's exact first frame. Before a re-encode replaces a clip, compare one frame old against new at 100%: labels and thin lines must stay as sharp, else lower that clip's CRF by 2 (`crf=` in the manifest). Re-runnable; `--videos` rebuilds only clips.
 
-## Pages
+## Visual reference
+Study every PNG in references/. They're frames from a site I love (Our Revolution). Match its structure, spacing, type contrast and motion. Don't copy its content or wordmark, and add my cartographic signature moves below so the site is clearly mine.
 
-| File | What it is |
-| --- | --- |
-| `index.html` | Home. Live waterline hero (WebGL) drawn from real shorelines, cycling Mumbai, the Belgian coast and Philadelphia. Small globe with the current place above it. Then the statement and Selected Projects. |
-| `about.html` | Statement, CV bar, City journey (lens globe left, experience scroll box right), Skills & tools with a collapsible Urban design skills section. |
-| `work.html` | Heading "Drawn, mapped & built", word filters, then a wall (3 columns, 2 on tablet and phone). Tiles are images only; the name, place and year appear on hover. Clicking (or tapping) a tile opens it in place across two columns and two rows with its summary, meta, an image counter and the link; the rest of the wall glides round it (FLIP animation, `grid-auto-flow: dense`). Escape or Close shuts it. A few in-between cells keep it playful. Reads `projects.json`. |
-| `project.html` | Simple image-led project page, built from one `projects.json` entry: `project.html#<id>`. |
-| `contact.html` | Email, LinkedIn. Still a stand-in. |
-| `404.html` | Shown by GitHub Pages for any missing address. Root-relative links (`/work.html`) so it works at any depth. |
-| `og.jpg`, `favicon.svg`, `apple-touch-icon.png` | Share preview image (1200 × 630, the Mumbai hero) and icons. Every page links them in its `<head>` with Open Graph and Twitter tags pointing at https://gautamik01.github.io/. |
-| `robots.txt`, `sitemap.xml` | For search engines. Add new top-level pages to the sitemap. |
-| `tools/prep_images.py` | Turns a folder of originals into `projects/<id>/cover.jpg` (4:3, 1600 × 1200) and a gallery (`01.jpg…`, long edge 2000 px). Needs Pillow. |
-| `.claude/skills/add-project/` | The `/add-project` command: the step-by-step way to add a project. |
+## Design tokens
+- --paper: #E7E4E0 (home hero, light pages)
+- --ink: #0B0B0B (featured section, project pages)
+- --sage: #B3B7AD (menu overlay)
+- --white: #F5F4F1
+- --muted: rgba(11,11,11,0.55) on light, rgba(245,244,241,0.6) on dark
+- No other UI colours. Colour only comes from the work.
+- 24px gutter on desktop, 16px on mobile. 12-column grid. Generous whitespace.
 
-## Design system
+## Typography
+- Adobe Fonts kit vwk1ddw: `<link rel="stylesheet" href="https://use.typekit.net/vwk1ddw.css">` in every page head. What its CSS served on 2026-11-05: kepler-3-display-cond 400; termina 800 and 900; obviously 800; neue-haas-grotesk-text 500; neue-haas-grotesk-display 500.
+- --font-display: "kepler-3-display-cond" 400 (Kepler 3 Display Condensed), fallback Instrument Serif. Condensed high-contrast serif, UPPERCASE headlines, line-height 0.88, tracking -0.01em, clamp(56px, 9vw, 160px).
+- --font-punch: "termina" 900 (Termina Black), fallback Archivo wdth 125 wght 900. Heavy wide sans for exactly ONE word per headline. Obviously 800 is the other heavy face in the kit; fonts-test.html shows both.
+- --font-text: "neue-haas-grotesk-text" 400 and 500, fallback Inter. Grotesk for body (17px, line-height 1.5) and labels. The kit is missing the 400 (Neue Haas Grotesk Text 55 Roman): add it to kit vwk1ddw in Adobe Fonts; until then 400 renders as 500.
+- Labels: 11px, uppercase, letter-spacing 0.08em, always in parentheses with spaces: ( MENU ), ( OPEN ), ( CV ↓ ).
+- Fallbacks: Instrument Serif, Archivo (wdth 125, weight 900) and Inter, from Google Fonts.
+- Copy rule: no em dashes anywhere in site text.
 
-- Colours (CSS tokens on `:root`): paper `#F3F1EB`, paper-2 `#E7E4DC`, ink `#151515`, ink-soft `#5B5953`, water blue `#2F45C6`, now orange `#EF5A2A`, rust `#B9400F` (orange as text), land `#FBFAF6`.
-- Meaning: blue is water and education; orange is now (ongoing, learning at Penn, the current place). Nothing else gets colour.
-- Type: Instrument Sans (body, name), Instrument Sans condensed via `font-stretch` (labels, big headings), Instrument Serif (statements). All type flows through `--sans`, `--cond`, `--cond-stretch`, `--serif` and the scale tokens `--disp`, `--body`, `--ser`.
-- No drop shadows, no gradients, no rounded cards, no emoji, no stock icons. Hairlines (`--hair`) and ink rules instead of boxes.
-- Every page shares the header (hides on scroll down, returns on scroll up) and the footer (email left, LinkedIn | GitHub right). The Work page footer has no rule above it; Gautami asked for no long lines there.
-- Home: the place name ("Mumbai, IN") sits centred above the small globe and only slides sideways if it would run off a narrow screen (`keepLabelIn`).
+## Global chrome
+- No menu overlay. Fixed header with mix-blend-mode: difference so the labels read on paper, ink and images. The wordmark "Gautami Kasat" centred in the display serif, title case, linking home. The four labels "( WORK )" "( ABOUT )" "( CONTACT )" "( CV ↓ )" together in the top-right corner, evenly spaced; CV downloads assets/cv/Gautami_Kasat_CV.pdf. The current page's label carries a small filled dot before it. Under 700px: wordmark on the first row, the four labels evenly spaced on a second row.
+- Compact contact footer at the bottom of every page except contact (home below the hero, work below the strip, about, every project; the contact page's five links are the footer, so it carries none). One row: left, the email in the display serif at about 32px, a mailto link that also copies and shows "( COPIED )" beside it; right, on the same row: ( LINKEDIN ↗ ) ( CV ↓ ) ( GITHUB ↗ ). Directly under it, tight, the tiny labels: "© 2026 Gautami Kasat", "( 39.95° N, 75.16° W ) Philadelphia", "( BACK TO TOP ↑ )" at the right. The whole band is about 130px tall. The footer takes the page's colour (--ink on dark pages, --paper on light) with a hairline rule above. The scale bar hides while the footer is in view. LinkedIn: https://www.linkedin.com/in/gautamikasat.
 
-## Adding work
+## Motion
+- Page transitions: an --ink panel wipes up from the bottom (700ms, power4.inOut), the page navigates, then the panel wipes away upward. Faint procedural contour lines (6% opacity) drift across the panel.
+- Headlines: SplitText lines rise out of masks (yPercent 100 to 0, 900ms, stagger 0.08).
+- Signature 1: a scale bar fixed bottom-left ("0", bar, "1 km") whose fill tracks scroll progress.
+- Signature 2: project meta shows real site coordinates, like ( 39.95° N, 75.16° W ).
+- Signature 3: the contour-line wipe.
+- Videos: muted, loop, playsinline, poster first. preload none until a clip is within one screen of the viewport (then auto), play only while in view, at most six at once so a row of four plus the lead all run (`VIDEO` in app.js); the opener alone preloads and autoplays from the first paint. Screens under 700px load the `-720.mp4` copies (js/media.js).
+- prefers-reduced-motion: no wipes, ripple, smooth scroll or autoplay. Fades and posters instead.
 
-Use `/add-project` (`.claude/skills/add-project/SKILL.md`), which walks through facts, images, notebooks, the JSON entry and the browser check. All Work cards come from `projects.json`. One entry per project:
+## Shell contract (css/tokens.css, css/base.css, js/app.js, js/contours.js, js/pages.js, js/hero.js)
+- Pages: index.html (home, the hero project browser), work.html (the featured strip), project.html?p=slug[&h=image], about.html, contact.html. Every page: `<html data-theme="paper|ink" data-page="home|work|about|contact">`, the inline `document.documentElement.classList.add('js')`, the Typekit and Google Fonts links, tokens.css then base.css, `<main id="main" data-theme data-page>` carrying the same two attributes (each main paints its own background), then the pinned GSAP 3.13.0 and Lenis scripts and `js/app.js` as a module.
+- app.js injects the header, the contact footer (appended to each `<main>` so it rolls with the page; `SITE` at the top of app.js holds the email and links), scale bar and cursor. Internal links do not reload: app.js fetches the next page, injects its `<main>` beside the current one, rolls it up (new page y 100vh to 0, old page up 30vh, scale 0.96, brightness 0.5, 900ms power4.inOut, faint contours along the incoming top edge), then pushState. Back and forward roll in reverse; a failed fetch falls back to a normal navigation; reduced motion crossfades in 200ms. Tuning constants: `ROLL` at the top of app.js.
+- pages.js renders `#browser` (home thumbnails and panel, via hero.js), `#work` (the tile strip from data/work.json, via work.js) and `#project` from data/projects.json for the first load and for every rolled-in page; a renderer may return a cleanup function. The router marks a main `data-entered="1"` and dispatches `page:enter` on it once it is fully on screen (first load, or after its roll); the work view starts its enter sequence on that. Tuning constants: `WORK` at the top of js/work.js. A project may carry `lead_video` (with `lead` as its poster): the clip loops muted beside the text in place of the lead image, with the same black-and-white to colour hover and `lead_fit` contain. With `?h=assets/...` the project opener uses that image as its hero; the hero browser passes the hero poster this way and Flips it into the opener. The home panel shows each project's real hero media: its opener video (buffering from the moment the thumbnail is hovered) or its poster. On commit or click the panel passes its playback time as `&t=`, the opener video resumes there (preload auto, poster = the exact first frame), and when the panel is playing a video that same element is adopted as the opener's video during the Flip. `"opener_fit": "contain"` shows non-16:9 opener media whole on ink.
+- Hero browser tuning: `BROWSER` at the top of js/hero.js (20vw start, slide and swap timings, lerp, close delay).
+- Hooks: `data-split` on a headline (SplitText line reveal), `data-cursor="open"` on anything the cursor should grow over, `data-autoplay` on videos (play only in view), `data-no-transition` on a link to skip the roll.
+- `html.fonts-adobe` or `html.fonts-fallback` is set once the kit is checked; the fallback serif is not condensed, so the display size scales by 0.9 under `fonts-fallback`.
+- fonts-test.html is a standalone specimen page, not part of the site.
 
-```json
-{
-  "id": "floodable-park",
-  "title": "Living in a Floodable Park",
-  "summary": "One sentence.",
-  "place": "Middelkerke, BE",
-  "year": "2024–25",
-  "status": "ongoing",
-  "categories": ["urban-design", "research"],
-  "tools": ["ArcGIS"],
-  "image": "projects/floodable-park/cover.jpg",
-  "link": "project.html#floodable-park",
-  "linkType": "page",
-  "images": ["projects/floodable-park/01.jpg", "projects/floodable-park/02.jpg"],
-  "featured": true
-}
-```
+## Project page rules (every project, from now on)
+- Never crop UI, dashboards, text, map labels or legends. Gallery images are never cropped (natural aspect ratio, object-fit contain). Lead images only crop empty margins, with a focal point (`lead_focus`) that keeps the subject whole.
+- Opener to text panel is a fast triggered snap (about 600ms, power3.inOut) in both directions, never a slow scroll-scrubbed rise.
+- The text panel fits one screen at 1440x900. The lead image matches the text column's height.
+- Gallery: a strict grid of full-width rows (`"width": "full"`), equal 6/6 pairs whose images share an aspect ratio, or a row of four (`"width": "quarter"`), top-aligned. Nothing staggered or offset. Media never grows past its own pixels, so a small image sits centred in its cell.
+- Every gallery caption starts exactly at its own image's left edge and is no wider than the image, site-wide, including images that are centred or narrower than their cell.
+- Fixed UI (scale bar, header, labels) never overlaps text or media labels on any page or screen size. The scale bar hides on the home hero and while a caption passes under it.
+- Opener media that is not 16:9 (a portrait clip, a 2:1 recording, a poster) is shown whole with `"opener_fit": "contain"` on ink, never cover-cropped.
+- Opener media with its own title along its top edge (the ski map) takes `"opener_fit": "top"` and an `"opener_bg"` matching its background: the frame fills the screen under the header (object-fit cover, anchored to its top edge, so only the bottom is ever cropped), and under 760px it is anchored to its top-left corner so the title column stays whole. The header never covers a title inside the footage. `"opener_title": false` leaves the number, title, kicker and meta off that opener, since the footage carries its own title; every other project keeps them.
+- Before finishing any project page, look at every image placement yourself and confirm nothing important is cut off.
 
-- `link` decides where the card goes:
-  - a project's own HTML, e.g. a Quarto render committed at `projects/<id>/index.html` (use `linkType: "quarto"`);
-  - `project.html#<id>` for a design project shown as images (`linkType: "page"`, fill `images`);
-  - a PDF (`"pdf"`), slides (`"slides"`), a repo (`"github"`) or any outside URL (`"site"`).
-  - Empty `link` shows the card as "Coming soon".
-- `status: "ongoing"` adds the orange Ongoing tag. `categories` use the ids in the `categories` list; the visible filter names are the `name` fields (Places & landscapes, Research, Maps, Data stories, AI experiments, Climate) and "Everything" for all.
-- A filter only shows once at least one project uses it, so Data stories appears with the first notebook.
-- Tiles never show category tags or text under the image. `summary` appears only when a tile is opened, and on `project.html`.
-- `image` plus `images` form the little gallery inside an opened tile (click the image or the counter to step through). Empty strings show as grey placeholders until real images exist.
-- `fillers` (top level) are the in-between cells on the Everything view: `blank`, `places` (coordinates that tick through a list), `water` (moving waterlines round an island), `line` (one serif sentence) and `now` (orange dot plus a short note). `after` is the project id they follow. They hide when a filter is picked.
-- Covers: 4:3, roughly 1600 × 1200, JPG or WebP under ~300 KB. Put assets in `projects/<id>/`.
+## Quality bar
+Lighthouse performance 90+ on desktop. Lazy-load below the fold. Works fully on a phone. Meaningful alt text. Visible focus. No console errors.
 
-`featured: true` will drive the home page Selected Projects once item 1 in the list below is done.
-
-## Water fields (home hero)
-
-- `fields/<key>.png` encode a signed distance field (metres to the shoreline, sqrt-compressed, 16-bit in R/G). Lines are drawn only where the value is positive (water).
-- Built by `tools/build_fields2.py` (Python: numpy, scipy, Pillow, basemap + basemap-data-hires for GSHHG shorelines).
-  - mumbai: GSHHG full resolution, 48 km square centred on 72.885 E, 18.99 N (wide enough that Colaba's tip sits clear of the bottom edge).
-  - coast: GSHHG plus OpenStreetMap harbour basins connected to the sea at Oostende (HOT export `hotosm_bel_waterways_osm_geojson`).
-  - philadelphia: Philadelphia Water Department "Hydrographic Features (Poly)", Delaware and Schuylkill only.
-- The source GeoJSONs are large and not in the repo. Update the `GEO` path at the top of the script before rebuilding.
-- Per-place framing (`focus`, `zoom`) and line spacing (`density`) live in the `SITES` array in `index.html`.
-
-## Settled settings (from Gautami's tuning, Oct 2026)
-
-The Tune and Fonts panels are gone; their values are now the defaults.
-- Home, laptop and up: name one line about 34% of the screen wide (65px at 1440px), "Hello, I am" and role at 21px, globe 97px centred at 93% across and 84% down. Phones keep their own layout (name on two lines, 60px globe top right, low enough that the place name clears the menu). See `LAPTOP` in `index.html`.
-- Motion: 6 s on each place, 3.6 s transition, line drift 1x (`DWELL`, `MORPH`, `DRIFT`).
-- Type scale on every page: `--disp: 0.6` (big headings), `--body: 0.85` (body text, back to 1 on phones), `--ser: 1`. Faces: Instrument Sans, Instrument Sans condensed, Instrument Serif.
-- `tools/fontpanel.html` and `tools/inject_fonts.py` are retired and can be deleted if they're still in the folder.
-- Every page must keep its own `<!doctype html>` and `<meta name="viewport">`; without the viewport tag phones render the page at desktop width.
-
-## Local folder
-
-The `References/` folder in Gautami's working copy is her moodboard of other sites and images; it is not part of the site and `.gitignore` keeps it out of the repo. This file is public, so no personal file paths or machine details go in it.
-
-GitHub: user `gautamik01`. The site is meant to publish from the repo `gautamik01.github.io` (GitHub Pages, branch `main`, root), live at https://gautamik01.github.io. Gautami uses GitHub Desktop to commit and push.
-
-## Next: make it more professional (work through in this order, one at a time, showing Gautami each)
-
-1. **Home Selected Projects from `projects.json`.** The tiles on `index.html` are still hand-written placeholders. Read the `featured` projects (up to 6), keep the staggered Lupo-style layout and hover thumbnails, and make each tile open that project on the Work page.
-2. **Direct links to a project.** Support `work.html#p=<id>` (keep `#<category>` for filters): on load, open that tile in place and scroll to it; update the hash when a tile opens and clear it on close. She'll paste these links into applications.
-3. **Notebooks that look like the site.** A small Quarto theme in `tools/quarto/` (an `.scss` with the paper, ink, blue and orange tokens and the Instrument fonts, plus a header include with GK, a "Back to work" link and the footer) so Data stories feel like part of the portfolio. Document the front matter to use in `/add-project`.
-4. **Images done properly** once real covers exist: `width`/`height` on every `<img>` to stop layout jumps, `decoding="async"`, a smaller 800 px version via `srcset` for the wall, and an `alt` field per project in `projects.json` used as alt text.
-5. **Contact page.** Still a stand-in. Design it in the same language (big condensed heading, email with copy, LinkedIn, GitHub, CV); ask Gautami what else she wants on it.
-6. **CV button** on About: put the PDF in the root and set `CV_URL`.
-7. **Quality pass.** Run Lighthouse on all pages (performance, accessibility, best practices, SEO, aim for 90+), tab through the Work wall and About box with the keyboard, check contrast of `--ink-soft` text at its small sizes, and fix what comes up.
-8. **Speed.** Self-host the two Google fonts as woff2 in `fonts/` (drops a third-party request), load d3/topojson with `defer` where possible, keep total page weight for Home under ~2 MB.
-9. **Later, only if she wants:** her own domain (then Adobe Fonts), privacy-friendly visit counts (e.g. GoatCounter), and per-project share previews (static stubs in `projects/<id>/`).
-
-Ground rules: static files only, no frameworks or build step unless she agrees; keep the design system above; no shadows, gradients or rounded cards; test at 1440 and 390 px before saying it's done.
-
-## Open items
-
-- CV PDF: set `CV_URL` near the top of the script in `about.html`.
-- Real cover images and project images for every card.
-- Real title and year for "Godavari River Edge" (working title), year for Campus Forest, end month for AIGA Philadelphia.
-- Links for Raasta's project site, The Overlap and That Sinking Feeling.
-- Contact page design.
-- Fonts: Adobe Fonts (e.g. Neue Haas Grotesk) can replace Instrument Sans once the site has its own domain and an Adobe web project.
-- Optional: carry the new coast and Philadelphia fields into the bead-hero alternative (`dots/`).
-
-## Writing rules for site copy
-
-Short, plain, specific. No em dashes. No marketing phrases. One sentence per project or role detail. Do not invent project titles, dates or claims; leave a field empty instead.
+## Projects (this order)
+01 raasta: Raasta. "The most scenic walk in Philadelphia, not the fastest one." Walking-route prototype with 3D Mapbox navigation and a Python route engine. Portal: https://raasta-prototype.vercel.app/
+02 ski-terrain: Learning to Ski from NYC and Philly. Interactive terrain map of every ski area within three hours of either city, ranked by beginner terrain. Portal: https://gautamik01.github.io/30-day-map-challenge-2026/output/day21_openstreetmap-ski.html. Its opener and lead clips are Gautami's own captures in `../Some Material/Ski/` (read only); the stills and work tiles were recorded from the live page (Playwright, tools/record_ski.py) into ../_temp_sources/ski/. tools/prepare_media.py compresses both.
+03 forested-university: Forested University. 3D forested campus: aerial, exploded housing axonometric, human-scale walkthrough animations. No portal: this site is its home.
+04 cloud-footprint: The Cloud Has a Footprint. Interactive Mapbox maps of US data centers and AI campuses against water stress, built in Python. Portals: https://gautamik01.github.io/30-day-map-challenge-2026/output/day01_points-ai.html and https://gautamik01.github.io/30-day-map-challenge-2026/output/day03_polygons-water-ai.html
+05 map-series: 30 Day Map Challenge, static cartography built from one shared Python toolkit (mapkit). Portal: https://gautamik01.github.io/30-day-map-challenge-2026/output/

@@ -1,142 +1,34 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="ink" data-page="work">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Project, Gautami Kasat</title>
-<meta name="description" content="A project by Gautami Kasat.">
-<link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
-<meta name="theme-color" content="#F3F1EB">
-<link rel="canonical" href="https://gautamik01.github.io/project.html">
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="Gautami Kasat">
-<meta property="og:title" content="Project, Gautami Kasat">
-<meta property="og:description" content="A project by Gautami Kasat.">
-<meta property="og:url" content="https://gautamik01.github.io/project.html">
-<meta property="og:image" content="https://gautamik01.github.io/og.jpg">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Waterlines around Mumbai with the name Gautami Kasat, Urban Spatial Analyst and Urban Designer">
-<meta name="twitter:card" content="summary_large_image">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wdth,wght@75..100,400..700&family=Instrument+Serif:ital@0;1&display=swap">
-<style>
-/* Layout: a simple image-led project page built from one projects.json entry: title block, cover, then the images, then next project. */
-:root {
-  --paper: #F3F1EB;
-  --paper-2: #E7E4DC;
-  --ink: #151515;
-  --ink-soft: #5B5953;
-  --hair: rgba(21, 21, 21, 0.18);
-  --water: #2F45C6;
-  --now: #EF5A2A;
-  --rust: #B9400F;
-  --sans: "Instrument Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --serif: "Instrument Serif", "Times New Roman", Times, serif;
-  --cond: var(--sans);
-  --cond-stretch: 75%;
-  --disp: 0.6;
-  --body: 0.85;
-  --ser: 1;
-  --gutter: clamp(16px, 1.4vw, 24px);
-  color-scheme: light;
-}
-/* type scale settled by Gautami: big headings at 60%, body at 85% on screens wider than a phone */
-@media (max-width: 760px) { :root { --body: 1; } }
-html { background: var(--paper); }
-body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
-a { color: inherit; text-decoration: none; }
-:focus-visible { outline: 1.5px solid var(--water); outline-offset: 3px; }
-.top { position: sticky; top: 0; z-index: 20; display: flex; justify-content: space-between; align-items: center; padding: max(10px, env(safe-area-inset-top, 0px)) var(--gutter) 2px; background: var(--paper); transition: transform .5s cubic-bezier(.2,.75,.15,1); }
-.top.away { transform: translateY(-110%); }
-.top a { min-height: 44px; display: inline-flex; align-items: center; font-size: 17px; text-transform: uppercase; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 500; }
-.top nav { display: flex; gap: 20px; }
-.top a:hover, .top a[aria-current] { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px; }
-.cond { font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 600; }
-
-.back { display: inline-flex; margin: clamp(40px, 7vh, 80px) var(--gutter) 0; min-height: 40px; align-items: center; font-size: 15px; text-transform: uppercase; color: var(--ink-soft); }
-.back:hover { color: var(--ink); }
-.ttl { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 24px 40px; padding: 18px var(--gutter) 0; align-items: end; }
-h1 { margin: 0; font-size: calc(clamp(48px, 8vw, 132px) * var(--disp)); line-height: 0.86; text-transform: uppercase; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 700; letter-spacing: -0.02em; }
-dl { margin: 0; display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 8px 12px; font-size: 15px; border-top: 1px solid var(--ink); padding-top: 12px; }
-dt { color: var(--ink-soft); text-transform: uppercase; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 600; font-size: 13px; padding-top: 2px; }
-dd { margin: 0; }
-.sum { padding: 32px var(--gutter) 0; margin: 0; font-family: var(--serif); font-size: calc(clamp(26px, 2.6vw, 42px) * var(--ser)); line-height: 1.15; max-width: 28em; text-indent: 12%; }
-.imgs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(12px, 1.4vw, 24px); padding: clamp(40px, 6vw, 72px) var(--gutter) 0; }
-.imgs figure { margin: 0; }
-.imgs figure:first-child { grid-column: 1 / -1; }
-.imgs figure:nth-child(even):last-child { grid-column: 1 / -1; }
-.imgs figure:nth-child(even):last-child .ph { aspect-ratio: 16 / 8; }
-.ph { aspect-ratio: 4 / 3; background: var(--paper-2); position: relative; }
-.imgs figure:first-child .ph { aspect-ratio: 16 / 8; }
-.ph img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.ph span { position: absolute; left: 12px; bottom: 10px; font-size: 13px; color: var(--ink-soft); text-transform: uppercase; }
-figcaption { font-size: 14px; color: var(--ink-soft); padding-top: 8px; }
-.next { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; margin: clamp(80px, 12vh, 140px) var(--gutter) 0; padding: 18px 0 clamp(60px, 10vh, 120px); border-top: 1px solid var(--ink); }
-.next small { display: block; font-size: 15px; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 8px; }
-.next b { font-size: calc(clamp(34px, 5vw, 80px) * var(--disp)); line-height: 0.9; text-transform: uppercase; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 700; letter-spacing: -0.02em; }
-.next:hover b { color: var(--water); }
-footer { border-top: 1px solid var(--hair); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 24px; padding: 18px var(--gutter) max(22px, env(safe-area-inset-bottom, 0px)); font-size: 15px; }
-footer .k { color: var(--ink-soft); }
-footer a:hover { color: var(--water); }
-@media (max-width: 760px) { .top nav { gap: 12px; } .top a { font-size: 15px; } .ttl { grid-template-columns: 1fr; } .imgs { grid-template-columns: 1fr; } .sum { text-indent: 0; } }
-@media (prefers-reduced-motion: reduce) { .top { transition: none; } }
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Project, Gautami Kasat</title>
+  <meta name="description" content="A project by Gautami Kasat.">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#0B0B0B">
+  <script>document.documentElement.classList.add('js')</script>
+  <link rel="preconnect" href="https://use.typekit.net" crossorigin>
+  <link rel="stylesheet" href="https://use.typekit.net/vwk1ddw.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,900&family=Inter:wght@400;500&family=Instrument+Serif&display=swap">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <!-- the whole module graph in one round trip, and the project data, so the opener clip can start as early as possible -->
+  <link rel="modulepreload" href="js/app.js"><link rel="modulepreload" href="js/pages.js"><link rel="modulepreload" href="js/contours.js"><link rel="modulepreload" href="js/icons.js"><link rel="modulepreload" href="js/hero.js"><link rel="modulepreload" href="js/work.js"><link rel="modulepreload" href="js/project.js"><link rel="modulepreload" href="js/carousel.js"><link rel="modulepreload" href="js/media.js">
+  <link rel="preload" href="data/projects.json" as="fetch" crossorigin>
 </head>
 <body>
-<header class="top">
-  <a href="index.html" aria-label="Gautami Kasat, home">GK</a>
-  <nav aria-label="Main">
-    <a href="work.html" aria-current="page">Work</a>
-    <a href="about.html">About</a>
-    <a href="contact.html">Contact</a>
-  </nav>
-</header>
-<main id="main">
-  <a class="back cond" href="work.html">← All work</a>
-  <div class="ttl"><h1 id="t">Project</h1><dl id="m"></dl></div>
-  <p class="sum" id="s"></p>
-  <div class="imgs" id="imgs"></div>
-  <a class="next" id="next" href="work.html"><span><small class="cond">Next project</small><b id="nt"></b></span><span class="cond" aria-hidden="true">→</span></a>
-</main>
-<footer>
-  <a href="mailto:gautami.kasat@gmail.com">gautami.kasat@gmail.com</a>
-  <span><a href="https://www.linkedin.com/in/gautamikasat" target="_blank" rel="noopener">LinkedIn</a> <span class="k">|</span> <a href="https://github.com/gautamik01" target="_blank" rel="noopener">GitHub</a></span>
-</footer>
-<script>
-(() => {
-  const $ = (id) => document.getElementById(id);
-  const esc = (t) => String(t ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const topBar = document.querySelector('.top');
-  let lastY = scrollY, upRun = 0;
-  addEventListener('scroll', () => {
-    const y = Math.max(0, scrollY), atBottom = y + innerHeight >= document.documentElement.scrollHeight - 4;
-    if (y < 80) { topBar.classList.remove('away'); upRun = 0; }
-    else if (y > lastY) { upRun = 0; topBar.classList.add('away'); }
-    else if (y < lastY && !atBottom) { upRun += lastY - y; if (upRun > 48) topBar.classList.remove('away'); }
-    lastY = y;
-  }, { passive: true });
-  function show(d) {
-    const pages = d.projects.filter(p => p.link && p.link.startsWith('project.html#'));
-    const id = location.hash.slice(1), i = Math.max(0, pages.findIndex(p => p.id === id)), p = pages[i] || d.projects[0];
-    const cats = Object.fromEntries(d.categories.map(c => [c.id, c.name]));
-    document.title = p.title + ', Gautami Kasat';
-    $('t').textContent = p.title;
-    const rows = [['Place', p.place], ['Year', p.year], ['Category', (p.categories || []).map(c => cats[c] || c).join(', ')], ['Tools', (p.tools || []).join(', ')], ['Status', p.status === 'ongoing' ? 'Ongoing' : '']];
-    $('m').innerHTML = rows.filter(r => r[1]).map(r => '<dt>' + r[0] + '</dt><dd>' + esc(r[1]) + '</dd>').join('');
-    $('s').textContent = p.summary || '';
-    const imgs = (p.images && p.images.length ? p.images : ['', '', '']);
-    $('imgs').innerHTML = imgs.map((src, k) => '<figure><div class="ph">' + (src ? '<img src="' + esc(src) + '" alt="">' : '<span class="cond">Image ' + (k + 1) + '</span>') + '</div></figure>').join('');
-    const n = pages[(i + 1) % pages.length];
-    $('next').href = n.link; $('nt').textContent = n.title;
-    scrollTo(0, 0);
-  }
-  let data;
-  fetch('projects.json').then(r => r.json()).then(d => { data = d; show(d); });
-  addEventListener('hashchange', () => data && show(data));
-})();
-</script>
+  <main id="main" data-theme="ink" data-page="work">
+    <!-- one template for every project: project.html?p=<slug>[&h=<hero image>], filled from data/projects.json -->
+    <article id="project"></article>
+  </main>
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/Flip.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.3.4/dist/lenis.min.js"></script>
+  <script type="module" src="js/app.js"></script>
 </body>
 </html>

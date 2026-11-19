@@ -1,0 +1,403 @@
+[
+  {
+    "slug": "raasta",
+    "number": "01",
+    "published": true,
+    "title": "Raasta",
+    "kicker": "The most scenic walk in Philadelphia, not the fastest one.",
+    "location": "Philadelphia, PA",
+    "coords": "( 39.95° N, 75.16° W )",
+    "year": "2026",
+    "role": "For the Wharton Generative AI Studio",
+    "opener_text": "dark",
+    "tools": [
+      { "name": "Mapbox GL JS", "use": "the 3D map and the walk camera" },
+      { "name": "Python", "use": "the route engine, scoring every walkable segment" },
+      { "name": "FastAPI", "use": "the route API, on Render" },
+      { "name": "Next.js", "use": "the front end, on Vercel" },
+      { "name": "Groq", "use": "reads your mood into weights and writes the callouts" },
+      { "name": "Claude Code", "use": "build and iteration" }
+    ],
+    "data": ["OpenStreetMap walk network", "Philadelphia street tree inventory 2025", "PPR tree canopy 2015", "City street centerlines and High Injury Network", "OpenDataPhilly parks, hydrology, art and historic districts", "phila.gov farmers markets and events"],
+    "labels": ["( 3D NAVIGATION )", "( PROTOTYPE )", "( ROUTE ENGINE )"],
+    "card": "assets/projects/raasta/card.webp",
+    "card_video": "",
+    "hero": "assets/projects/raasta/clip-2-poster.webp",
+    "hero_video": "assets/projects/raasta/clip-2.mp4",
+    "lead": "assets/projects/raasta/lead.webp",
+    "lead_bw": true,
+    "lead_fit": "contain",
+    "lead_wide": true,
+    "lead_focus": "center",
+    "intro": [
+      "Raasta finds the most scenic walk in Philadelphia, not the fastest one. Tell it your mood and how many extra minutes you can spare, and it builds a real route, then narrates it as you go.",
+      "A Python engine scores all 196,411 walkable street segments for trees, parks, water, public art and history. A language model turns your mood into weights, but it never picks the streets, and nothing can switch off what is dangerous."
+    ],
+    "gallery": [
+      {
+        "type": "video",
+        "src": "assets/projects/raasta/clip-3.mp4",
+        "poster": "assets/projects/raasta/clip-3-poster.webp",
+        "alt": "Screen recording of Raasta in 3D: the camera moves along the route between Center City's towers as callouts appear.",
+        "caption": "Walking the route in 3D. Callouts are written from the real things it passes.",
+        "width": "full"
+      },
+      {
+        "type": "video",
+        "src": "assets/projects/raasta/clip-1.mp4",
+        "poster": "assets/projects/raasta/clip-1-poster.webp",
+        "alt": "Screen recording of Raasta: a mood is typed, a start and an end are picked, and the scenic route draws itself across the map.",
+        "caption": "",
+        "width": "full"
+      },
+      {
+        "type": "image",
+        "src": "assets/projects/raasta/route-3d.webp",
+        "poster": "",
+        "alt": "The same route in 3D: Center City's towers in pale blue and tan, the orange walk threading between them, with the three callouts pinned to their streets and the route panel on the left.",
+        "caption": "The route in 3D. Each callout stays pinned to the street it describes.",
+        "width": "full"
+      },
+      {
+        "type": "image",
+        "src": "assets/projects/raasta/route.webp",
+        "poster": "",
+        "alt": "The route result: 22 minutes instead of 14, 1.7 km, the walk drawn in orange from City Hall to Rittenhouse Square with hand-drawn speech bubbles along it.",
+        "caption": "The plan view. 22 minutes instead of 14, and 8 of them on nicer streets.",
+        "width": "full"
+      }
+    ],
+    "system": null,
+    "portals": [
+      {
+        "label": "( OPEN RAASTA ↗ )",
+        "cta": "Try the prototype",
+        "url": "https://raasta-prototype.vercel.app/",
+        "window": "assets/projects/raasta/clip-1.mp4",
+        "window_poster": "assets/projects/raasta/clip-1-poster.webp",
+        "embeddable": true
+      }
+    ],
+    "source": {
+      "repo": "Private working repo (local: D:/00_MUSA_EVERTHING/GEN_AI_Studio/raasta); front end on Vercel, API on Render",
+      "notes": "Screens captured with tools/shoot_portals.py (Playwright, 1440x900 at 2x). The API sleeps on Render's free tier, so the first route of a session can take a minute: the site says 'Waking up the route engine'. No X-Frame-Options or CSP frame-ancestors headers, so it can be iframed. Tools confirmed from the repo on 2026-11-11: requirements.txt (fastapi, groq), README (Next.js front end on Vercel, API on Render, built for the Wharton Generative AI Studio), PROGRESS.md (mapbox-gl 3.34 replaced maplibre on 4 November 2026)."
+    }
+  },
+  {
+    "slug": "ski-terrain",
+    "number": "02",
+    "published": true,
+    "title": "Learning to Ski from NYC and Philly",
+    "kicker": "Every ski area within three hours of New York or Philadelphia, ranked by beginner terrain and set on its real mountain.",
+    "location": "New York + Philadelphia day trips",
+    "coords": "( 42.56° N, 73.29° W )",
+    "year": "2026",
+    "role": "",
+    "opener_text": "dark",
+    "opener_fit": "top",
+    "opener_bg": "#FFFFFF",
+    "opener_title": false,
+    "tools": [
+      { "name": "Python", "use": "one notebook builds the whole page, with NumPy, SciPy and GeoPandas" },
+      { "name": "GeoPandas", "use": "trail lengths in UTM, the ranked list, the trail and lift layers" },
+      { "name": "ArcGIS Pro", "use": "3 m USGS elevation per mountain, a multidirectional hillshade and 20 m contours, through arcpy" },
+      { "name": "MapLibre GL JS", "use": "the page, which builds its own 3D terrain tiles in the browser" },
+      { "name": "Mapbox Matrix API", "use": "drive times from each city, no traffic" },
+      { "name": "mapkit", "use": "the shared toolkit: credits, style, the publish step" }
+    ],
+    "data": ["OpenStreetMap via OpenSkiMap (ODbL)", "USGS 3DEP elevation", "Mapbox Matrix API drive times", "US Census Bureau boundaries"],
+    "labels": ["( TERRAIN )", "( INTERACTIVE MAP )", "( OPENSTREETMAP )"],
+    "card": "assets/projects/ski-terrain/card.webp",
+    "card_video": "",
+    "hero": "assets/projects/ski-terrain/hero-poster.webp",
+    "hero_video": "assets/projects/ski-terrain/hero.mp4",
+    "lead": "assets/projects/ski-terrain/lead-poster.webp",
+    "lead_video": "assets/projects/ski-terrain/lead.mp4",
+    "lead_bw": true,
+    "lead_fit": "contain",
+    "lead_wide": true,
+    "lead_focus": "center",
+    "intro": [
+      "Learning to ski from New York or Philadelphia means a day trip, so this map starts with a rule: every ski area within three hours' drive of either city, with no traffic. It ranks them by beginner terrain, the kilometres of bunny hill and green trail, and puts each one on its real mountain.",
+      "The overview is a relief of the whole region from USGS elevation. Click a mountain and its own terrain loads: 3 m elevation, a multidirectional hillshade and 20 m contours made in ArcGIS Pro, on 3D tiles the page builds in the browser. Hover a trail for its length, drop and slope, with a profile that draws every trail on the mountain at one scale, so they compare. Trails and lifts come from OpenStreetMap through OpenSkiMap."
+    ],
+    "gallery": [
+      {
+        "type": "image",
+        "src": "assets/projects/ski-terrain/mountain.webp",
+        "poster": "",
+        "alt": "Windham in 3D: its hillshade and contours with the trails drawn over them, the trail profile at the bottom left and the mountain's stats on the right.",
+        "caption": "Windham, selected. 3 m terrain, 20 m contours and every trail, with a profile of the longest green run."
+      },
+      {
+        "type": "image",
+        "src": "assets/projects/ski-terrain/blue-mountain.webp",
+        "poster": "",
+        "alt": "Blue Mountain in 3D, seen low over its base: the bunny hill outlined in orange with the magic carpets drawn black beside it, the green trails dotted up the slope, Blue Mountain highlighted at number 6 in the ranked list and its stats on the right.",
+        "caption": "Blue Mountain, selected: a kilometre of bunny hill and nine magic carpets at the base, the green trails dotted up the slope."
+      }
+    ],
+    "system": null,
+    "portals": [
+      {
+        "label": "( OPEN THE SKI MAP ↗ )",
+        "cta": "Try the map",
+        "url": "https://gautamik01.github.io/30-day-map-challenge-2026/output/day21_openstreetmap-ski.html",
+        "window": "assets/projects/ski-terrain/lead.mp4",
+        "window_poster": "assets/projects/ski-terrain/lead-poster.webp",
+        "embeddable": true
+      }
+    ],
+    "source": {
+      "repo": "gautamik01/30-day-map-challenge-2026 (scripts/day21_openstreetmap_ski.ipynb, scripts/day21_terrain_arcgis.py, scripts/day21_page_template.html, captions/day21_openstreetmap-ski.md)",
+      "notes": "The opener (ski-hero.mp4: the overview, then Jiminy Peak with its trails highlighted in turn) and the lead clip beside the text (ski-snippet-2.mp4: Blue Mountain) are Gautami's own captures from Some Material/Ski, compressed by tools/prepare_media.py with first-frame posters; the card is the hero's map column at 14 s. The Windham still and the work tiles were captured from the live page with Playwright (tools/record_ski.py); the second still is a frame of ski-snippet-2.mp4 at 2 s (Blue Mountain), so the pair shows two resorts. The opener takes opener_fit top on a white opener_bg: the frame fills the screen under the header, anchored to its top edge so the map's own title is never cut (only the bottom is cropped), and on phones it is anchored to the top-left so the title column stays whole. opener_title false: the footage carries its own title, so no number, title, kicker or meta fade in over it. Coordinates are Jiminy Peak. Place and year as asked: New York + Philadelphia day trips · 2026."
+    }
+  },
+  {
+    "slug": "forested-university",
+    "number": "03",
+    "published": true,
+    "title": "Forested University",
+    "kicker": "A university campus set inside a forest, from the aerial down to the atrium.",
+    "location": "",
+    "coords": "",
+    "year": "",
+    "role": "",
+    "tools": [
+      { "name": "Rhino", "use": "" },
+      { "name": "Photoshop", "use": "" },
+      { "name": "Midjourney", "use": "" },
+      { "name": "Meta AI", "use": "" }
+    ],
+    "data": [],
+    "labels": ["( 3D ENVIRONMENT )", "( ANIMATION )", "( LANDSCAPE )"],
+    "card": "assets/projects/forested-university/card.webp",
+    "card_video": "",
+    "opener_text": "dark",
+    "opener_focus": "40% 40%",
+    "hero": "assets/projects/forested-university/aerial.webp",
+    "hero_video": "",
+    "lead": "assets/projects/forested-university/season-poster.webp",
+    "lead_video": "assets/projects/forested-university/season.mp4",
+    "lead_bw": false,
+    "lead_fit": "contain",
+    "lead_wide": true,
+    "lead_focus": "center",
+    "intro": [
+      "A university campus set inside a forest. Seen from above, white buildings stand among the trees beside the water, with pink blossom along the paths that thread between them. One student housing block is pulled apart floor by floor, so the pines can be seen rising through every level.",
+      "At eye level the walkthroughs move through an atrium built around the trunks and along a street of brick blocks in winter. The visuals were built in Rhino and developed with AI image tools."
+    ],
+    "gallery": [
+      {
+        "type": "video",
+        "src": "assets/projects/forested-university/campus.mp4",
+        "poster": "assets/projects/forested-university/campus-poster.webp",
+        "alt": "A flight from an aerial view of the campus, pink blossom along its paths, down to a path through the forest between the buildings.",
+        "caption": "From the aerial down to the path.",
+        "width": "quarter"
+      },
+      {
+        "type": "video",
+        "src": "assets/projects/forested-university/housing-exploded.mp4",
+        "poster": "assets/projects/forested-university/housing-exploded-poster.webp",
+        "alt": "An exploded axonometric of a student housing block on a pink background, its floors lifted apart with tall pines growing up through them.",
+        "caption": "Student housing, exploded floor by floor.",
+        "width": "quarter"
+      },
+      {
+        "type": "video",
+        "src": "assets/projects/forested-university/atrium.mp4",
+        "poster": "assets/projects/forested-university/atrium-poster.webp",
+        "alt": "A walkthrough of an atrium where tall tree trunks rise through open floors, with people at tables below.",
+        "caption": "At eye level: an atrium around the trunks.",
+        "width": "quarter"
+      },
+      {
+        "type": "video",
+        "src": "assets/projects/forested-university/winter-street.mp4",
+        "poster": "assets/projects/forested-university/winter-street-poster.webp",
+        "alt": "A winter walkthrough along a snowy street between brick housing blocks, bare trees overhead and lit windows.",
+        "caption": "The street between the brick blocks, in winter.",
+        "width": "quarter"
+      }
+    ],
+    "system": null,
+    "portals": [],
+    "source": {
+      "repo": "Local folder only (Some Material/Forested_University), read only. This site is the project's home.",
+      "notes": "The aerial drawing (BIE_241216 Aerial view Zoom.png) is the card, the home panel image and the opener, cover-fitted with its focal point at 40% 40% so the campus and the river stay in frame, with ink type. The lead is a 6.4 s season loop (season.mp4: the summer Heverlee view holds 2 s, crossfades 1.2 s to the autumn view, holds, crossfades back; 1600 px, CRF 24, flattened on paper, poster = first frame), shown whole in full colour. The four portrait clips (464x832, 5 s each) sit in one row of four at their natural ratio, each with its caption; montage.mp4 is compressed but no longer shown. Every poster is the clip's first frame. Place, year and role are left out on purpose; the tools are names only."
+    }
+  },
+  {
+    "slug": "cloud-footprint",
+    "number": "04",
+    "published": true,
+    "title": "The Cloud Has a Footprint",
+    "kicker": "US data centers and the AI campuses on the way, mapped against water stress.",
+    "location": "United States",
+    "coords": "( 39.83° N, 98.58° W )",
+    "year": "2026",
+    "role": "",
+    "tools": [
+      { "name": "Python", "use": "every map is a notebook, run top to bottom" },
+      { "name": "GeoPandas", "use": "joins the campuses to the basins and the states" },
+      { "name": "Shapely", "use": "the geometry under the joins" },
+      { "name": "Mapbox GL JS", "use": "the live pages: glow layers, hover details, the legend" },
+      { "name": "Jupyter", "use": "one notebook per map" },
+      { "name": "mapkit", "use": "the shared toolkit: palettes, credits, the title card, the publish step" }
+    ],
+    "data": ["IM3 Open Source Data Center Atlas (PNNL), derived from OpenStreetMap", "Epoch AI Frontier Data Centers", "WRI Aqueduct 4.0 water stress", "US Census Bureau cartographic boundaries"],
+    "labels": ["( INTERACTIVE )", "( PYTHON + MAPBOX )", "( DATA CENTERS )"],
+    "card": "assets/projects/cloud-footprint/card.webp",
+    "card_video": "",
+    "hero": "assets/projects/cloud-footprint/hero-poster.webp",
+    "hero_video": "assets/projects/cloud-footprint/hero.mp4",
+    "lead": "assets/projects/cloud-footprint/lead.webp",
+    "lead_bw": false,
+    "lead_focus": "center",
+    "intro": [
+      "Two interactive maps of the physical side of AI. Where AI Gets Built puts 1,472 existing US data centers on one map with the 34 new AI campuses already running and the 43 more that are coming. What AI Drinks lays the same campuses over the basins where water is already scarce: 39% of the new campuses sit in them.",
+      "Both are built in Python from the IM3 Data Center Atlas, Epoch AI's Frontier Data Centers list and WRI Aqueduct 4.0, and published as Mapbox GL pages with a floating card, hover details on every point and a legend that switches each layer on and off.",
+      "They are the first two studies in a series that follows the data centers into the water, power and climate risk around them. What AI Burns and Where AI Is at Risk come next."
+    ],
+    "gallery": [
+      {
+        "type": "image",
+        "src": "assets/projects/cloud-footprint/where-ai-gets-built.webp",
+        "poster": "",
+        "alt": "A dark map of the United States with small blue dots for existing data centers, amber dots for AI campuses that are running and large glowing pink dots for campuses that are coming, densest in Texas, the Midwest and Virginia. A floating card at the top left carries the title and legend.",
+        "caption": "Where AI Gets Built: 1,472 data centers today, 34 AI campuses running, 43 coming.",
+        "width": "full"
+      },
+      {
+        "type": "image",
+        "src": "assets/projects/cloud-footprint/what-ai-drinks.webp",
+        "poster": "",
+        "alt": "The same campuses over teal basins shaded by water stress, with the pink dots clustered in the dry Southwest and Texas, and the title card What AI Drinks at the top left.",
+        "caption": "What AI Drinks: 39% of the new AI campuses sit where water is already scarce.",
+        "width": "full"
+      }
+    ],
+    "system": null,
+    "portals": [
+      {
+        "label": "( OPEN WHERE AI GETS BUILT ↗ )",
+        "cta": "Try the map",
+        "url": "https://gautamik01.github.io/30-day-map-challenge-2026/output/day01_points-ai.html",
+        "window": "assets/projects/cloud-footprint/hero.mp4",
+        "window_poster": "assets/projects/cloud-footprint/hero-poster.webp",
+        "embeddable": true
+      },
+      {
+        "label": "( OPEN WHAT AI DRINKS ↗ )",
+        "cta": "Try the map",
+        "url": "https://gautamik01.github.io/30-day-map-challenge-2026/output/day03_polygons-water-ai.html",
+        "window_poster": "assets/projects/cloud-footprint/lead.webp",
+        "size": "small",
+        "embeddable": true
+      }
+    ],
+    "source": {
+      "repo": "gautamik01/30-day-map-challenge-2026 (README, captions/day01_points-ai.md, captions/day03_polygons-water-ai.md, output/maps.json, scripts/mapkit/style.py, scripts/mapkit/ai.py)",
+      "notes": "The opener is a 13 s recording from the live day01 map on 2026-11-12 (scratch cloud_record2.py: Playwright on the GPU, the page's own map object stepped frame by frame, a drawn cursor and the real pointer gliding onto a pink, a yellow and a blue dot and resting on each so the page's own card opens; title card and zoom buttons hidden), its poster the first frame; the card is the pink campus with its card open, at 2x. The lead is the 4:5 crop of png_thumbnail/day03_polygons-water-ai.png, so the panel pairs the dark dots map with the teal water map. The counts (1,472 / 34 / 43) and the 39% line were read from the live pages' layer data and cards on 2026-11-11; the live pages load mapbox-gl-js v3.7.0. Coordinates are the geographic centre of the contiguous US."
+    }
+  },
+  {
+    "slug": "map-series",
+    "number": "05",
+    "published": true,
+    "title": "30 Day Map Challenge",
+    "kicker": "Five static maps, one question each, from one shared Python toolkit.",
+    "location": "Big Sur, San Francisco, Philadelphia, Mumbai",
+    "coords": "( 36.37° N, 121.90° W )",
+    "year": "2026",
+    "role": "",
+    "opener": "carousel",
+    "carousel": [
+      { "src": "assets/projects/map-series/big-sur.webp", "alt": "Big Sur Marathon: the course in plan and section on fine contour lines." },
+      { "src": "assets/projects/map-series/sf-zoning.webp", "alt": "What San Francisco Lets You Build: every block coloured by zoning." },
+      { "src": "assets/projects/map-series/billy-penn.webp", "alt": "What Billy Penn Can No Longer See: pink wedges for the towers that block the statue's view." },
+      { "src": "assets/projects/map-series/bombay.webp", "alt": "Bombay Was Seven Islands: the 1843 map with today's shoreline in red." },
+      { "src": "assets/projects/map-series/philly-parks.webp", "alt": "Philadelphia Passes the 10-Minute Test: streets by their walk to a large park." },
+      { "src": "assets/projects/map-series/nyc-indian.webp", "alt": "Naan Stop in New York: 314 Indian restaurants and their 12 clusters." }
+    ],
+    "tools": [
+      { "name": "Python", "use": "one notebook per map, run top to bottom" },
+      { "name": "GeoPandas", "use": "the joins, the overlays and the street-length sums" },
+      { "name": "Matplotlib", "use": "every map is drawn to a poster-sized figure" },
+      { "name": "OSMnx", "use": "streets, water and footprints from OpenStreetMap" },
+      { "name": "SciPy", "use": "the contours and the elevation section" },
+      { "name": "Jupyter", "use": "where each map is built" },
+      { "name": "mapkit", "use": "the shared toolkit: palettes, fonts, credits, the publish step" }
+    ],
+    "data": ["Big Sur International Marathon course facts", "OpenStreetMap contributors", "USGS 3DEP elevation", "DataSF zoning districts", "City of Philadelphia footprints, parks and Heat Vulnerability Index", "Wikipedia, tallest buildings in Philadelphia", "British Library, 1843 map via Wikimedia Commons", "Trust for Public Land"],
+    "labels": ["( CARTOGRAPHY )", "( GRAPHIC SYSTEM )", "( PYTHON )"],
+    "card": "assets/projects/map-series/card.webp",
+    "card_video": "",
+    "hero": "assets/projects/map-series/big-sur.webp",
+    "hero_video": "",
+    "lead": "assets/projects/map-series/sf-zoning.webp",
+    "lead_bw": false,
+    "lead_fit": "contain",
+    "intro": [
+      "Five static maps from the first week of the 30 Day Map Challenge, each one a question about a place answered with a number or a line. The Big Sur Marathon is drawn in plan and section with three line weights and one red line, the 510 ft climb to Hurricane Point. San Francisco's blocks are coloured by what the city lets you build: outside parks and public land, half of it is zoned for one or two family houses.",
+      "In Philadelphia, 12 towers now rise above William Penn's hat, all of them behind his back, and together they block 18% of his horizon. In the city's most heat-vulnerable tracts, 98% of streets are a ten minute walk from a park, but only 32% reach one of ten acres. Bombay's 1843 map of the seven islands carries today's shoreline in red.",
+      "Every map starts from the same Python toolkit, mapkit: the palettes, the credits and the title card live in one style file, each map is a notebook run top to bottom, and a publish step turns it into a live page and a thumbnail."
+    ],
+    "gallery": [],
+    "system": {
+      "note": "One style file holds the palettes, the credits and the title card. Every map starts from the same template notebook, and a publish step turns a finished notebook into a live page, a thumbnail and a caption stub, so a new map is one run away.",
+      "typefaces": ["Fraunces for titles and Inter for everything else, by default.", "A case of display faces kept in the kit for a map that asks for one: Cinzel, DM Serif Display, IM Fell English, Abril Fatface, Bebas Neue, Zilla Slab."],
+      "palettes": [
+        {
+          "name": "The Cloud Has a Footprint",
+          "series": "ai",
+          "basemap": "dark",
+          "swatches": [
+            { "name": "paper", "hex": "#0e1418" },
+            { "name": "ink", "hex": "#eef3f4" },
+            { "name": "muted", "hex": "#9fb0b6" },
+            { "name": "accent, data centers", "hex": "#f2b134" },
+            { "name": "accent 2, water", "hex": "#2fb5a8" }
+          ],
+          "ramp": ["#13343b", "#1f6f74", "#2fb5a8", "#f2b134", "#f25f3a"],
+          "categorical": ["#f2b134", "#2fb5a8", "#e86a92", "#8fb3ff", "#c3e88d", "#ff9f6e", "#b39ddb"]
+        },
+        {
+          "name": "City Senses",
+          "series": "city",
+          "basemap": "light",
+          "swatches": [
+            { "name": "paper", "hex": "#f7f2ea" },
+            { "name": "ink", "hex": "#24201c" },
+            { "name": "muted", "hex": "#7a6f63" },
+            { "name": "accent", "hex": "#d1495b" },
+            { "name": "accent 2", "hex": "#00798c" }
+          ],
+          "ramp": ["#fbe8d3", "#f4b183", "#e0705a", "#b03a48", "#5c1a33"],
+          "categorical": ["#d1495b", "#00798c", "#edae49", "#30638e", "#6a994e", "#9c6ade", "#e07a5f"]
+        }
+      ],
+      "cast": [
+        { "name": "Existing data centers", "hex": "#8fb3c9" },
+        { "name": "New AI campuses, running", "hex": "#f2b134" },
+        { "name": "New AI campuses, coming", "hex": "#ff5c8a" },
+        { "name": "Water", "hex": "#2fb5a8" },
+        { "name": "Power", "hex": "#f25f3a" }
+      ]
+    },
+    "portals": [
+      {
+        "label": "( OPEN THE SERIES ↗ )",
+        "cta": "See all the maps",
+        "url": "https://gautamik01.github.io/30-day-map-challenge-2026/output/",
+        "window_poster": "assets/projects/map-series/card.webp",
+        "embeddable": true
+      }
+    ],
+    "source": {
+      "repo": "gautamik01/30-day-map-challenge-2026 (output/*.png, captions/*.md, output/maps.json, README, scripts/mapkit/style.py, the mapkit font files)",
+      "notes": "The opener is a full-screen carousel of six whole maps (the five static maps plus day04 Naan Stop in New York), drifting and draggable (js/carousel.js); the home panel still shows the Big Sur map. The gallery is empty on purpose: the text panel goes straight to the toolkit block. The lead is the San Francisco zoning map, shown whole. Card is a crop of day02_lines-big-sur.png around Hurricane Point. Coordinates are Hurricane Point on the Big Sur course. Findings and credits come from each map's own title block and credit line and from captions/*.md. The system block is read from scripts/mapkit/style.py: the two SERIES palettes, the LOOK cast colours and the FONTS link, plus the display faces bundled in scripts/mapkit/*.ttf."
+    }
+  }
+]
