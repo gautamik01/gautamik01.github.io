@@ -69,6 +69,7 @@ Use `/add-project` (`.claude/skills/add-project/SKILL.md`), which walks through 
 - A filter only shows once at least one project uses it, so Data stories appears with the first notebook.
 - Tiles never show category tags or text under the image. `summary` appears only when a tile is opened, and on `project.html`.
 - `image` plus `images` form the little gallery inside an opened tile (click the image or the counter to step through). Empty strings show as grey placeholders until real images exist.
+- `video` (optional) is a short muted clip, `projects/<id>/clip.mp4`: 6 to 8 s, 16:10, H.264, under 3 MB. It takes the cover's slot in the gallery with the cover as its poster, plays on a loop while the tile is open and on hover where there is a mouse, and falls back to the cover if it cannot load. Nothing plays when the visitor prefers reduced motion.
 - `fillers` (top level) are the in-between cells on the Everything view: `blank`, `places` (coordinates that tick through a list), `water` (moving waterlines round an island), `line` (one serif sentence) and `now` (orange dot plus a short note). `after` is the project id they follow. They hide when a filter is picked.
 - Covers: 4:3, roughly 1600 × 1200, JPG or WebP under ~300 KB. Put assets in `projects/<id>/`.
 

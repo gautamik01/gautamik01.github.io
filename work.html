@@ -86,7 +86,7 @@ h1 { margin: 0; font-size: calc(clamp(56px, 9.5vw, 160px) * var(--disp)); line-h
 
 .card { background: var(--paper-2); }
 .card .media { position: absolute; inset: 0; overflow: hidden; background: var(--paper-2); }
-.card .media img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .7s cubic-bezier(.2,.75,.15,1); }
+.card .media img, .card .media video { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .7s cubic-bezier(.2,.75,.15,1); }
 .card .ph { position: absolute; inset: 0; display: grid; place-items: center; font-size: 13px; color: var(--ink-soft); text-transform: uppercase; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 600; letter-spacing: 0.03em; }
 .card .dot { position: absolute; right: 12px; top: 12px; z-index: 2; width: 9px; height: 9px; border-radius: 50%; background: var(--now); pointer-events: none; }
 .card .dot::after, .f-now .nd::after { content: ""; position: absolute; inset: -5px; border-radius: 50%; border: 1.5px solid var(--now); opacity: 0; animation: ring 2.4s ease-out infinite; }
@@ -107,7 +107,7 @@ h1 { margin: 0; font-size: calc(clamp(56px, 9.5vw, 160px) * var(--disp)); line-h
 .card.open .media.more { cursor: e-resize; }
 .card.open .media.out { cursor: pointer; }
 .card.open .hit, .card.open .over { display: none; }
-.card.open .media img { transform: none; }
+.card.open .media img, .card.open .media video { transform: none; }
 .card.open .info { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 24px; row-gap: 6px; align-items: start; padding: 14px 0 0; }
 .info h3 { margin: 0; font-size: calc(clamp(24px, 2.2vw, 36px) * var(--body)); font-weight: 600; letter-spacing: -0.025em; line-height: 1.05; }
 .info .close, .info .count, .info .foot { font-size: 14px; text-transform: uppercase; font-family: var(--cond); font-stretch: var(--cond-stretch); font-weight: 600; color: var(--ink-soft); }
@@ -160,7 +160,7 @@ footer a:hover { color: var(--water); }
   .filters button sup { font-size: 10px; margin-top: 13px; }
   .f-places .pl-n, .f-places .pl-i { font-size: 12px; }
 }
-@media (prefers-reduced-motion: reduce) { .top, .media img, .over { transition: none; } .card .dot::after, .f-now .nd::after { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .top, .media img, .media video, .over { transition: none; } .card .dot::after, .f-now .nd::after { animation: none; } }
 .empty { grid-column: 1 / -1; padding: 28px 0; font-size: 18px; color: var(--ink-soft); }
 </style>
 </head>
@@ -211,7 +211,9 @@ footer a:hover { color: var(--water); }
   let data = null, current = 'all', openEl = null;
 
   // ---------- project cards ----------
-  function slide(src, i) {
+  // a slide is an image, or, for the first one when the project has a clip, a muted video with the cover as its poster
+  function slide(src, i, video) {
+    if (video) return '<video src="' + esc(video) + '"' + (src ? ' poster="' + esc(src) + '"' : '') + ' muted loop playsinline preload="none" aria-hidden="true"></video>';
     return src ? '<img src="' + esc(src) + '" alt="" loading="lazy">' : '<span class="ph">' + (i ? 'Image ' + (i + 1) : 'Cover image') + '</span>';
   }
   function makeCard(p) {
@@ -220,6 +222,7 @@ footer a:hover { color: var(--water); }
     el.dataset.id = p.id;
     el.dataset.cats = (p.categories || []).join(' ');
     const gallery = [p.image || ''].concat(p.images || []);
+    let video = p.video || '';
     const external = /^https?:/.test(p.link || '') || p.linkType === 'pdf';
     const where = [p.place, p.year].filter(Boolean).join(' · ');
     const go = p.link
@@ -227,7 +230,7 @@ footer a:hover { color: var(--water); }
       : '<span class="go soon">Coming soon</span>';
     const meta = [p.status === 'ongoing' ? '<span class="ongo">Ongoing</span>' : '', where ? '<span>' + esc(where) + '</span>' : '', (p.tools || []).length ? '<span>' + esc(p.tools.join(', ')) + '</span>' : ''].join('');
     el.innerHTML =
-      '<div class="media' + (gallery.length > 1 ? ' more' : p.link ? ' out' : '') + '">' + slide(gallery[0], 0) + '</div>' +
+      '<div class="media' + (gallery.length > 1 ? ' more' : p.link ? ' out' : '') + '">' + slide(gallery[0], 0, video) + '</div>' +
       (p.status === 'ongoing' ? '<span class="dot" aria-hidden="true"></span>' : '') +
       '<button type="button" class="hit" aria-expanded="false" aria-label="' + esc(p.title + (where ? ', ' + where : '')) + '"></button>' +
       '<div class="over" aria-hidden="true"><h3>' + esc(p.title) + '</h3>' + (where ? '<p>' + esc(where) + '</p>' : '') + '</div>' +
@@ -242,10 +245,35 @@ footer a:hover { color: var(--water); }
     const media = el.querySelector('.media'), count = el.querySelector('.count');
     const next = () => {
       i = (i + 1) % gallery.length;
-      media.innerHTML = slide(gallery[i], i);
+      media.innerHTML = slide(gallery[i], i, i === 0 ? video : '');
       if (count) count.textContent = pad(i + 1) + ' / ' + pad(gallery.length);
       if (!reduce) media.firstChild.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 320, easing: 'ease-out' });
+      if (i === 0 && el.classList.contains('open')) play();
     };
+    // the clip plays muted on a loop while the tile is open, and on hover where there is a mouse; closing rewinds it
+    const clip = () => media.querySelector('video');
+    const play = () => { const v = clip(); if (v && !reduce) { v.muted = true; v.play().catch(() => {}); } };
+    const stop = () => { const v = clip(); if (v) { v.pause(); v.currentTime = 0; } };
+    // a closed tile shows its cover again (and the clip, on hover)
+    const reset = () => {
+      stop();
+      if (i === 0) return;
+      i = 0;
+      media.innerHTML = slide(gallery[0], 0, video);
+      if (count) count.textContent = '01 / ' + pad(gallery.length);
+    };
+    el.clipPlay = play; el.clipReset = reset;
+    if (video) {
+      media.addEventListener('error', (e) => {
+        if (e.target.tagName !== 'VIDEO') return;
+        video = '';                                     // missing or unplayable: fall back to the cover image
+        if (i === 0) media.innerHTML = slide(gallery[0], 0, '');
+      }, true);
+      if (matchMedia('(hover: hover)').matches) {
+        el.addEventListener('mouseenter', () => { if (!el.classList.contains('open')) play(); });
+        el.addEventListener('mouseleave', () => { if (!el.classList.contains('open')) stop(); });
+      }
+    }
     el.querySelector('.hit').addEventListener('click', () => open(el));
     el.querySelector('.close').addEventListener('click', close);
     if (count) count.addEventListener('click', next);
@@ -351,6 +379,7 @@ footer a:hover { color: var(--water); }
     return after;
   }
   function shut(el) {
+    if (el.clipReset) el.clipReset();
     el.classList.remove('open');
     el.style.removeProperty('--c0');
     el.querySelector('.hit').setAttribute('aria-expanded', 'false');
@@ -370,6 +399,7 @@ footer a:hover { color: var(--water); }
       el.classList.add('open');
       el.querySelector('.hit').setAttribute('aria-expanded', 'true');
       openEl = el;
+      if (el.clipPlay) el.clipPlay();
     });
     if (!reduce) el.querySelector('.info').animate([{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }], { duration: 420, delay: 320, easing: EASE, fill: 'backwards' });
     el.querySelector('.close').focus({ preventScroll: true });

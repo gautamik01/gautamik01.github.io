@@ -30,7 +30,7 @@
     {
       "id": "raasta",
       "title": "Raasta",
-      "summary": "A walking-route tool that plans for time and intent, not speed.",
+      "summary": "A web app that finds the most scenic walking route from A to B instead of the fastest one, built in the Wharton Generative AI Studio.",
       "place": "Philadelphia, US",
       "year": "2026",
       "status": "ongoing",
@@ -39,12 +39,22 @@
         "cartography"
       ],
       "tools": [
+        "TypeScript",
+        "Vite",
+        "GSAP",
+        "OpenStreetMap",
         "Claude Code",
-        "Mapbox"
+        "Vercel"
       ],
-      "image": "",
-      "link": "",
+      "image": "projects/raasta/cover.jpg",
+      "video": "projects/raasta/clip.mp4",
+      "link": "https://raastawalks.vercel.app/",
       "linkType": "site",
+      "images": [
+        "projects/raasta/01.jpg",
+        "projects/raasta/02.jpg",
+        "projects/raasta/03.jpg"
+      ],
       "featured": true
     },
     {

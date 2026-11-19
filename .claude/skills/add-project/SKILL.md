@@ -34,7 +34,7 @@ Never invent a title, date, client, award or claim. If something is unknown, lea
 python tools/prep_images.py "<folder with her originals>" <id>
 ```
 
-(On Windows `py` may work where `python` doesn't. If Pillow is missing: `python -m pip install pillow`.)
+(Run it with the `geospatial` conda environment's `python.exe`, called by full path; see "Working with Gautami" in CLAUDE.md. Pillow is already there.)
 This writes `cover.jpg` (4:3, 1600 × 1200) and `01.jpg, 02.jpg …` (long edge 2000 px) and prints the `image` and `images` lines. Open `cover.jpg` and look at it: if the crop cuts the drawing badly, rerun with `--cover "<better file>"`. Order the gallery the way she wants by renaming originals or by editing the `images` list. Use `"link": "project.html#<id>"` and `"linkType": "page"`.
 
 **Quarto / R Markdown / Jupyter (Data stories)**
@@ -51,6 +51,8 @@ Render, then copy the HTML to `projects/<id>/index.html`. If it can't be self-co
 
 **PDF**: copy to `projects/<id>/<id>.pdf` (keep it under about 15 MB), `"linkType": "pdf"`.
 **Outside link or repo**: `"link": "https://…"`, `"linkType": "site"` or `"github"`.
+
+**Clip (optional, for apps and animations)**: a muted MP4 at `projects/<id>/clip.mp4`, 6 to 8 s, 16:10 (1280 × 800 is plenty), H.264, under 3 MB, set as `"video"` in the entry. It replaces the cover in the tile's gallery, with the cover as its poster: it plays on a loop when the tile is open and on hover on desktop. For a web app, record it with Playwright (screen recording at 1440 × 900) and cut it with ffmpeg from the `capture` conda env: `ffmpeg -ss <start> -t 7.6 -i take.webm -an -vf "scale=1280:800,fps=30,format=yuv420p" -c:v libx264 -crf 26 -movflags +faststart clip.mp4`. Keep the originals in `References/`.
 
 ## 4. Add the entry to projects.json
 
